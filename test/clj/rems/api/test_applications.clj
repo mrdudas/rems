@@ -8,6 +8,7 @@
             [rems.api.testing :refer [api-call api-fixture api-response assert-response-is-ok authenticate get-csrf-token login-with-cookies read-body read-ok-body response-is-forbidden? response-is-not-found? response-is-ok? response-is-payload-too-large? response-is-unauthorized? response-is-unsupported-media-type? transit-body]]
             [rems.config]
             [rems.db.applications]
+            [rems.db.outbox]
             [rems.db.blacklist]
             [rems.db.core :as db]
             [rems.service.test-data :as test-data :refer [+test-api-key+]]
@@ -3273,3 +3274,133 @@
   ;; to mount a proper handler.
   (deftest test-todos-performance
     (clj-async-profiler.core/profile {:interval 100000} (get-handled-todos "handler"))))
+
+(deftest test-member-preparation-and-supervisor-approval
+  (test-helpers/create-user! {:userid "researcher"})
+  (test-helpers/create-user! {:userid "supervisor"})
+  (let [contact "alice"
+        form-id (test-helpers/create-form! {:form/fields [{:field/id "fld1"
+                                                           :field/type :text
+                                                           :field/title {:en "Title" :fi "Title" :sv "Title"}
+                                                           :field/optional false}]})
+        workflow-id (test-helpers/create-workflow! {:type :workflow/default
+                                                    :handlers ["handler"]})
+        cat-item-id (test-helpers/create-catalogue-item! {:form-id form-id
+                                                          :workflow-id workflow-id})
+        app-id (test-helpers/create-application! {:catalogue-item-ids [cat-item-id]
+                                                  :actor contact})
+        emails (atom [])
+        sent-emails (fn [] (->> @emails
+                                (map #(select-keys (:outbox/email %) [:subject :to-user]))
+                                (sort-by :to-user)))
+        join! (fn [userid]
+                (is (= {:success true}
+                       (send-command contact {:type :application.command/invite-member
+                                              :application-id app-id
+                                              :member {:name userid :email (str userid "@example.com")}})))
+                (let [token (-> (rems.db.applications/get-application-internal app-id)
+                                :application/events
+                                last
+                                :invitation/token)]
+                  (is (= {:success true :application-id app-id}
+                         (api-call :post (str "/api/applications/accept-invitation?invitation-token=" token) nil
+                                   +test-api-key+ userid)))))
+        save! (fn [actor value]
+                (send-command actor {:type :application.command/save-draft
+                                     :application-id app-id
+                                     :field-values [{:form form-id :field "fld1" :value value}]}))
+        permissions (fn [userid]
+                      (set (:application/permissions (get-application-for-user app-id userid))))]
+    (join! "researcher")
+    (join! "supervisor")
+
+    (testing "everything is off by default"
+      (is (not (contains? (permissions "researcher") "application.command/save-draft")))
+      (is (not (contains? (permissions "researcher") "application.command/mark-ready")))
+      (is (not (contains? (permissions contact) "application.command/designate-supervisor")))
+      (is (= {:success false :errors [{:type "forbidden"}]}
+             (send-command contact {:type :application.command/designate-supervisor
+                                    :application-id app-id
+                                    :supervisor {:userid "supervisor"}}))))
+
+    (with-redefs [rems.config/env (assoc rems.config/env
+                                         :enable-member-editing true
+                                         :enable-supervisor-approval true)
+                  rems.db.outbox/puts! (fn [new-emails] (swap! emails concat new-emails))]
+      (testing "the researcher fills in the draft and marks it ready"
+        (is (= {:success true} (save! "researcher" "first version")))
+        (is (= {:success true}
+               (send-command "researcher" {:type :application.command/mark-ready
+                                           :application-id app-id
+                                           :comment "ready"})))
+        (is (= [{:subject "(2000/1) Application is ready for submission" :to-user contact}]
+               (map #(update % :subject str/replace #"^\([^)]*\)" "(2000/1)") (sent-emails))))
+        (let [application (get-application-for-user app-id contact)]
+          (is (:application/marked-ready application))
+          (is (= "first version" (get-in application [:application/forms 0 :form/fields 0 :field/value])))))
+
+      (testing "the contact designates the supervisor"
+        (reset! emails [])
+        (is (= {:success true}
+               (send-command contact {:type :application.command/designate-supervisor
+                                      :application-id app-id
+                                      :supervisor {:userid "supervisor"}})))
+        (is (= ["supervisor"] (map :to-user (sent-emails))))
+        (is (= "supervisor" (get-in (get-application-for-user app-id contact) [:application/supervisor :userid])))
+        (is (contains? (permissions "supervisor") "application.command/approve-supervision"))
+        (is (not (contains? (permissions "researcher") "application.command/approve-supervision"))))
+
+      (testing "submitting needs the supervisor's approval"
+        (is (= {:success false :errors [{:type "t.actions.errors/supervision-not-approved"}]}
+               (send-command contact {:type :application.command/submit
+                                      :application-id app-id}))))
+
+      (testing "the supervisor approves"
+        (reset! emails [])
+        (is (= {:success true}
+               (send-command "supervisor" {:type :application.command/approve-supervision
+                                           :application-id app-id})))
+        (is (= [contact] (map :to-user (sent-emails))))
+        (is (:application/supervision-approved (get-application-for-user app-id contact))))
+
+      (testing "changing the answers resets the approval and the ready mark"
+        (is (= {:success true} (save! "researcher" "second version")))
+        (let [application (get-application-for-user app-id contact)]
+          (is (nil? (:application/supervision-approved application)))
+          (is (nil? (:application/marked-ready application))))
+        (is (= {:success false :errors [{:type "t.actions.errors/supervision-not-approved"}]}
+               (send-command contact {:type :application.command/submit
+                                      :application-id app-id}))))
+
+      (testing "after a new approval the contact can submit, the members cannot"
+        (is (= {:success true}
+               (send-command "supervisor" {:type :application.command/approve-supervision
+                                           :application-id app-id})))
+        (is (= {:success false :errors [{:type "forbidden"}]}
+               (send-command "researcher" {:type :application.command/submit
+                                           :application-id app-id})))
+        (is (= {:success true}
+               (send-command contact {:type :application.command/submit
+                                      :application-id app-id}))))
+
+      (testing "after submitting the members cannot edit or approve"
+        (is (= #{"application.command/accept-licenses" "application.command/copy-as-new"}
+               (permissions "researcher")))
+        (is (= {:success false :errors [{:type "forbidden"}]}
+               (send-command "supervisor" {:type :application.command/approve-supervision
+                                           :application-id app-id}))))
+
+      (testing "events are shown to the applicant"
+        (is (= ["application.event/created"
+                "application.event/member-invited"
+                "application.event/member-joined"
+                "application.event/member-invited"
+                "application.event/member-joined"
+                "application.event/draft-saved"
+                "application.event/marked-ready"
+                "application.event/supervisor-designated"
+                "application.event/supervision-approved"
+                "application.event/draft-saved"
+                "application.event/supervision-approved"
+                "application.event/submitted"]
+               (map :event/type (:application/events (get-application-for-user app-id contact)))))))))
