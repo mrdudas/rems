@@ -56,14 +56,14 @@
 (defn- valid-owner? [owner]
   (not (str/blank? owner)))
 
+(defn- valid-localized-string? [localized-string]
+  (some (comp not str/blank?) (vals localized-string)))
+
 (defn- valid-create-request? [request languages]
   (and
    (not (str/blank? (:organization/id request)))
-   (= (set languages)
-      (set (keys (:organization/short-name request)))
-      (set (keys (:organization/name request))))
-   (not-any? str/blank? (vals (:organization/short-name request)))
-   (not-any? str/blank? (vals (:organization/name request)))
+   (valid-localized-string? (:organization/short-name request))
+   (valid-localized-string? (:organization/name request))
    (every? valid-owner? (:organization/owners request))
    (every? (partial valid-review-email? languages) (:organization/review-emails request))))
 
@@ -82,11 +82,8 @@
       request)))
 
 (defn- valid-edit-request? [request languages]
-  (and (= (set languages)
-          (set (keys (:organization/short-name request)))
-          (set (keys (:organization/name request))))
-       (not-any? str/blank? (vals (:organization/short-name request)))
-       (not-any? str/blank? (vals (:organization/name request)))
+  (and (valid-localized-string? (:organization/short-name request))
+       (valid-localized-string? (:organization/name request))
        (every? valid-owner? (:organization/owners request))
        (every? (partial valid-review-email? languages) (:organization/review-emails request))))
 
