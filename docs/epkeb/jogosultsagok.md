@@ -1,0 +1,84 @@
+# Jogosultságok és tiltások
+
+Források: `docs/application-permissions.md` (a teljes szerep × állapot × parancs táblázat), `resources/config-defaults.edn` (`:disable-commands`), `CHANGELOG.md`, és a kód (`src/clj/rems/application/model.clj`, `master_workflow.clj`).
+
+## Hogyan működik
+
+1. **A master workflow** meghatározza, melyik szerep melyik állapotban mit tehet. Ez a felső határ. A `default` és a `decider` workflow-típus ennek egy részhalmaza; a különbség, hogy jóváhagyni és elutasítani a handler (default) vagy a decider (decider) tud.
+2. **Tiltások** ezt szűkítik, kétféleképpen:
+   - **globálisan** a `config.edn`-ben: `:disable-commands [:application.command/...]` – minden workflow-ra, minden szerepre;
+   - **workflow-nként** az admin felületen (Workflow → *Disable commands*), szabályokkal: `{:command ... :when/state [...] :when/role [...]}`. Az állapot és a szerep elhagyható; ilyenkor mindenre vonatkozik.
+3. **Tiltással csak elvenni lehet**, hozzáadni nem. Ami a master workflow-ban nincs meg egy szerepnek, azt tiltásokkal nem lehet megadni.
+
+További beépített kapcsolók:
+
+| Kapcsoló | Hatás |
+|---|---|
+| Workflow → *anonymize handling* | A kérelmező és a tagok a handler, a bíráló és a decider neve helyett csak „Ügyintéző” feliratot látnak az eseményekben, a mellékleteknél és az e-mailekben. |
+| Űrlapmező → *privát* | A mezőt a bírálók nem látják (a handler igen). |
+| Workflow → *voting* (`:enable-voting`) | `:reviewers-vote` vagy `:handlers-vote`; értékei: elfogad / elutasít / üres (kísérleti). |
+| `:enable-processing-states` | Szabadon definiált állapotcímkék (pl. „Bírálók felkérve”), nyilvános vagy belső. |
+| `:application-deadline-days` | Döntési határidő az első benyújtástól (csak jelzés). |
+
+## Mit fed le ez az EPKEB-folyamatból kód nélkül
+
+| Igény ([cel-folyamat.md](cel-folyamat.md)) | Megoldás tiltással vagy kapcsolóval |
+|---|---|
+| **A bíráló névtelen a kérelmező felé** (eljárásrend) | *anonymize handling* a workflow-n. Ez a bírálóra is vonatkozik, mert a bíráló „handling” szerep. |
+| **A bíráló kérdez a kérelmezőtől** | A bíráló `remark` parancsa nyilvánosra állítva megjelenik a kérelmezőnek, névtelenítve. *(A kérelmező válaszolni nem tud, lásd lent.)* |
+| **Teljes bizottsági szavazás elutasítási javaslatnál** | `request-decision` a bizottsági tagoknak (decider), mindenki `decide`-dal szavaz (elfogad/elutasít, indoklással). A handler a többség szerint dönt. A szavazatszámlálás kézi. |
+| **Rövidített eljárás bírálók nélkül** | Külön workflow, ahol tiltva: `request-review`, `invite-reviewer`, `request-decision`, `invite-decider`, `vote`. |
+| **Elutasítás után újra beadható, de csak a kapcsolattartó másolhat** | `copy-as-new` tiltva a `member` szerepre (a kérelmező), az `applicant` (kapcsolattartó) megtartja. |
+| **A kapcsolattartó ne cserélhesse a katalóguselemet** | `change-resources` globálisan tiltva. |
+| **Felesleges admin funkciók elrejtése** | Globálisan tiltva: `assign-external-id`, `add-licenses`; a handlernél `change-applicant`. |
+| **A bíráló ne redaktáljon mellékletet** | `redact-attachments` tiltva a `reviewer` és `past-reviewer` szerepre. |
+| **Állapotok a táblázat szerint** | Processing states: „Bírálók kijelölve”, „Bírálók felkérve”, „Módosítás alatt”, „Bizottsági szavazás”. |
+
+### Javasolt beállítás
+
+`config.edn`:
+
+```clojure
+:disable-commands [:application.command/change-resources
+                   :application.command/assign-external-id
+                   :application.command/add-licenses]
+:enable-processing-states true
+```
+
+Normál eljárás workflow (`default` típus), *anonymize handling* bekapcsolva, tiltások:
+
+```clojure
+[{:command :application.command/copy-as-new :when/role [:member]}
+ {:command :application.command/change-applicant}
+ {:command :application.command/redact-attachments :when/role [:reviewer :past-reviewer]}]
+```
+
+Rövidített eljárás workflow (`default` típus), *anonymize handling* bekapcsolva, tiltások:
+
+```clojure
+[{:command :application.command/copy-as-new :when/role [:member]}
+ {:command :application.command/change-applicant}
+ {:command :application.command/request-review}
+ {:command :application.command/invite-reviewer}
+ {:command :application.command/request-decision}
+ {:command :application.command/invite-decider}
+ {:command :application.command/vote}]
+```
+
+## Amit tiltással nem lehet megoldani
+
+Ezekhez a master workflow-t vagy új parancsot kell fejleszteni:
+
+| Igény | Miért nem megy | Teendő |
+|---|---|---|
+| A meghívott kérelmező (member) kitöltheti az űrlapot | A `save-draft` csak az applicant joga | `save-draft` (és mellékletfeltöltés) engedése a `member` szerepnek draft és returned állapotban |
+| „Beadható” jelzés a kapcsolattartónak | Nincs ilyen parancs | Új parancs és esemény |
+| Felügyelői jóváhagyás | Nincs ilyen parancs | Új parancs; a `submit` feltétele |
+| A kérelmező válaszol a bíráló kérdésére | A benyújtott kérelemnél az applicant és a member nem írhat megjegyzést | `remark` engedése az applicant/member szerepnek submitted állapotban, vagy kérdés–válasz funkció |
+| Bírálati lap három javaslattal | A `review` szabad szöveg; a `vote` csak elfogad/elutasít | Strukturált bírálat |
+| Bírálói kör, saját intézmény kizárása, terhelés | A `request-review` bármely felhasználót elfogad | Szűrés és statisztika |
+| Kiegészítés után automatikus újrafelkérés ugyanazoknak | Nincs ilyen automatizmus | Folyamatkezelő (process manager) |
+| Határidők, emlékeztetők, felfüggesztés 30 nap után | Csak az `:application-deadline-days` jelzés van | Ütemezett feladat |
+| A szavazatok automatikus összesítése | A handler kézzel dönt | Opcionális |
+
+A [cel-folyamat.md](cel-folyamat.md) fejlesztési listája ennek megfelelően rövidül: a névtelenség, a bizottsági szavazás (kézi számlálással), a rövidített eljárás és a felesleges funkciók elrejtése konfigurációval megoldható.

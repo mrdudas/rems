@@ -18,6 +18,7 @@ A cél: a kérelmek beküldése, a bírálók kijelölése, a bírálat, a módo
 |---|---|
 | [cel-folyamat.md](cel-folyamat.md) | **A tervezett folyamat**: szerepek, lépések, állapotok, és mi fejlesztendő hozzá |
 | [urlap-terv.md](urlap-terv.md) | A rems.analyst.hu jelenlegi beállításai, és az új kéreleműrlap terve duplikációk nélkül |
+| [jogosultsagok.md](jogosultsagok.md) | Mit lehet a REMS tiltásaival és kapcsolóival lefedni, és mihez kell fejlesztés |
 | [szervezetek.md](szervezetek.md) | Mit jelent a szervezet a REMS-ben, és hogyan kezeljük a tagintézményeket |
 | [eljarasrend.md](eljarasrend.md) | Az EPKEB eljárási rendjének a rendszert érintő szabályai, és a 2026-os nyilvántartás (táblázat) elemzése |
 | [kovetelmenyek.md](kovetelmenyek.md) | Az „EPKEBADMIN felhasználói követelményjegyzék” összefoglalása, a kommentekben felmerült álláspontokkal és döntésekkel |
