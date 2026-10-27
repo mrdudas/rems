@@ -38,14 +38,25 @@ Az állapot 2026-10-27-i felmérése. A beállításokat (űrlapok, workflow-k, 
 ```clojure
 :mail-from "rems@analyst.hu"
 :languages [:en :hu]
+:enable-cart false
 :enable-organization-contacts true
+:enable-member-editing true
 :enable-processing-states true
 :disable-commands [:application.command/change-resources
                    :application.command/assign-external-id
                    :application.command/add-licenses]
 ```
 
-Bemutatóadat: az `EPKEB` szervezet kapcsolattartója és illetékes elnöke beállítva; a 2026/8-as kérelem a kapcsolattartós létrehozás próbája.
+### Bemutatóadat
+
+| Elem | Beállítás |
+|---|---|
+| Szervezet `EPKEB` | kapcsolattartó és illetékes elnök beállítva |
+| Workflow #3 „próba munkafolyamat” (normál eljárás) | *anonymize handling* be; tiltások: `approve` a bírálónak, `copy-as-new` a tagnak, `change-applicant`, `redact-attachments` a bírálónak; állapotcímkék: Bírálók kijelölve, Bírálók felkérve, Módosítás alatt, Bizottsági szavazás |
+| Workflow #4 „Rövidített eljárás” | *anonymize handling* be; tiltások: `copy-as-new` a tagnak, `change-applicant`, `request-review`, `invite-reviewer`, `request-decision`, `invite-decider`, `vote` |
+| Katalóguselem #2 „Normál eljárás” | workflow #3, űrlap #3 |
+| Katalóguselem #3 „Rövidített eljárás” | workflow #4, űrlap #3 (az új űrlap elkészültéig) |
+| Kérelem 2026/8 | a kapcsolattartós létrehozás próbája |
 
 ## Upstream verzió
 
