@@ -30,6 +30,7 @@
             :errors {:duplicate-id "Id:et är redan upptaget."
                      :invalid-token [:div [:p "Det gick inte att ansluta till ansökningen."] [:p "Vänligen kontrollera koden för inbjudan." [:code "%1"]]]
                      :licenses-not-accepted "Du har inte godkänt användarvillkoren."
+                     :not-organization-contact "Endast organisationens kontaktpersoner kan skapa ansökningar."
                      :organization-does-not-exist "Organisationen \"%1\" hittades inte."
                      :validation-errors "Var vänlig kontrollera följande:"
                      :validation-warnings "Vänligen kontrollera följande innan du skickar in:"
@@ -146,6 +147,8 @@
                    :org "Org"
                    :organization "Organisation"
                    :organizations "Organisationer"
+                   :chairs "Ansvariga ordförande"
+                   :contacts "Kontaktpersoner"
                    :owners "Ägare"
                    :preview "Förhandsvisning"
                    :processing-state "Ansökans delstad" ; TODO: check
@@ -249,6 +252,7 @@
                  :intro [:div.intro [:p "Fyll i ansökan och skicka den för behandling. Du kan bjuda in andra att delta i din ansökan. Alla deltagare måste godkänna användarvillkoren senast när ansökan godkänts."]]
                  :last-activity "Ändrat"
                  :latest-activity "Senaste aktivitet"
+                 :organization "Organisation"
                  :my-applications "Mina ansökningar"
                  :not-shown-to-applying-users "Dold för sökande"
                  :redacted-attachments "Borttagna bilagor"

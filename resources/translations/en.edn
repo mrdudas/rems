@@ -32,6 +32,7 @@
                      :invalid-token [:div [:p "Joining the application failed."] [:p "Check the invitation token " [:code "%1"]]]
                      :licenses-not-accepted "Terms of use not accepted."
                      ;; %1 - organization name
+                     :not-organization-contact "Only the contacts of an organization can create applications."
                      :organization-does-not-exist "Organization \"%1\" does not exist"
                      :validation-errors "Check the following errors:"
                      :validation-warnings "Check the following before submit:"
@@ -149,6 +150,8 @@
                    :org "Org"
                    :organization "Organization"
                    :organizations "Organizations"
+                   :chairs "Responsible chairs"
+                   :contacts "Contacts"
                    :owners "Owners"
                    :preview "Preview"
                    :processing-state "Processing state"
@@ -290,6 +293,7 @@
                  :intro [:div.intro [:p "Fill out and submit the application. Several applicants can be invited as members of the application, and each applicant has to accept the terms of use to gain access."]]
                  :last-activity "Last activity"
                  :latest-activity "Latest activity"
+                 :organization "Organization"
                  :my-applications "My Applications"
                  :not-shown-to-applying-users "Not shown to applicants"
                  :redacted-attachments "Redacted attachments"

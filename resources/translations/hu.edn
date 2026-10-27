@@ -32,6 +32,7 @@
                      :invalid-token [:div [:p "A csatlakozás a jelentkezéshez sikertelen."] [:p "Ellenőrizze a meghívó tokent: " [:code "%1"]]]
                      :licenses-not-accepted "A felhasználási feltételek nincsenek elfogadva."
                      ;; %1 - organization name
+                     :not-organization-contact "Kérelmet csak az intézmény kapcsolattartója hozhat létre."
                      :organization-does-not-exist "A(z) \"%1\" szervezet nem létezik"
                      :validation-errors "Ellenőrizze a következő hibákat:"
                      :validation-warnings "Ellenőrizze a következőket benyújtás előtt:"
@@ -149,6 +150,8 @@
                    :org "Szervezet"
                    :organization "Szervezet"
                    :organizations "Szervezetek"
+                   :chairs "Illetékes elnökök"
+                   :contacts "Kapcsolattartók"
                    :owners "Tulajdonosok"
                    :preview "Előnézet"
                    :processing-state "Feldolgozási állapot"
@@ -290,6 +293,7 @@
                  :intro [:div.intro [:p "Töltse ki és nyújtsa be a jelentkezést. Több jelentkező is meghívható a jelentkezés tagjaként, és minden tagnak el kell fogadnia a felhasználási feltételeket a hozzáférés megszerzéséhez."]]
                  :last-activity "Utolsó aktivitás"
                  :latest-activity "Legutóbbi aktivitás"
+                 :organization "Intézmény"
                  :my-applications "Saját jelentkezéseim"
                  :not-shown-to-applying-users "Nem látható a jelentkezők számára"
                  :redacted-attachments "Anonimizált mellékletek"

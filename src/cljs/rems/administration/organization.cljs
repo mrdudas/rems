@@ -8,6 +8,7 @@
             [rems.collapsible :as collapsible]
             [rems.common.roles :as roles]
             [rems.flash-message :as flash-message]
+            [rems.globals]
             [rems.spinner :as spinner]
             [rems.text :refer [localized text]]
             [rems.util :refer [fetch]]))
@@ -97,6 +98,20 @@
                     (map enrich-user)
                     (map :display))
                {:multiline? true}]
+              (when (:enable-organization-contacts @rems.globals/config)
+                [:<>
+                 [inline-info-field
+                  (text :t.administration/contacts)
+                  (->> (:organization/contacts organization)
+                       (map enrich-user)
+                       (map :display))
+                  {:multiline? true}]
+                 [inline-info-field
+                  (text :t.administration/chairs)
+                  (->> (:organization/chairs organization)
+                       (map enrich-user)
+                       (map :display))
+                  {:multiline? true}]])
               [review-emails-field (:organization/review-emails organization)]
               [inline-info-field (text :t.administration/active) [readonly-checkbox {:value (status-flags/active? organization)}]]]}]
    (let [id (:organization/id organization)

@@ -474,6 +474,48 @@
                          (build-application-view [dummy-created-event]))))
     (is (false? @allocated-new-ids?) "should not allocate new IDs")))
 
+(deftest test-create-with-organization-contacts
+  (let [injections (assoc command-injections
+                          :get-contact-organizations {applicant-user-id [{:organization/id "org1"}
+                                                                         {:organization/id "org2"}]
+                                                      "somebody" []})]
+    (testing "a contact creates an application linked to their first organization"
+      (is (= {:event/type :application.event/created
+              :event/actor applicant-user-id
+              :event/time (DateTime. 1000)
+              :application/id new-app-id
+              :application/external-id new-external-id
+              :application/resources [{:catalogue-item/id 1
+                                       :resource/ext-id "res1"}]
+              :application/licenses [{:license/id 1}]
+              :application/forms [{:form/id 1}]
+              :workflow/id 1
+              :workflow/type :workflow/default
+              :application/organization {:organization/id "org1"}}
+             (ok-command {:type :application.command/create
+                          :actor applicant-user-id
+                          :catalogue-item-ids [1]}
+                         nil
+                         injections))))
+
+    (testing "error: not a contact of any organization"
+      (reset! allocated-new-ids? false)
+      (is (= {:errors [{:type :t.actions.errors/not-organization-contact}]}
+             (fail-command {:type :application.command/create
+                            :actor "somebody"
+                            :catalogue-item-ids [1]}
+                           nil
+                           injections)))
+      (is (false? @allocated-new-ids?) "should not allocate application ids"))
+
+    (testing "no restriction when the feature is off"
+      (is (not (contains? (ok-command {:type :application.command/create
+                                       :actor "somebody"
+                                       :catalogue-item-ids [1]}
+                                      nil
+                                      (assoc command-injections :get-contact-organizations (constantly nil)))
+                          :application/organization))))))
+
 (deftest test-save-draft
   (testing "saves a draft"
     (is (= {:event/type :application.event/draft-saved

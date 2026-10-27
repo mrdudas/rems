@@ -14,6 +14,10 @@
 (s/defschema OrganizationRaw
   (merge schema-base/OrganizationOverview
          {(s/optional-key :organization/owners) [schema-base/User]
+          ;; users who may create applications on behalf of the organization
+          (s/optional-key :organization/contacts) [schema-base/User]
+          ;; chairs (handlers) responsible for the organization's applications
+          (s/optional-key :organization/chairs) [schema-base/User]
           (s/optional-key :organization/review-emails) [{:name schema-base/LocalizedString
                                                          :email s/Str}]
           (s/optional-key :enabled) s/Bool
@@ -34,6 +38,8 @@
                  :organization/short-name (:organization/short-name data)
                  :organization/name (:organization/name data)}
                 (assoc-some :organization/owners (:organization/owners data)
+                            :organization/contacts (:organization/contacts data)
+                            :organization/chairs (:organization/chairs data)
                             :organization/review-emails (:organization/review-emails data)
                             :enabled (:enabled data)
                             :archived (:archived data)))]
@@ -59,6 +65,8 @@
 (defn get-organizations []
   (->> (get-organizations-raw)
        (transform [ALL :organization/owners ALL] #(rems.db.users/get-user (:userid %)))
+       (transform [ALL :organization/contacts ALL] #(rems.db.users/get-user (:userid %)))
+       (transform [ALL :organization/chairs ALL] #(rems.db.users/get-user (:userid %)))
        (mapv coerce-organization-full)))
 
 (defn- getx-organization-id [x]
@@ -78,6 +86,8 @@
                                         :organization/id id}]}))
       (->> org
            (transform [:organization/owners ALL] rems.db.users/join-user)
+           (transform [:organization/contacts ALL] rems.db.users/join-user)
+           (transform [:organization/chairs ALL] rems.db.users/join-user)
            coerce-organization-full))))
 
 (defn join-organization [x]
@@ -101,6 +111,8 @@
   (let [id (:organization/id organization)
         stripped-organization (-> organization
                                   (update :organization/owners (partial mapv #(select-keys % [:userid])))
+                                  (update-existing :organization/contacts (partial mapv #(select-keys % [:userid])))
+                                  (update-existing :organization/chairs (partial mapv #(select-keys % [:userid])))
                                   validate-organization)]
     (db/set-organization! {:id id
                            :data (json/generate-string stripped-organization)})
@@ -111,7 +123,21 @@
   (let [organization (getx-organization-by-id (or (:organization/id id) id))]
     (set-organization! (update-fn organization))))
 
+(defn- has-user? [organization k userid]
+  (contains? (set (map :userid (get organization k))) userid))
+
+(defn get-contact-organizations
+  "Returns the enabled, non-archived organizations where `userid` is a contact."
+  [userid]
+  (->> (get-organizations-raw)
+       (filter #(has-user? % :organization/contacts userid))
+       (remove #(false? (:enabled %)))
+       (remove :archived)
+       (sort-by :organization/id)))
+
 (defn get-all-organization-roles [userid]
-  (when (some #(contains? (set (map :userid (:organization/owners %))) userid)
-              (get-organizations-raw))
-    #{:organization-owner}))
+  (let [organizations (get-organizations-raw)]
+    (not-empty
+     (cond-> #{}
+       (some #(has-user? % :organization/owners userid) organizations) (conj :organization-owner)
+       (some #(has-user? % :organization/contacts userid) organizations) (conj :organization-contact)))))

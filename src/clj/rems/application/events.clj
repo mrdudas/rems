@@ -53,7 +53,10 @@
          :application/licenses [{:license/id s/Int}]
          :application/forms [{:form/id schema-base/FormId}]
          :workflow/id s/Int
-         :workflow/type (apply s/enum application-util/workflow-types)))
+         :workflow/type (apply s/enum application-util/workflow-types)
+         ;; the organization of the contact who created the application,
+         ;; when `:enable-organization-contacts` is on
+         (s/optional-key :application/organization) schema-base/OrganizationId))
 (s/defschema DecidedEvent
   (assoc EventWithComment
          :event/type (s/enum :application.event/decided)

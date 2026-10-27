@@ -422,6 +422,19 @@
     (when-not (time/after? dt (time/today-at 23 59 59))
       {:errors [{:type :t.actions.errors/entitlement-end-not-in-future}]})))
 
+(defn- contact-organizations
+  "The organizations the actor is a contact of, or nil when applications are
+  not restricted to organization contacts (`:enable-organization-contacts`)."
+  [actor {:keys [get-contact-organizations]}]
+  (when get-contact-organizations
+    (get-contact-organizations actor)))
+
+(defn- not-organization-contact-error [actor injections]
+  (let [organizations (contact-organizations actor injections)]
+    (when (and (some? organizations)
+               (empty? organizations))
+      {:errors [{:type :t.actions.errors/not-organization-contact}]})))
+
 (defn- application-created-event! [{:keys [catalogue-item-ids time actor] :as cmd}
                                    {:keys [allocate-application-ids! get-catalogue-item get-workflow]
                                     :as injections}]
@@ -429,22 +442,26 @@
       (invalid-catalogue-items catalogue-item-ids injections)
       (unbundlable-catalogue-items catalogue-item-ids injections)
       (disabled-catalogue-items-error catalogue-item-ids injections)
+      (not-organization-contact-error actor injections)
       (let [workflow-id (-> (first catalogue-item-ids)
                             get-catalogue-item
                             :wfid)
             workflow (get-workflow workflow-id)
             workflow-type (getx-in workflow [:workflow :type])
+            organization (first (contact-organizations actor injections))
             ids (allocate-application-ids! time)]
-        {:event {:event/type :application.event/created
-                 :event/time time
-                 :event/actor actor
-                 :application/id (:application/id ids)
-                 :application/external-id (:application/external-id ids)
-                 :application/resources (build-resources-list catalogue-item-ids injections)
-                 :application/licenses (build-licenses-list catalogue-item-ids injections)
-                 :application/forms (build-forms-list workflow catalogue-item-ids injections)
-                 :workflow/id workflow-id
-                 :workflow/type workflow-type}})))
+        {:event (-> {:event/type :application.event/created
+                     :event/time time
+                     :event/actor actor
+                     :application/id (:application/id ids)
+                     :application/external-id (:application/external-id ids)
+                     :application/resources (build-resources-list catalogue-item-ids injections)
+                     :application/licenses (build-licenses-list catalogue-item-ids injections)
+                     :application/forms (build-forms-list workflow catalogue-item-ids injections)
+                     :workflow/id workflow-id
+                     :workflow/type workflow-type}
+                    (assoc-some :application/organization (some-> organization
+                                                                  (select-keys [:organization/id]))))})))
 
 (defmethod command-handler :application.command/create
   [cmd application injections]

@@ -77,8 +77,15 @@
     (some-> (get-dom-element selector)
             .click)))
 
+(defn- may-create-applications? []
+  (or (not (:enable-organization-contacts @rems.globals/config))
+      (roles/has-roles? :organization-contact)))
+
 (defn- row-command [item cart-item-ids]
   (cond
+    (not (may-create-applications?))
+    nil
+
     (not (:enable-cart @rems.globals/config))
     [apply-button item]
 
@@ -89,7 +96,8 @@
     [cart/add-to-cart-button item]))
 
 (defn- perform-row-command [item cart-item-ids root-id]
-  (when-not (:category/id item)
+  (when-not (or (:category/id item)
+                (not (may-create-applications?)))
     (cond
       (not (:enable-cart @rems.globals/config))
       (click-apply-button (:id item) (name root-id))

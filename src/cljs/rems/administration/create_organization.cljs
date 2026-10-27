@@ -12,6 +12,7 @@
             [rems.dropdown :as dropdown]
             [rems.fetcher :as fetcher]
             [rems.flash-message :as flash-message]
+            [rems.globals]
             [rems.spinner :as spinner]
             [rems.text :refer [text text-format]]
             [rems.util :refer [navigate! post! put! trim-when-string]]))
@@ -72,11 +73,16 @@
            (map-vals trim-when-string (:name review-email)))
    :email (trim-when-string (:email review-email))})
 
+(defn- build-users [users]
+  (mapv #(select-keys % [:userid]) users))
+
 (defn build-create-request [form languages]
   (let [request {:organization/id (trim-when-string (:organization/id form))
                  :organization/short-name (map-vals trim-when-string (:organization/short-name form))
                  :organization/name (map-vals trim-when-string (:organization/name form))
-                 :organization/owners (mapv #(select-keys % [:userid]) (:organization/owners form))
+                 :organization/owners (build-users (:organization/owners form))
+                 :organization/contacts (build-users (:organization/contacts form))
+                 :organization/chairs (build-users (:organization/chairs form))
                  :organization/review-emails (mapv build-review-email (:organization/review-emails form))}]
     (when (valid-create-request? request languages)
       request)))
@@ -91,7 +97,9 @@
   (let [request {:organization/id (:organization/id form)
                  :organization/short-name (map-vals trim-when-string (:organization/short-name form))
                  :organization/name (map-vals trim-when-string (:organization/name form))
-                 :organization/owners (mapv #(select-keys % [:userid]) (:organization/owners form))
+                 :organization/owners (build-users (:organization/owners form))
+                 :organization/contacts (build-users (:organization/contacts form))
+                 :organization/chairs (build-users (:organization/chairs form))
                  :organization/review-emails (mapv build-review-email (:organization/review-emails form))}]
     (when (valid-edit-request? request languages)
       request)))
@@ -121,6 +129,7 @@
    {}))
 
 (rf/reg-event-db ::set-owners (fn [db [_ owners]] (assoc-in db [::form :organization/owners] (sort-by :userid owners))))
+(rf/reg-event-db ::set-users (fn [db [_ k users]] (assoc-in db [::form k] (sort-by :userid users))))
 
 (fetcher/reg-fetcher ::available-owners "/api/organizations/available-owners" {:result (partial mapv enrich-user)})
 
@@ -188,6 +197,34 @@
        :disabled? (and @(rf/subscribe [::editing?])
                        (not org-owner?))
        :on-change #(rf/dispatch [::set-owners %])}]]))
+
+(defn- organization-users-field
+  "Multi-select of users for the organization key `k`, e.g. `:organization/contacts`."
+  [{:keys [id k label]}]
+  (let [form @(rf/subscribe [::form])
+        all-users @(rf/subscribe [::available-owners])
+        selected-users (set (map :userid (get form k)))]
+    [:div.form-group
+     [:label.administration-field-label {:for id}
+      (text-format :t.label/optional label)]
+     [dropdown/dropdown
+      {:id id
+       :items all-users
+       :item-key :userid
+       :item-label :display
+       :item-selected? #(contains? selected-users (% :userid))
+       :multi? true
+       :on-change #(rf/dispatch [::set-users k %])}]]))
+
+(defn- organization-contacts-field []
+  [organization-users-field {:id "contacts-dropdown"
+                             :k :organization/contacts
+                             :label (text :t.administration/contacts)}])
+
+(defn- organization-chairs-field []
+  [organization-users-field {:id "chairs-dropdown"
+                             :k :organization/chairs
+                             :label (text :t.administration/chairs)}])
 
 (defn- remove-review-email-button [field-index]
   [items/remove-button {:on-click #(rf/dispatch [::remove-review-email field-index])
@@ -257,6 +294,10 @@
                   [organization-short-name-field]
                   [organization-name-field]
                   [organization-owners-field]
+                  (when (:enable-organization-contacts @rems.globals/config)
+                    [:<>
+                     [organization-contacts-field]
+                     [organization-chairs-field]])
                   [organization-review-emails-field]
                   [:div.col.commands
                    [cancel-button]

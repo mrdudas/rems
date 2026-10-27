@@ -252,6 +252,9 @@
                                              :application/external-id s/Str}]
    :application/last-activity DateTime
    :application/applicant schema-base/UserWithAttributes
+   (s/optional-key :application/organization) (rjs/field
+                                               schema-base/OrganizationOverview
+                                               {:description "The organization of the contact who created the application, when `:enable-organization-contacts` is on"})
    :application/members #{schema-base/UserWithAttributes}
    :application/invited-members #{{:name s/Str
                                    :email s/Str}}

@@ -6,11 +6,13 @@
             [rems.application.commands :as commands]
             [rems.application.process-managers :as process-managers]
             [rems.application.rejecter-bot :as rejecter-bot]
+            [rems.config :refer [env]]
             [rems.db.applications]
             [rems.db.attachments]
             [rems.db.core :as db]
             [rems.db.events]
             [rems.db.entitlements]
+            [rems.db.organizations]
             [rems.db.users]
             [rems.db.user-mappings]
             [rems.email.core :as email]
@@ -39,7 +41,10 @@
           :allocate-application-ids! rems.db.applications/allocate-application-ids!
           :copy-attachment! rems.db.attachments/copy-attachment!
           :valid-user? rems.db.users/user-exists?
-          :find-userid rems.db.user-mappings/find-userid}))
+          :find-userid rems.db.user-mappings/find-userid
+          :get-contact-organizations (fn [userid]
+                                       (when (:enable-organization-contacts env)
+                                         (rems.db.organizations/get-contact-organizations userid)))}))
 
 (def ^:dynamic *fail-on-process-manager-errors* false)
 

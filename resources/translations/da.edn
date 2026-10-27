@@ -32,6 +32,7 @@
                      :invalid-token [:div [:p "Tilslutning til ansøgning mislykkedes."] [:p "Tjek invitationstoken " [:code "%1"]]]
                      :licenses-not-accepted "Brugsvilkår ikke accepteret."
                      ;; %1 - organization name
+                     :not-organization-contact "Kun organisationens kontaktpersoner kan oprette ansøgninger."
                      :organization-does-not-exist "Organisation \"%1\" eksisterer ikke"
                      :validation-errors "Undersøg følgende fejl:"
                      :validation-warnings "Undersøg følgende før indsendelse:"
@@ -149,6 +150,8 @@
                    :org "Org"
                    :organization "Organisation"
                    :organizations "Organisationer"
+                   :chairs "Ansvarlige formænd"
+                   :contacts "Kontaktpersoner"
                    :owners "Ejere"
                    :preview "Forhåndsvisning"
                    :processing-state nil
@@ -265,6 +268,7 @@
                  :intro [:div.intro [:p "Udfyld og indsend ansøgningen. Du kan invitere andre til at deltage i ansøgningen. Alle deltagere skal acceptere brugsvilkår senest når ansøgningen godkendes."]]
                  :last-activity "Ændret"
                  :latest-activity "Seneste aktivitet"
+                 :organization "Organisation"
                  :my-applications "Mine ansøgninger"
                  :not-shown-to-applying-users "Skjult for ansøgere"
                  :redacted-attachments "Erstattede bilag"

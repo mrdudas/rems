@@ -831,6 +831,11 @@
       description
       {:inline? true}])
 
+   (when-some [organization (:application/organization application)]
+     [info-field (text :t.applications/organization)
+      (localized (:organization/name organization))
+      {:inline? true}])
+
    [info-field (text :t.applications/state)
     [render-state application]
     {:inline? true}]

@@ -42,7 +42,8 @@
              :application/events []
              :application/forms (:application/forms event)
              :application/workflow {:workflow/id (:workflow/id event)
-                                    :workflow/type (:workflow/type event)})))
+                                    :workflow/type (:workflow/type event)})
+      (assoc-some :application/organization (:application/organization event))))
 
 (defmethod application-base-view :application.event/draft-saved
   [application event]
@@ -904,6 +905,13 @@
          :application/applicant
          (get-user (get-in application [:application/applicant :userid]))))
 
+(defn- enrich-organization [application get-organization]
+  (update-existing application :application/organization
+                   (fn [organization]
+                     (or (when get-organization
+                           (get-organization (:organization/id organization)))
+                         organization))))
+
 (defn enrich-with-injections
   [application {:keys [blacklisted?
                        get-attachments-for-application
@@ -911,6 +919,7 @@
                        get-config
                        get-form-template
                        get-license
+                       get-organization
                        get-resource
                        get-user
                        get-users-with-role
@@ -928,6 +937,7 @@
       (enrich-application-licenses get-license)
       (enrich-events get-user get-catalogue-item get-resource get-config)
       (enrich-applicant get-user)
+      (enrich-organization get-organization)
       (enrich-user-attributes get-user)
       (enrich-blacklist blacklisted?) ; uses enriched users
       (enrich-workflow-handlers (or cached-get-workflow-handlers

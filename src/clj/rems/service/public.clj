@@ -43,6 +43,7 @@
                     :show-pdf-action
                     :enable-voting
                     :enable-processing-states
+                    :enable-organization-contacts
                     :tables])
       (update :extra-pages filter-extra-pages)))
 

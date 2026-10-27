@@ -12,7 +12,9 @@
   (-> schema-base/OrganizationFull
       (dissoc :organization/modifier
               :organization/last-modifier)
-      (assoc (s/optional-key :organization/owners) [schema-base/User])))
+      (assoc (s/optional-key :organization/owners) [schema-base/User]
+             (s/optional-key :organization/contacts) [schema-base/User]
+             (s/optional-key :organization/chairs) [schema-base/User])))
 
 (s/defschema CreateOrganizationResponse
   {:success s/Bool

@@ -68,3 +68,23 @@ A kérvény létrehozásakor a rendszer rögzíti a kapcsolattartó intézmény�
 
 - **Intézményenként külön katalóguselem és workflow** (18 × normál/rövidített): ez a REMS „szervezeti” modellje lenne, de a közös űrlap és folyamat változásait 36 helyen kellene karbantartani, és a bírálói szabályokat (más intézményből, arányos terhelés) így sem oldja meg.
 - **Az intézmény mint űrlapmező** (a mostani rems.analyst.hu-n): bárki bármelyik intézményt kiválaszthatja, és a kapcsolattartói jogosultság nem köthető hozzá.
+
+## Megvalósítás (1. lépés)
+
+Elkészült az `epkeb` ágon:
+
+- **Új szervezeti mezők:** `:organization/contacts` (kapcsolattartók) és `:organization/chairs` (illetékes elnökök). Az admin felületen a szervezet szerkesztésekor és megtekintésekor látszanak, ha a funkció be van kapcsolva. Az API-ban (`/api/organizations/create`, `/edit`) `[{:userid ...}]` alakban adhatók meg.
+- **Új szerepkör:** `:organization-contact` – annak a felhasználónak, aki valamelyik szervezet kapcsolattartója.
+- **Új beállítás:** `:enable-organization-contacts` (alapból `false`). Bekapcsolva:
+  - kérelmet csak engedélyezett, nem archivált szervezet kapcsolattartója hozhat létre (másolat készítésére is vonatkozik); másnak a `t.actions.errors/not-organization-contact` hibát adja;
+  - a létrehozási esemény rögzíti a kapcsolattartó szervezetét (`:application/organization`); ha valaki több szervezet kapcsolattartója, az azonosító szerinti első;
+  - a kérelem oldalán megjelenik az intézmény;
+  - a katalógusban a „Jelentkezés” (kérelem indítása) gomb csak kapcsolattartónak látszik.
+
+A tagintézmény itt még nem különül el az `EPKEB` admin szervezettől: bármely szervezet kaphat kapcsolattartót. Az illetékes elnök mező egyelőre csak nyilvántartás; az értesítések és a bírálói szabályok későbbi lépésben használják.
+
+Bekapcsolás a próbarendszeren (`/opt/analyst.hu/rems/config.edn`):
+
+```clojure
+:enable-organization-contacts true
+```

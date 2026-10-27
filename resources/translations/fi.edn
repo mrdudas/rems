@@ -30,6 +30,7 @@
             :errors {:duplicate-id "Tunnus on jo käytössä."
                      :invalid-token [:div [:p "Hakemukseen liittyminen epäonnistui."] [:p "Tarkista kutsukoodi " [:code "%1"]]]
                      :licenses-not-accepted "Käyttöehtoja ei ole hyväksytty."
+                     :not-organization-contact "Vain organisaation yhteyshenkilöt voivat luoda hakemuksia."
                      :organization-does-not-exist "Organisaatiota \"%1\" ei ole olemassa"
                      :validation-errors "Tarkasta seuraavat virheet:"
                      :validation-warnings "Tarkasta vielä seuraavat ennen lähetystä:"
@@ -146,6 +147,8 @@
                    :org "Org"
                    :organization "Organisaatio"
                    :organizations "Organisaatiot"
+                   :chairs "Vastuulliset puheenjohtajat"
+                   :contacts "Yhteyshenkilöt"
                    :owners "Omistajat"
                    :preview "Esikatselu"
                    :processing-state "Hakemuksen alitila"
@@ -249,6 +252,7 @@
                  :intro [:div.intro [:p "Täytä hakemus ja lähetä se käsiteltäväksi. Hakemukseen voi kutsua jäseniksi useampia hakijoita, joista jokaisen on hyväksyttävä käyttöehdot viimeistään kun hakemus on hyväksytty."]]
                  :last-activity "Muokattu"
                  :latest-activity "Viimeisin toimenpide"
+                 :organization "Organisaatio"
                  :my-applications "Omat hakemukset"
                  :not-shown-to-applying-users "Ei näytetä hakijoille"
                  :redacted-attachments "Poistetut liitetiedostot"

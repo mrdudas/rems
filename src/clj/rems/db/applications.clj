@@ -21,6 +21,7 @@
             [rems.db.events]
             [rems.db.form]
             [rems.db.licenses]
+            [rems.db.organizations]
             [rems.db.resource]
             [rems.db.roles]
             [rems.db.users]
@@ -79,6 +80,9 @@
    :get-user rems.db.users/get-user
    :get-users-with-role rems.db.roles/get-users-with-role
    :get-workflow rems.db.workflow/get-workflow
+   :get-organization (fn [id]
+                       (some-> (rems.db.organizations/get-organization-by-id-raw id)
+                               (select-keys [:organization/id :organization/short-name :organization/name])))
    :blacklisted? rems.db.blacklist/blacklisted?})
 
 (defn get-application-internal

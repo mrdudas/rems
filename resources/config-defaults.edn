@@ -466,6 +466,11 @@
  :enable-voting false ; voting (experimental)
  :enable-processing-states false
 
+ ;; When true, only the contacts of an organization (see `:organization/contacts`)
+ ;; may create applications, and each new application is linked to the
+ ;; organization of the contact who created it.
+ :enable-organization-contacts false
+
  ;; If `:scanner-path` is defined, it is assumed to be an executable that:
  ;; can take a binary file from `STDIN` and return a status code of zero if and only if the file passes the scan.
  ;;

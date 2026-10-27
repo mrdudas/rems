@@ -76,6 +76,8 @@
          {(s/optional-key :organization/modifier) UserWithAttributes
           (s/optional-key :organization/last-modified) DateTime
           (s/optional-key :organization/owners) [UserWithAttributes]
+          (s/optional-key :organization/contacts) [UserWithAttributes]
+          (s/optional-key :organization/chairs) [UserWithAttributes]
           (s/optional-key :organization/review-emails) [{:name LocalizedString
                                                          :email s/Str}]
           (s/optional-key :enabled) s/Bool
