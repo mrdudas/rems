@@ -13,6 +13,11 @@
             :approve "Approve"
             :approve-end-date "Date for access rights to expire (optional)"
             :approve-reject "Approve or reject"
+            :mark-ready "Mark as ready for submission"
+            :mark-ready-intro "The applicant will be notified that the application is ready to be submitted."
+            :approve-supervision "Approve as supervisor"
+            :approve-supervision-intro "By approving, you take responsibility for the content of the application as its supervisor. If the answers are changed later, a new approval is needed."
+            :designate-supervisor "Designate as supervisor"
             :assign-external-id "Assign external id"
             :assign-external-id-info "External id"
             :bundling-intro [:div.intro [:p "Note that only resources that have the same application workflow can be bundled together."]]
@@ -31,6 +36,7 @@
                      ;; %1 - invitation token
                      :invalid-token [:div [:p "Joining the application failed."] [:p "Check the invitation token " [:code "%1"]]]
                      :licenses-not-accepted "Terms of use not accepted."
+                     :supervision-not-approved "The supervisor has not approved the current version of the application."
                      ;; %1 - organization name
                      :not-organization-contact "Only the contacts of an organization can create applications."
                      :organization-does-not-exist "Organization \"%1\" does not exist"
@@ -246,6 +252,9 @@
                           :expiration-notifications-sent "%:event-actor% sent expiration notification email."
                           :licenses-accepted "%:event-actor% accepted the terms of use."
                           :licenses-added "%:event-actor% added terms of use."
+                          :marked-ready "%:event-actor% marked the application ready for submission."
+                          :supervision-approved "%:event-actor% approved the application as the supervisor."
+                          :supervisor-designated "%:event-actor% designated %:supervisor% as the supervisor."
                           ;; Extra parameters for member-added:
                           ;; %2 - %:added-user% - Name of the added member
                           :member-added "%:event-actor% added %:added-user% to the application."
@@ -295,6 +304,10 @@
                  :latest-activity "Latest activity"
                  :organization "Organization"
                  :my-applications "My Applications"
+                 :marked-ready "Marked ready for submission"
+                 :supervisor "Supervisor"
+                 :supervision-approved "Approved by the supervisor"
+                 :supervision-pending "Waiting for the supervisor's approval"
                  :not-shown-to-applying-users "Not shown to applicants"
                  :redacted-attachments "Redacted attachments"
                  :redacted-attachments-replaced "New attachments replace the redacted attachments."
@@ -357,6 +370,9 @@
              :add-licenses "Add terms of use"
              :add-member "Add member"
              :approve "Approve"
+             :approve-supervision "Approve as supervisor"
+             :designate-supervisor "Designate as supervisor"
+             :mark-ready "Mark as ready for submission"
              :assign-external-id "Assign external id"
              :change-applicant "Make applicant"
              :change-resources "Change resources"
@@ -547,6 +563,12 @@
                              ;; %3 - %:actions-url% - link to actions page
                              :message "Dear %:recipient%,\n\nThe following applications are in progress and may require your actions:\n\n%:applications%\n\nYou can view the applications at %:actions-url%"
                              :subject "Applications in progress"}
+          :marked-ready {:subject "(%:application-id%) Application is ready for submission"
+                         :message "Dear %:recipient%,\n\n%:event-actor% has marked the application %:application-id% ready for submission.\n\nYou can view and submit the application at %:application-url%"}
+          :supervision-approved {:subject "(%:application-id%) The supervisor has approved the application"
+                                 :message "Dear %:recipient%,\n\n%:event-actor% has approved the application %:application-id% as the supervisor.\n\nYou can view the application at %:application-url%"}
+          :supervisor-designated {:subject "(%:application-id%) You have been designated as a supervisor"
+                                  :message "Dear %:recipient%,\n\n%:event-actor% has designated you as the supervisor of the application %:application-id%. The application can be submitted only after your approval.\n\nYou can view and approve the application at %:application-url%"}
           :member-added {:subject "Added as a member of an application %:application-id%"
                          :message "Dear %:recipient%,\n\nYou've been added as a member of application %:application-id%, submitted by %:applicant%.\n\nYou can view application and accept the terms of use at %:application-url%"}
           ;; Format parameters for member-invited:
@@ -716,6 +738,7 @@
           :past-decider "Past decider"
           :past-reviewer "Past reviewer"
           :reviewer "Reviewer"
+          :supervisor "Supervisor"
           :technical-role "Technical role"}
   :search {:clear-search "Clear search"
            :example-searches "Example searches"

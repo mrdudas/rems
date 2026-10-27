@@ -290,6 +290,24 @@
                  (text :t.email/regards)
                  (text :t.email/footer))})))))
 
+(defmethod event-to-emails :application.event/marked-ready [event application]
+  (emails-to-recipients [(:application/applicant application)]
+                        event application
+                        :t.email.marked-ready/subject
+                        :t.email.marked-ready/message))
+
+(defmethod event-to-emails :application.event/supervisor-designated [event application]
+  (emails-to-recipients [(:application/supervisor event)]
+                        event application
+                        :t.email.supervisor-designated/subject
+                        :t.email.supervisor-designated/message))
+
+(defmethod event-to-emails :application.event/supervision-approved [event application]
+  (emails-to-recipients [(:application/applicant application)]
+                        event application
+                        :t.email.supervision-approved/subject
+                        :t.email.supervision-approved/message))
+
 ;; TODO member-joined?
 
 (defn handler-reminder-email [lang handler applications]

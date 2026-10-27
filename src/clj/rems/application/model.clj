@@ -45,10 +45,16 @@
                                     :workflow/type (:workflow/type event)})
       (assoc-some :application/organization (:application/organization event))))
 
+(defn- answers-changed? [old-answers new-answers]
+  (not= (set old-answers) (set new-answers)))
+
 (defmethod application-base-view :application.event/draft-saved
   [application event]
   (-> application
       (assoc :application/modified (:event/time event))
+      ;; the ready signal and the supervisor's approval refer to the answers at that time
+      (cond-> (answers-changed? (::draft-answers application) (:application/field-values event))
+        (dissoc :application/marked-ready :application/supervision-approved))
       (assoc ::draft-answers (:application/field-values event))
       (assoc-some-in [:application/duo :duo/codes] (:application/duo-codes event))))
 
@@ -99,7 +105,24 @@
   [application event]
   (-> application
       (update :application/members disj (:application/member event))
-      (update :application/past-members conj (:application/member event))))
+      (update :application/past-members conj (:application/member event))
+      (cond-> (= (:userid (:application/member event))
+                 (get-in application [:application/supervisor :userid]))
+        (dissoc :application/supervisor :application/supervision-approved))))
+
+(defmethod application-base-view :application.event/marked-ready
+  [application event]
+  (assoc application :application/marked-ready (:event/time event)))
+
+(defmethod application-base-view :application.event/supervisor-designated
+  [application event]
+  (-> application
+      (assoc :application/supervisor (:application/supervisor event))
+      (dissoc :application/supervision-approved)))
+
+(defmethod application-base-view :application.event/supervision-approved
+  [application event]
+  (assoc application :application/supervision-approved (:event/time event)))
 
 (defmethod application-base-view :application.event/applicant-changed
   [application event]
@@ -147,7 +170,7 @@
       (assoc ::previous-submitted-answers (::submitted-answers application))
       (assoc ::submitted-answers (::draft-answers application))
       (update :application/first-submitted #(or % (:event/time event)))
-      (dissoc ::draft-answers)
+      (dissoc ::draft-answers :application/marked-ready)
       (assoc :application/state :application.state/submitted)
       (assoc :application/todo (if (:application/first-submitted application)
                                  :resubmitted-application
@@ -299,6 +322,7 @@
     {:permission :application.command/accept-licenses}
     {:permission :application.command/add-licenses}
     {:permission :application.command/add-member}
+    {:permission :application.command/approve-supervision}
     {:permission :application.command/assign-external-id}
     {:permission :application.command/change-applicant}
     {:permission :application.command/change-processing-state}
@@ -308,9 +332,11 @@
     {:permission :application.command/create}
     {:permission :application.command/decide}
     {:permission :application.command/delete}
+    {:permission :application.command/designate-supervisor}
     {:permission :application.command/invite-decider}
     {:permission :application.command/invite-member}
     {:permission :application.command/invite-reviewer}
+    {:permission :application.command/mark-ready}
     {:permission :application.command/redact-attachments}
     {:permission :application.command/remark}
     {:permission :application.command/remove-member}
@@ -335,6 +361,7 @@
     {:permission :application.command/accept-licenses}
     {:permission :application.command/add-licenses}
     {:permission :application.command/add-member}
+    {:permission :application.command/approve-supervision}
     {:permission :application.command/assign-external-id}
     {:permission :application.command/change-applicant}
     {:permission :application.command/change-processing-state}
@@ -343,8 +370,10 @@
     {:permission :application.command/copy-as-new}
     {:permission :application.command/create}
     {:permission :application.command/delete}
+    {:permission :application.command/designate-supervisor}
     {:permission :application.command/invite-member}
     {:permission :application.command/invite-reviewer}
+    {:permission :application.command/mark-ready}
     {:permission :application.command/redact-attachments}
     {:permission :application.command/remark}
     {:permission :application.command/remove-member}
@@ -609,6 +638,7 @@
                         :application.event/expiration-notifications-sent
                         :application.event/licenses-accepted
                         :application.event/licenses-added
+                        :application.event/marked-ready
                         :application.event/member-added
                         :application.event/member-invited
                         :application.event/member-joined
@@ -620,7 +650,9 @@
                         :application.event/resources-changed
                         :application.event/returned
                         :application.event/revoked
-                        :application.event/submitted}]
+                        :application.event/submitted
+                        :application.event/supervision-approved
+                        :application.event/supervisor-designated}]
     (is (= #{}
            (set/intersection sensitive-events public-events)))
     (is (= #{}
@@ -664,6 +696,9 @@
 
              :application.event/applicant-changed
              {:application/applicant (get-user (:userid (:application/applicant event)))}
+
+             :application.event/supervisor-designated
+             {:application/supervisor (get-user (:userid (:application/supervisor event)))}
 
              {}))))
 
@@ -718,9 +753,9 @@
                         (merge member
                                (get-user (:userid member)))))
                  set))]
-    (update application
-            :application/members
-            enrich-members)))
+    (-> application
+        (update :application/members enrich-members)
+        (update-existing :application/supervisor #(merge % (get-user (:userid %)))))))
 
 (defn get-workflow-handlers [workflow-id get-workflow get-user]
   (let [workflow (get-workflow workflow-id)
@@ -796,12 +831,17 @@
                                        :role role}))))))
 
 (defn enrich-member-editing [application get-config]
-  (if (:enable-member-editing (get-config))
-    application
+  (let [config (get-config)]
     (permissions/blacklist application
                            (permissions/compile-rules
-                            [{:permission :application.command/save-draft
-                              :role :member}]))))
+                            (concat
+                             (when-not (:enable-member-editing config)
+                               [{:permission :application.command/save-draft
+                                 :role :member}
+                                {:permission :application.command/mark-ready}])
+                             (when-not (:enable-supervisor-approval config)
+                               [{:permission :application.command/designate-supervisor}
+                                {:permission :application.command/approve-supervision}]))))))
 
 (defn- update-voting-permissions [application voting]
   (case (:type voting)
@@ -977,6 +1017,7 @@
   (-> event
       (update-existing :event/actor-attributes censor-user)
       (update-existing :application/member censor-user)
+      (update-existing :application/supervisor censor-user)
       ;; deciders and reviewers occur only in events removed by
       ;; hide-sensitive-events, but keeping the code here for
       ;; completeness
@@ -988,6 +1029,7 @@
   (-> application
       (update :application/applicant censor-user)
       (update :application/members (comp set (partial mapv censor-user)))
+      (update-existing :application/supervisor censor-user)
       ;; hide-sensitive-information has already dissoced the
       ;; blacklist, so this is unnecessary. Keeping it here for
       ;; completeness anyway.

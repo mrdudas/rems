@@ -13,6 +13,11 @@
             :approve "Godkend"
             :approve-end-date "Udløbsdato for adgangsrettigheder (valgfri)"
             :approve-reject "Godkend eller afvis"
+            :mark-ready "Markér som klar til indsendelse"
+            :mark-ready-intro "Ansøgeren får besked om, at ansøgningen er klar til at blive indsendt."
+            :approve-supervision "Godkend som vejleder"
+            :approve-supervision-intro "Ved at godkende påtager du dig som vejleder ansvaret for ansøgningens indhold. Hvis svarene ændres senere, kræves en ny godkendelse."
+            :designate-supervisor "Udpeg som vejleder"
             :assign-external-id "Tildel ekstern id"
             :assign-external-id-info "Ekstern id"
             :bundling-intro [:div.intro [:p "NB: Kun ressourcer med samme ansøgningsarbejdsgang kan lægges sammen."]]
@@ -31,6 +36,7 @@
                      ;; %1 - invitation token
                      :invalid-token [:div [:p "Tilslutning til ansøgning mislykkedes."] [:p "Tjek invitationstoken " [:code "%1"]]]
                      :licenses-not-accepted "Brugsvilkår ikke accepteret."
+                     :supervision-not-approved "Vejlederen har ikke godkendt den aktuelle version af ansøgningen."
                      ;; %1 - organization name
                      :not-organization-contact "Kun organisationens kontaktpersoner kan oprette ansøgninger."
                      :organization-does-not-exist "Organisation \"%1\" eksisterer ikke"
@@ -235,6 +241,9 @@
                           :expiration-notifications-sent "%1 sendte e-mail pga. inaktiv ansøgning."
                           :licenses-accepted "%1 accepterede brugsvilkår."
                           :licenses-added "%1 tilføjede brugsvilkår."
+                          :marked-ready "%1 markerede ansøgningen som klar til indsendelse."
+                          :supervision-approved "%1 godkendte ansøgningen som vejleder."
+                          :supervisor-designated "%1 udpegede %2 som vejleder."
                           ;; %2 - member name
                           :member-added "%1 tilføjede %2 til ansøgningen."
                           :member-invited "%1 inviterede %2 til ansøgningen."
@@ -270,6 +279,10 @@
                  :latest-activity "Seneste aktivitet"
                  :organization "Organisation"
                  :my-applications "Mine ansøgninger"
+                 :marked-ready "Markeret som klar til indsendelse"
+                 :supervisor "Vejleder"
+                 :supervision-approved "Godkendt af vejlederen"
+                 :supervision-pending "Afventer vejlederens godkendelse"
                  :not-shown-to-applying-users "Skjult for ansøgere"
                  :redacted-attachments "Erstattede bilag"
                  :redacted-attachments-replaced "Nye bilag erstattede de gamle bilag."
@@ -332,6 +345,9 @@
              :add-licenses "Tilføj brugsvilkår"
              :add-member "Tilføj deltager"
              :approve "Godkend"
+             :approve-supervision "Godkend som vejleder"
+             :designate-supervisor "Udpeg som vejleder"
+             :mark-ready "Markér som klar til indsendelse"
              :assign-external-id "Tildel ekstern id"
              :change-applicant "Gør til ansøger"
              :change-processing-state nil
@@ -510,6 +526,12 @@
           :handler-reminder {:application "%1, indsendt af %2"
                              :message "Kære %1,\n\nFølgende ansøgninger er i gang og kan kræve handling af dig:\n\n%2\n\nDu kan se ansøgningerne på %3"
                              :subject "Ansøgninger i gang"}
+          :marked-ready {:subject "(%3) Ansøgningen er klar til indsendelse"
+                         :message "Kære %1,\n\n%2 har markeret ansøgningen %3 som klar til indsendelse.\n\nDu kan se og indsende ansøgningen på %6"}
+          :supervision-approved {:subject "(%3) Vejlederen har godkendt ansøgningen"
+                                 :message "Kære %1,\n\n%2 har godkendt ansøgningen %3 som vejleder.\n\nDu kan se ansøgningen på %6"}
+          :supervisor-designated {:subject "(%3) Du er udpeget som vejleder"
+                                  :message "Kære %1,\n\n%2 har udpeget dig som vejleder for ansøgningen %3. Ansøgningen kan først indsendes efter din godkendelse.\n\nDu kan se og godkende ansøgningen på %6"}
           :member-added {:subject "Tilføjet som deltager i ansøgning %3"
                          :message "Kære %1,\n\nDu er blevet tilføjet som deltager i ansøgning %3, indsendt af %4.\n\nDu kan se ansøgningen og acceptere brugsvilkår på %6"}
           ;; %1 - name of member, as entered in application
@@ -661,6 +683,7 @@
           :past-decider "Tidligere beslutningstager"
           :past-reviewer "Tidligere reviewer"
           :reviewer "Reviewer"
+          :supervisor "Vejleder"
           :technical-role "Teknisk rolle"}
   :search {:clear-search "Ryd søgning"
            :example-searches "Eksempler på søgninger"

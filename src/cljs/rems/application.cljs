@@ -12,6 +12,7 @@
             [rems.actions.add-licenses :refer [add-licenses-action-button add-licenses-form]]
             [rems.actions.add-member :refer [add-member-action-button add-member-form]]
             [rems.actions.approve-reject :refer [approve-reject-action-button approve-reject-form]]
+            [rems.actions.approve-supervision :refer [approve-supervision-action-button approve-supervision-form]]
             [rems.actions.assign-external-id :refer [assign-external-id-button assign-external-id-form]]
             [rems.actions.change-applicant :refer [change-applicant-action-button change-applicant-form]]
             [rems.actions.change-processing-state :refer [change-processing-state-action-button change-processing-state-form]]
@@ -20,8 +21,10 @@
             [rems.actions.components :refer [perform-action-button]]
             [rems.actions.decide :refer [decide-action-button decide-form]]
             [rems.actions.delete :refer [delete-action-button delete-form]]
+            [rems.actions.designate-supervisor :refer [designate-supervisor-action-button designate-supervisor-form]]
             [rems.actions.invite-decider-reviewer :refer [invite-decider-action-link invite-reviewer-action-link invite-decider-form invite-reviewer-form]]
             [rems.actions.invite-member :refer [invite-member-action-button invite-member-form]]
+            [rems.actions.mark-ready :refer [mark-ready-action-button mark-ready-form]]
             [rems.actions.redact-attachments :refer [redact-attachments-action-button redact-attachments-form]]
             [rems.actions.remark :refer [remark-action-button remark-form]]
             [rems.actions.remove-member :refer [remove-member-action-button remove-member-form]]
@@ -836,6 +839,21 @@
       (localized (:organization/name organization))
       {:inline? true}])
 
+   (when-some [supervisor (:application/supervisor application)]
+     [info-field (text :t.applications/supervisor)
+      [:<>
+       (get-member-name supervisor)
+       " – "
+       (if-some [approved (:application/supervision-approved application)]
+         (str (text :t.applications/supervision-approved) " (" (localize-time approved) ")")
+         (text :t.applications/supervision-pending))]
+      {:inline? true}])
+
+   (when-some [marked-ready (:application/marked-ready application)]
+     [info-field (text :t.applications/marked-ready)
+      (localize-time marked-ready)
+      {:inline? true}])
+
    [info-field (text :t.applications/state)
     [render-state application]
     {:inline? true}]
@@ -912,12 +930,18 @@
                            (contains? permissions :application.command/uninvite-member))
         can-change? (and (not applicant?)
                          (not invited-user?)
-                         (contains? permissions :application.command/change-applicant))]
+                         (contains? permissions :application.command/change-applicant))
+        supervisor? (and (some? user-id)
+                         (= user-id (get-in application [:application/supervisor :userid])))
+        can-designate? (and (not applicant?)
+                            (not invited-user?)
+                            (not supervisor?)
+                            (contains? permissions :application.command/designate-supervisor))]
     [collapsible/minimal
      {:id (str id "-collapsible")
       :class (when group? "group")
       :always [:div
-               (when-not simple? [:h3 title])
+               (when-not simple? [:h3 title (when supervisor? (str " – " (text :t.applications/supervisor)))])
                [user/username attributes]
                (when-not (or invited-user?
                              simple?
@@ -928,13 +952,16 @@
       :footer (let [element-id (str id "-operations")]
                 [:div {:id element-id}
                  [collapsible/toggle-control {:collapsible-id (str id "-collapsible")}]
-                 [:div.commands {:class (when (or can-change? can-remove? can-uninvite?)
+                 [:div.commands {:class (when (or can-change? can-remove? can-uninvite? can-designate?)
                                           "mt-2")}
                   (when can-change?
                     [change-applicant-action-button element-id])
+                  (when can-designate?
+                    [designate-supervisor-action-button element-id])
                   (when (or can-remove? can-uninvite?)
                     [remove-member-action-button element-id])]
                  [change-applicant-form element-id attributes application-id (partial reload! application-id)]
+                 [designate-supervisor-form element-id attributes application-id (partial reload! application-id)]
                  [remove-member-form element-id attributes application-id (partial reload! application-id)]])}]))
 
 (defn- applicants-details [application & [opts]]
@@ -1037,7 +1064,9 @@
                                 ;; no explicit command for :application.command/save-draft when autosave
                                 [:application.command/save-draft [save-button]])
 
-                              [:application.command/submit [submit-button]
+                              [:application.command/mark-ready [mark-ready-action-button]
+                               :application.command/approve-supervision [approve-supervision-action-button]
+                               :application.command/submit [submit-button]
                                :application.command/return [return-action-button]
                                ;; this assumes that request-review and invite-reviewer are both possible or neither is
                                :application.command/request-review [request-review-dropdown]
@@ -1089,6 +1118,8 @@
                  (into [:div#action-commands] [pre-actions-info actions])
 
                  [:div#actions-forms.mt-3
+                  [mark-ready-form app-id reload]
+                  [approve-supervision-form app-id reload]
                   [request-review-form app-id reload]
                   [request-decision-form app-id reload]
                   [invite-decider-form app-id reload]

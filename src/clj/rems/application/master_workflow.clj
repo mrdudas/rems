@@ -69,15 +69,24 @@
   #{:application.command/accept-licenses
     :application.command/copy-as-new})
 
-;; Members may edit the draft only when `:enable-member-editing` is on,
-;; see rems.application.model/enrich-member-editing
+;; Members may edit the draft and mark it ready only when
+;; `:enable-member-editing` is on, and supervisors are used only when
+;; `:enable-supervisor-approval` is on, see
+;; rems.application.model/enrich-member-editing
 (def ^:private member-editing-commands
-  (conj member-commands :application.command/save-draft))
+  (conj member-commands
+        :application.command/save-draft
+        :application.command/mark-ready))
+
+(def ^:private supervisor-commands
+  #{:application.command/approve-supervision})
 
 (def ^:private created-permissions
   {:applicant (conj submittable-application-commands
-                    :application.command/delete)
+                    :application.command/delete
+                    :application.command/designate-supervisor)
    :member member-editing-commands
+   :supervisor supervisor-commands
    :reporter #{:see-everything}
    :expirer #{:application.command/delete
               :application.command/send-expiration-notifications}
@@ -88,6 +97,7 @@
 (def ^:private submitted-permissions
   {:applicant non-submittable-application-commands
    :member member-commands
+   :supervisor #{}
    :handler (conj handler-all-commands :see-everything)
    :reviewer #{:see-everything
                :application.command/redact-attachments
@@ -110,8 +120,10 @@
 
 (def ^:private returned-permissions
   {:applicant (conj submittable-application-commands
-                    :application.command/close)
+                    :application.command/close
+                    :application.command/designate-supervisor)
    :member member-editing-commands
+   :supervisor supervisor-commands
    :handler (conj handler-returned-commands :see-everything)
    :decider #{:see-everything
               :application.command/redact-attachments
@@ -121,6 +133,7 @@
 (def ^:private approved-permissions
   {:applicant non-submittable-application-commands
    :member member-commands
+   :supervisor #{}
    :handler #{:see-everything
               :application.command/redact-attachments
               :application.command/remark
@@ -147,6 +160,7 @@
 (def ^:private closed-permissions
   {:applicant #{:application.command/copy-as-new}
    :member #{:application.command/copy-as-new}
+   :supervisor #{}
    :handler #{:see-everything
               :application.command/change-processing-state
               :application.command/redact-attachments
@@ -180,7 +194,16 @@
 (defmethod application-permissions-view :application.event/member-removed
   [application event]
   (-> application
-      (permissions/remove-role-from-user :member (get-in event [:application/member :userid]))))
+      (permissions/remove-role-from-user :member (get-in event [:application/member :userid]))
+      (permissions/remove-role-from-user :supervisor (get-in event [:application/member :userid]))))
+
+(defmethod application-permissions-view :application.event/supervisor-designated
+  [application event]
+  (let [previous (for [[user roles] (:application/user-roles application)
+                       :when (contains? roles :supervisor)]
+                   user)]
+    (-> (reduce #(permissions/remove-role-from-user %1 :supervisor %2) application previous)
+        (permissions/give-role-to-users :supervisor [(get-in event [:application/supervisor :userid])]))))
 
 (defmethod application-permissions-view :application.event/applicant-changed
   [application event]

@@ -90,9 +90,9 @@ A REMS processing state funkciója (`:enable-processing-states`) a finomabb áll
 |---|---|---|
 | Kérelmező meghívása | `invite-member` | – |
 | Létrehozás csak kapcsolattartónak | nincs | **fejlesztés**: kapcsolattartók listája tagintézményenként, és a létrehozás ellenőrzése |
-| A meghívott tag szerkesztheti az űrlapot | csak az applicant szerkeszthet | **fejlesztés**: `save-draft` jog a tagoknak piszkozat és visszaküldött állapotban |
-| „Beadható” jelzés | nincs | **fejlesztés**: új parancs és esemény, értesítés a kapcsolattartónak |
-| Felügyelői jóváhagyás | nincs | **fejlesztés**: új parancs, és a benyújtás feltétele |
+| A meghívott tag szerkesztheti az űrlapot | csak az applicant szerkeszthet | **kész**: `:enable-member-editing` |
+| „Beadható” jelzés | nincs | **kész**: `mark-ready` parancs, értesítés a kapcsolattartónak (lásd [jogosultsagok.md](jogosultsagok.md#elkészült-fejlesztések)) |
+| Felügyelői jóváhagyás | nincs | **kész**: `designate-supervisor` és `approve-supervision`, a benyújtás feltétele |
 | Benyújtás, visszaadás, másolat elutasítás után | `submit`, `return`, `copy-as-new` | – |
 | Bírálói kör, jelentkezés, terhelés, saját intézmény kizárása | `request-review` bármely felhasználóra | **fejlesztés** |
 | Bírálói kérdés és kérelmezői válasz | a bíráló `remark`-ja lehet nyilvános, de a kérelmező nem tud válaszolni | **fejlesztés**: kérdés–válasz, névtelenül |

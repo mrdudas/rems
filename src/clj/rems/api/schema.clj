@@ -256,6 +256,15 @@
                                                schema-base/OrganizationOverview
                                                {:description "The organization of the contact who created the application, when `:enable-organization-contacts` is on"})
    :application/members #{schema-base/UserWithAttributes}
+   (s/optional-key :application/supervisor) (rjs/field
+                                             schema-base/UserWithAttributes
+                                             {:description "The member designated as the supervisor, when `:enable-supervisor-approval` is on"})
+   (s/optional-key :application/supervision-approved) (rjs/field
+                                                       DateTime
+                                                       {:description "When the supervisor approved the current answers"})
+   (s/optional-key :application/marked-ready) (rjs/field
+                                               DateTime
+                                               {:description "When a member marked the current answers ready for submission"})
    :application/invited-members #{{:name s/Str
                                    :email s/Str}}
    (s/optional-key :application/blacklist) (rjs/field

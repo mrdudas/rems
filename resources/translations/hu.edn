@@ -13,6 +13,11 @@
             :approve "Jóváhagyás"
             :approve-end-date "Hozzáférési jogok lejárati dátuma (opcionális)"
             :approve-reject "Jóváhagyás vagy elutasítás"
+            :mark-ready "Beadhatónak jelölöm"
+            :mark-ready-intro "A kapcsolattartó értesítést kap, hogy a kérelem benyújtható."
+            :approve-supervision "Jóváhagyom felügyelőként"
+            :approve-supervision-intro "A jóváhagyással felügyelőként felelősséget vállal a kérelem tartalmáért. Ha a válaszok később módosulnak, újra jóvá kell hagynia."
+            :designate-supervisor "Kijelölés felügyelőnek"
             :assign-external-id "Külső azonosító hozzárendelése"
             :assign-external-id-info "Külső azonosító"
             :bundling-intro [:div.intro [:p "Megjegyzés: Csak az azonos munkafolyamattal rendelkező kérelmek vonhatók össze."]]
@@ -31,6 +36,7 @@
                      ;; %1 - invitation token
                      :invalid-token [:div [:p "A csatlakozás a jelentkezéshez sikertelen."] [:p "Ellenőrizze a meghívó tokent: " [:code "%1"]]]
                      :licenses-not-accepted "A felhasználási feltételek nincsenek elfogadva."
+                     :supervision-not-approved "A felügyelő még nem hagyta jóvá a kérelem jelenlegi változatát."
                      ;; %1 - organization name
                      :not-organization-contact "Kérelmet csak az intézmény kapcsolattartója hozhat létre."
                      :organization-does-not-exist "A(z) \"%1\" szervezet nem létezik"
@@ -246,6 +252,9 @@
                           :expiration-notifications-sent "%:event-actor% elküldte a lejárati értesítő e-mailt."
                           :licenses-accepted "%:event-actor% elfogadta a felhasználási feltételeket."
                           :licenses-added "%:event-actor% felhasználási feltételeket adott hozzá."
+                          :marked-ready "%:event-actor% beadhatónak jelölte a kérelmet."
+                          :supervision-approved "%:event-actor% felügyelőként jóváhagyta a kérelmet."
+                          :supervisor-designated "%:event-actor% felügyelőnek jelölte: %:supervisor%."
                           ;; Extra parameters for member-added:
                           ;; %2 - %:added-user% - Name of the added member
                           :member-added "%:event-actor% hozzáadta %:added-user% felhasználót a jelentkezéshez."
@@ -295,6 +304,10 @@
                  :latest-activity "Legutóbbi aktivitás"
                  :organization "Intézmény"
                  :my-applications "Saját jelentkezéseim"
+                 :marked-ready "Beadhatónak jelölve"
+                 :supervisor "Felügyelő"
+                 :supervision-approved "A felügyelő jóváhagyta"
+                 :supervision-pending "A felügyelő jóváhagyására vár"
                  :not-shown-to-applying-users "Nem látható a jelentkezők számára"
                  :redacted-attachments "Anonimizált mellékletek"
                  :redacted-attachments-replaced "Az új mellékletek helyettesítik az anonimizált mellékleteket."
@@ -357,6 +370,9 @@
              :add-licenses "Felhasználási feltételek hozzáadása"
              :add-member "Tag hozzáadása"
              :approve "Jóváhagyás"
+             :approve-supervision "Jóváhagyás felügyelőként"
+             :designate-supervisor "Kijelölés felügyelőnek"
+             :mark-ready "Beadhatónak jelölés"
              :assign-external-id "Külső azonosító hozzárendelése"
              :change-applicant "Jelentkező módosítása"
              :change-resources "Kérelmek módosítása"
@@ -547,6 +563,12 @@
                              ;; %3 - %:actions-url% - link to actions page
                              :message "Tisztelt %:recipient%!\n\nA következő jelentkezések folyamatban vannak és műveletet igényelhetnek:\n\n%:applications%\n\nA jelentkezéseket itt tekintheti meg: %:actions-url%"
                              :subject "Folyamatban lévő jelentkezések"}
+          :marked-ready {:subject "(%:application-id%) A kérelem beadható"
+                         :message "Tisztelt %:recipient%!\n\n%:event-actor% jelezte, hogy a(z) %:application-id% azonosítójú kérelem benyújtható.\n\nA kérelmet itt tekintheti meg és nyújthatja be: %:application-url%"}
+          :supervision-approved {:subject "(%:application-id%) A felügyelő jóváhagyta a kérelmet"
+                                 :message "Tisztelt %:recipient%!\n\n%:event-actor% felügyelőként jóváhagyta a(z) %:application-id% azonosítójú kérelmet.\n\nA kérelmet itt tekintheti meg: %:application-url%"}
+          :supervisor-designated {:subject "(%:application-id%) Felügyelőnek jelölték"
+                                  :message "Tisztelt %:recipient%!\n\n%:event-actor% Önt jelölte a(z) %:application-id% azonosítójú kérelem felügyelőjének. A kérelem csak az Ön jóváhagyása után nyújtható be.\n\nA kérelmet itt tekintheti meg és hagyhatja jóvá: %:application-url%"}
           :member-added {:subject "Hozzáadták tagként a(z) %:application-id% jelentkezéshez"
                          :message "Tisztelt %:recipient%!\n\nÖnt hozzáadták tagként %:applicant% %:application-id% azonosítójú jelentkezéséhez.\n\nA jelentkezést megtekintheti és a feltételeket elfogadhatja itt: %:application-url%"}
           ;; Format parameters for member-invited:
@@ -716,6 +738,7 @@
           :past-decider "Korábbi döntéshozó"
           :past-reviewer "Korábbi véleményező"
           :reviewer "Véleményező"
+          :supervisor "Felügyelő"
           :technical-role "Technikai szerepkör"}
   :search {:clear-search "Keresés törlése"
            :example-searches "Példa keresések"

@@ -119,6 +119,9 @@
   (assoc schema-base/EventBase
          :event/type (s/enum :application.event/member-joined)
          :invitation/token s/Str))
+(s/defschema MarkedReadyEvent
+  (assoc EventWithComment
+         :event/type (s/enum :application.event/marked-ready)))
 (s/defschema MemberRemovedEvent
   (assoc EventWithComment
          :event/type (s/enum :application.event/member-removed)
@@ -177,6 +180,13 @@
 (s/defschema SubmittedEvent
   (assoc schema-base/EventBase
          :event/type (s/enum :application.event/submitted)))
+(s/defschema SupervisorDesignatedEvent
+  (assoc EventWithComment
+         :event/type (s/enum :application.event/supervisor-designated)
+         :application/supervisor schema-base/User))
+(s/defschema SupervisionApprovedEvent
+  (assoc EventWithComment
+         :event/type (s/enum :application.event/supervision-approved)))
 (s/defschema VotedEvent
   (assoc EventWithComment
          :event/type (s/enum :application.event/voted)
@@ -200,6 +210,7 @@
    :application.event/expiration-notifications-sent ExpirationNotificationsSentEvent
    :application.event/licenses-accepted LicensesAcceptedEvent
    :application.event/licenses-added LicensesAddedEvent
+   :application.event/marked-ready MarkedReadyEvent
    :application.event/member-added MemberAddedEvent
    :application.event/member-invited MemberInvitedEvent
    :application.event/member-joined MemberJoinedEvent
@@ -216,6 +227,8 @@
    :application.event/reviewer-invited ReviewerInvitedEvent
    :application.event/reviewer-joined ReviewerJoinedEvent
    :application.event/submitted SubmittedEvent
+   :application.event/supervision-approved SupervisionApprovedEvent
+   :application.event/supervisor-designated SupervisorDesignatedEvent
    :application.event/voted VotedEvent})
 
 (def event-types

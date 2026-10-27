@@ -396,7 +396,7 @@
                                   on-change
                                   value]}]
   (let [id (str "disable-commands-" index "-select-user-roles")
-        applicant-roles [:applicant :member]
+        applicant-roles [:applicant :member :supervisor]
         expert-roles [:handler :reviewer :decider :past-reviewer :past-decider]
         technical-roles [:expirer :reporter]
         localize-dropdown-role #(if (some #{%} technical-roles)

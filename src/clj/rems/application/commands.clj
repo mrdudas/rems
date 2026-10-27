@@ -64,6 +64,8 @@
   CommandBase)
 (s/defschema CreateCommand
   {:catalogue-item-ids [s/Int]})
+(s/defschema ApproveSupervisionCommand
+  CommandWithComment)
 (s/defschema DecideCommand
   (assoc CommandWithComment
          :decision (s/enum :approved :rejected)))
@@ -79,6 +81,11 @@
   (assoc CommandBase
          :member {:name s/Str
                   :email s/Str}))
+(s/defschema DesignateSupervisorCommand
+  (assoc CommandWithComment
+         :supervisor schema-base/User))
+(s/defschema MarkReadyCommand
+  CommandWithComment)
 (s/defschema ChangeApplicantCommand
   (assoc CommandWithComment
          :member schema-base/User))
@@ -134,6 +141,7 @@
    :application.command/add-licenses AddLicensesCommand
    :application.command/add-member AddMemberCommand
    :application.command/approve ApproveCommand
+   :application.command/approve-supervision ApproveSupervisionCommand
    :application.command/assign-external-id AssignExternalIdCommand
    :application.command/change-applicant ChangeApplicantCommand
    :application.command/change-processing-state ChangeProcessingStateCommand
@@ -143,9 +151,11 @@
    :application.command/create CreateCommand
    :application.command/decide DecideCommand
    :application.command/delete DeleteCommand
+   :application.command/designate-supervisor DesignateSupervisorCommand
    :application.command/invite-decider InviteDeciderCommand
    :application.command/invite-member InviteMemberCommand
    :application.command/invite-reviewer InviteReviewerCommand
+   :application.command/mark-ready MarkReadyCommand
    :application.command/redact-attachments RedactAttachmentsCommand
    :application.command/reject RejectCommand
    :application.command/remark RemarkCommand
@@ -224,6 +234,9 @@
           :application.command/delete
           :application.command/save-draft
           :application.command/submit
+          :application.command/mark-ready
+          :application.command/designate-supervisor
+          :application.command/approve-supervision
           ;; will not change the application's state, so they
           ;; can be ignored from a workflow point of view
           :application.command/add-licenses
@@ -505,12 +518,37 @@
   (ok {:event/type :application.event/licenses-accepted
        :application/accepted-licenses (set (:accepted-licenses cmd))}))
 
+(defn- supervision-not-approved-error [application]
+  (when (and (:application/supervisor application)
+             (not (:application/supervision-approved application)))
+    {:errors [{:type :t.actions.errors/supervision-not-approved}]}))
+
 (defmethod command-handler :application.command/submit
   [cmd application _injections]
   (or (merge-with concat
                   (licenses-not-accepted-error application (:actor cmd))
-                  (form-validation-errors (:application/forms application)))
+                  (form-validation-errors (:application/forms application))
+                  (supervision-not-approved-error application))
       (ok {:event/type :application.event/submitted})))
+
+(defmethod command-handler :application.command/mark-ready
+  [cmd application injections]
+  (add-comment-and-attachments cmd application injections
+                               {:event/type :application.event/marked-ready}))
+
+(defmethod command-handler :application.command/designate-supervisor
+  [cmd application injections]
+  (let [userid (:userid (:supervisor cmd))]
+    (or (when-not (some #(= userid (:userid %)) (:application/members application))
+          {:errors [{:type :user-not-member :user (:supervisor cmd)}]})
+        (add-comment-and-attachments cmd application injections
+                                     {:event/type :application.event/supervisor-designated
+                                      :application/supervisor (select-keys (:supervisor cmd) [:userid])}))))
+
+(defmethod command-handler :application.command/approve-supervision
+  [cmd application injections]
+  (add-comment-and-attachments cmd application injections
+                               {:event/type :application.event/supervision-approved}))
 
 (defmethod command-handler :application.command/approve
   [cmd application injections]

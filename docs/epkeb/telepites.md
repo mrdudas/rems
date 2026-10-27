@@ -41,6 +41,7 @@ Az állapot 2026-10-27-i felmérése. A beállításokat (űrlapok, workflow-k, 
 :enable-cart false
 :enable-organization-contacts true
 :enable-member-editing true
+:enable-supervisor-approval true
 :enable-processing-states true
 :disable-commands [:application.command/change-resources
                    :application.command/assign-external-id

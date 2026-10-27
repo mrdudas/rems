@@ -71,14 +71,29 @@ Ezekhez a master workflow-t vagy új parancsot kell fejleszteni:
 
 | Igény | Miért nem megy | Teendő |
 |---|---|---|
-| A meghívott kérelmező (member) kitöltheti az űrlapot | A `save-draft` csak az applicant joga | `save-draft` (és mellékletfeltöltés) engedése a `member` szerepnek draft és returned állapotban |
-| „Beadható” jelzés a kapcsolattartónak | Nincs ilyen parancs | Új parancs és esemény |
-| Felügyelői jóváhagyás | Nincs ilyen parancs | Új parancs; a `submit` feltétele |
 | A kérelmező válaszol a bíráló kérdésére | A benyújtott kérelemnél az applicant és a member nem írhat megjegyzést | `remark` engedése az applicant/member szerepnek submitted állapotban, vagy kérdés–válasz funkció |
 | Bírálati lap három javaslattal | A `review` szabad szöveg; a `vote` csak elfogad/elutasít | Strukturált bírálat |
 | Bírálói kör, saját intézmény kizárása, terhelés | A `request-review` bármely felhasználót elfogad | Szűrés és statisztika |
 | Kiegészítés után automatikus újrafelkérés ugyanazoknak | Nincs ilyen automatizmus | Folyamatkezelő (process manager) |
 | Határidők, emlékeztetők, felfüggesztés 30 nap után | Csak az `:application-deadline-days` jelzés van | Ütemezett feladat |
 | A szavazatok automatikus összesítése | A handler kézzel dönt | Opcionális |
+
+## Elkészült fejlesztések
+
+Mindhárom kapcsolóval bekapcsolható; alapból ki vannak kapcsolva, így a gyári működés nem változik.
+
+| Igény | Megoldás | Kapcsoló |
+|---|---|---|
+| A meghívott kérelmező (member) kitöltheti az űrlapot | `save-draft` a `member` szerepnek piszkozat és visszaküldött állapotban (mellékletfeltöltéssel együtt). Benyújtani továbbra is csak a kapcsolattartó tud. | `:enable-member-editing` |
+| „Beadható” jelzés | Új parancs: `mark-ready` (a tagnak, piszkozat és visszaküldött állapotban), esemény: `marked-ready`. A kapcsolattartó e-mailt kap; a kérelem oldalán „Beadhatónak jelölve” és az időpont látszik. | `:enable-member-editing` |
+| Felügyelői jóváhagyás | Új szerep: `supervisor`. A kapcsolattartó egy már csatlakozott tagot kijelöl felügyelőnek (`designate-supervisor`, a tag dobozában „Kijelölés felügyelőnek”); a felügyelő e-mailt kap, és jóváhagyja (`approve-supervision`, „Jóváhagyom felügyelőként”). A kapcsolattartó jóváhagyáskor e-mailt kap. Ha van felügyelő, a `submit` csak az ő jóváhagyása után sikerül (`t.actions.errors/supervision-not-approved`). | `:enable-supervisor-approval` |
+
+Szabályok:
+
+- A „beadható” jelzés és a felügyelői jóváhagyás a **válaszok akkori állapotára** vonatkozik: ha később bárki megváltoztatja a válaszokat, mindkettő érvényét veszti. Ugyanazon válaszok újramentése nem érinti.
+- A benyújtás törli a „beadható” jelzést; a felügyelői jóváhagyás megmarad, amíg a válaszok nem változnak (így visszaküldés után módosítás nélkül újra benyújtható).
+- Ha a felügyelőt eltávolítják a tagok közül, a feltétel megszűnik. Új felügyelő kijelölése a korábbi jóváhagyást törli.
+- Felügyelőt csak akkor kell kijelölni, ha a kérelmezőnek nincs fokozata; ezt a rendszer nem ellenőrzi, a kapcsolattartó dönti el.
+- A felügyelő szerep a workflow tiltásaiban is választható (*Disable commands* → szerep).
 
 A [cel-folyamat.md](cel-folyamat.md) fejlesztési listája ennek megfelelően rövidül: a névtelenség, a bizottsági szavazás (kézi számlálással), a rövidített eljárás és a felesleges funkciók elrejtése konfigurációval megoldható.

@@ -13,6 +13,11 @@
             :approve "Hyväksy"
             :approve-end-date "Päivä jolloin pääsyoikeudet vanhenevat (valinnainen)"
             :approve-reject "Hyväksy tai hylkää"
+            :mark-ready "Merkitse valmiiksi lähetettäväksi"
+            :mark-ready-intro "Hakijalle ilmoitetaan, että hakemus on valmis lähetettäväksi."
+            :approve-supervision "Hyväksy ohjaajana"
+            :approve-supervision-intro "Hyväksymällä otat ohjaajana vastuun hakemuksen sisällöstä. Jos vastauksia muutetaan myöhemmin, tarvitaan uusi hyväksyntä."
+            :designate-supervisor "Nimeä ohjaajaksi"
             :assign-external-id "Aseta tunniste"
             :assign-external-id-info "Tunniste"
             :bundling-intro [:div.intro [:p "Huomaa, että vain resursseja, joilla on sama työvuo, voidaan liittää yhteen."]]
@@ -30,6 +35,7 @@
             :errors {:duplicate-id "Tunnus on jo käytössä."
                      :invalid-token [:div [:p "Hakemukseen liittyminen epäonnistui."] [:p "Tarkista kutsukoodi " [:code "%1"]]]
                      :licenses-not-accepted "Käyttöehtoja ei ole hyväksytty."
+                     :supervision-not-approved "Ohjaaja ei ole hyväksynyt hakemuksen nykyistä versiota."
                      :not-organization-contact "Vain organisaation yhteyshenkilöt voivat luoda hakemuksia."
                      :organization-does-not-exist "Organisaatiota \"%1\" ei ole olemassa"
                      :validation-errors "Tarkasta seuraavat virheet:"
@@ -223,6 +229,9 @@
                           :expiration-notifications-sent "%1 lähetti sähköpostimuistutuksen vanhentuvasta hakemuksesta."
                           :licenses-accepted "%1 hyväksyi käyttöehdot."
                           :licenses-added "%1 lisäsi käyttöehtoja."
+                          :marked-ready "%1 merkitsi hakemuksen valmiiksi lähetettäväksi."
+                          :supervision-approved "%1 hyväksyi hakemuksen ohjaajana."
+                          :supervisor-designated "%1 nimesi käyttäjän %2 ohjaajaksi."
                           :member-added "%1 lisäsi käyttäjän %2 hakemuksen jäseneksi."
                           :member-invited "%1 kutsui henkilön %2 hakemuksen jäseneksi."
                           :member-joined "Henkilö %1 liittyi hakemuksen jäseneksi."
@@ -254,6 +263,10 @@
                  :latest-activity "Viimeisin toimenpide"
                  :organization "Organisaatio"
                  :my-applications "Omat hakemukset"
+                 :marked-ready "Merkitty valmiiksi lähetettäväksi"
+                 :supervisor "Ohjaaja"
+                 :supervision-approved "Ohjaaja on hyväksynyt"
+                 :supervision-pending "Odottaa ohjaajan hyväksyntää"
                  :not-shown-to-applying-users "Ei näytetä hakijoille"
                  :redacted-attachments "Poistetut liitetiedostot"
                  :redacted-attachments-replaced "Uudet liitetiedostot korvaavat poistetut liitetiedostot."
@@ -311,6 +324,9 @@
              :add-licenses "Lisää käyttöehto"
              :add-member "Lisää jäsen"
              :approve "Hyväksy"
+             :approve-supervision "Hyväksy ohjaajana"
+             :designate-supervisor "Nimeä ohjaajaksi"
+             :mark-ready "Merkitse valmiiksi lähetettäväksi"
              :assign-external-id "Aseta tunniste"
              :change-applicant "Tee hakija"
              :change-processing-state "Muuta alitilaa"
@@ -468,6 +484,12 @@
           :handler-reminder {:application "%1, lähettänyt %2"
                              :message "Hyvä %1,\n\nSeuraavat hakemukset ovat avoinna ja saattavat vaatia toimenpiteitä:\n\n%2\n\nVoit tarkastella hakemuksia osoitteessa %3"
                              :subject "Avoimet hakemukset"}
+          :marked-ready {:subject "(%3) Hakemus on valmis lähetettäväksi"
+                         :message "Hyvä %1,\n\n%2 on merkinnyt hakemuksen %3 valmiiksi lähetettäväksi.\n\nVoit tarkastella ja lähettää hakemuksen osoitteessa %6"}
+          :supervision-approved {:subject "(%3) Ohjaaja on hyväksynyt hakemuksen"
+                                 :message "Hyvä %1,\n\n%2 on hyväksynyt hakemuksen %3 ohjaajana.\n\nVoit tarkastella hakemusta osoitteessa %6"}
+          :supervisor-designated {:subject "(%3) Sinut on nimetty ohjaajaksi"
+                                  :message "Hyvä %1,\n\n%2 on nimennyt sinut hakemuksen %3 ohjaajaksi. Hakemuksen voi lähettää vasta hyväksyntäsi jälkeen.\n\nVoit tarkastella ja hyväksyä hakemuksen osoitteessa %6"}
           :member-added {:subject "Lisätty hakemuksen %3 jäseneksi"
                          :message "Hyvä %1,\n\nSinut on lisätty käyttäjän %4 jättämän hakemuksen %3 jäseneksi.\n\nVoit tarkastella hakemusta ja hyväksyä käyttöehdot osoitteessa %6"}
           :member-invited {:subject "Kutsu osallistumaan hakemukseen %3"
@@ -612,6 +634,7 @@
           :past-decider "Aikaisempi päättäjä"
           :past-reviewer "Aikaisempi katselmoija"
           :reviewer "Katselmoija"
+          :supervisor "Ohjaaja"
           :technical-role "Tekninen rooli"}
   :search {:clear-search "Tyhjennä hakuehdot"
            :example-searches "Esimerkkihakuja"

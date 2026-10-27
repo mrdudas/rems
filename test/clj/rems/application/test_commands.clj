@@ -676,6 +676,154 @@
                                                     dummy-member-added-event]
                                                    member-editing)))))))
 
+;; EPKEB: the researcher marks the draft ready, the supervisor approves it
+(deftest test-mark-ready
+  (let [cmd {:type :application.command/mark-ready
+             :actor "somebody"
+             :comment "ready"}
+        member-editing (assoc application-injections :get-config (constantly {:enable-member-editing true}))]
+    (testing "forbidden by default"
+      (is (= {:errors [{:type :forbidden}]}
+             (fail-command cmd (build-application-view [dummy-created-event
+                                                        dummy-member-added-event])))))
+    (testing "allowed for a member when member editing is enabled"
+      (is (= {:event/type :application.event/marked-ready
+              :event/time test-time
+              :event/actor "somebody"
+              :application/id app-id
+              :application/comment "ready"}
+             (ok-command cmd (build-application-view [dummy-created-event
+                                                      dummy-member-added-event]
+                                                     member-editing)))))
+    (testing "forbidden in a submitted application"
+      (is (= {:errors [{:type :forbidden}]}
+             (fail-command cmd (build-application-view [dummy-created-event
+                                                        dummy-member-added-event
+                                                        dummy-submitted-event]
+                                                       member-editing)))))
+    (let [marked-ready-event {:event/type :application.event/marked-ready
+                              :event/time test-time
+                              :event/actor "somebody"
+                              :application/id app-id}
+          changed-draft-event (assoc dummy-draft-saved-event
+                                     :application/field-values [{:form 1 :field "1" :value "bar"}])]
+      (testing "the application shows when it was marked ready"
+        (is (= test-time
+               (:application/marked-ready (build-application-view [dummy-created-event
+                                                                    dummy-member-added-event
+                                                                    dummy-draft-saved-event
+                                                                    marked-ready-event]
+                                                                   member-editing)))))
+      (testing "saving the same answers keeps the mark"
+        (is (:application/marked-ready (build-application-view [dummy-created-event
+                                                                 dummy-member-added-event
+                                                                 dummy-draft-saved-event
+                                                                 marked-ready-event
+                                                                 dummy-draft-saved-event]
+                                                                member-editing))))
+      (testing "changing the answers resets the mark"
+        (is (nil? (:application/marked-ready (build-application-view [dummy-created-event
+                                                                       dummy-member-added-event
+                                                                       dummy-draft-saved-event
+                                                                       marked-ready-event
+                                                                       changed-draft-event]
+                                                                      member-editing)))))
+      (testing "submitting resets the mark"
+        (is (nil? (:application/marked-ready (build-application-view [dummy-created-event
+                                                                       dummy-member-added-event
+                                                                       dummy-draft-saved-event
+                                                                       marked-ready-event
+                                                                       dummy-submitted-event]
+                                                                      member-editing))))))))
+
+(deftest test-supervisor-approval
+  (let [supervision (assoc application-injections :get-config (constantly {:enable-supervisor-approval true}))
+        designate-cmd {:type :application.command/designate-supervisor
+                       :actor applicant-user-id
+                       :supervisor {:userid "somebody"}}
+        approve-cmd {:type :application.command/approve-supervision
+                     :actor "somebody"}
+        submit-cmd {:type :application.command/submit
+                    :actor applicant-user-id}
+        designated-event {:event/type :application.event/supervisor-designated
+                          :event/time test-time
+                          :event/actor applicant-user-id
+                          :application/id app-id
+                          :application/supervisor {:userid "somebody"}}
+        approved-event {:event/type :application.event/supervision-approved
+                        :event/time test-time
+                        :event/actor "somebody"
+                        :application/id app-id}
+        changed-draft-event (assoc dummy-draft-saved-event
+                                   :application/field-values [{:form 1 :field "1" :value "bar"}])
+        member-removed-event {:event/type :application.event/member-removed
+                              :event/time test-time
+                              :event/actor applicant-user-id
+                              :application/id app-id
+                              :application/member {:userid "somebody"}}
+        base-events [dummy-created-event
+                     dummy-member-added-event
+                     dummy-draft-saved-event]]
+    (testing "designating is forbidden by default"
+      (is (= {:errors [{:type :forbidden}]}
+             (fail-command designate-cmd (build-application-view base-events)))))
+    (testing "the applicant designates a member as the supervisor"
+      (is (= designated-event
+             (ok-command designate-cmd (build-application-view base-events supervision)))))
+    (testing "only members can be designated"
+      (is (= {:errors [{:type :user-not-member :user {:userid "nobody"}}]}
+             (fail-command (assoc designate-cmd :supervisor {:userid "nobody"})
+                           (build-application-view base-events supervision))))
+      (is (= {:errors [{:type :user-not-member :user {:userid applicant-user-id}}]}
+             (fail-command (assoc designate-cmd :supervisor {:userid applicant-user-id})
+                           (build-application-view base-events supervision)))))
+    (testing "members cannot designate"
+      (is (= {:errors [{:type :forbidden}]}
+             (fail-command (assoc designate-cmd :actor "somebody")
+                           (build-application-view base-events supervision)))))
+    (testing "only the designated supervisor can approve"
+      (is (= {:errors [{:type :forbidden}]}
+             (fail-command approve-cmd (build-application-view base-events supervision))))
+      (is (= {:errors [{:type :forbidden}]}
+             (fail-command (assoc approve-cmd :actor applicant-user-id)
+                           (build-application-view (conj base-events designated-event) supervision))))
+      (is (= approved-event
+             (ok-command approve-cmd (build-application-view (conj base-events designated-event) supervision)))))
+    (testing "submitting needs the supervisor's approval"
+      (is (= {:errors [{:type :t.actions.errors/supervision-not-approved}]}
+             (fail-command submit-cmd (build-application-view (conj base-events designated-event) supervision))))
+      (is (= :application.event/submitted
+             (:event/type (ok-command submit-cmd (build-application-view (conj base-events designated-event approved-event) supervision))))))
+    (testing "saving the same answers keeps the approval"
+      (is (= :application.event/submitted
+             (:event/type (ok-command submit-cmd (build-application-view (conj base-events designated-event approved-event dummy-draft-saved-event) supervision))))))
+    (testing "changing the answers resets the approval"
+      (is (= {:errors [{:type :t.actions.errors/supervision-not-approved}]}
+             (fail-command submit-cmd (build-application-view (conj base-events designated-event approved-event changed-draft-event) supervision)))))
+    (testing "removing the supervisor from the members removes the requirement"
+      (let [application (build-application-view (conj base-events designated-event member-removed-event) supervision)]
+        (is (nil? (:application/supervisor application)))
+        (is (= :application.event/submitted
+               (:event/type (ok-command submit-cmd application))))))
+    (testing "designating another supervisor moves the role"
+      (let [application (build-application-view [dummy-created-event
+                                                 dummy-member-added-event
+                                                 (assoc dummy-member-added-event :application/member {:userid "somebody2"})
+                                                 dummy-draft-saved-event
+                                                 designated-event
+                                                 approved-event
+                                                 (assoc designated-event :application/supervisor {:userid "somebody2"})]
+                                                supervision)]
+        (is (= {:errors [{:type :forbidden}]}
+               (fail-command approve-cmd application)))
+        (is (= :application.event/supervision-approved
+               (:event/type (ok-command (assoc approve-cmd :actor "somebody2") application))))
+        (is (= {:errors [{:type :t.actions.errors/supervision-not-approved}]}
+               (fail-command submit-cmd application)))))
+    (testing "the supervisor cannot approve a submitted application"
+      (is (= {:errors [{:type :forbidden}]}
+             (fail-command approve-cmd (build-application-view (conj base-events designated-event dummy-submitted-event) supervision)))))))
+
 (deftest test-accept-licenses
   (is (= {:event/type :application.event/licenses-accepted
           :event/time test-time

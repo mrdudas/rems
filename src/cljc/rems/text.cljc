@@ -205,6 +205,7 @@
    :application.event/expiration-notifications-sent :t.applications.events/expiration-notifications-sent
    :application.event/licenses-accepted :t.applications.events/licenses-accepted
    :application.event/licenses-added :t.applications.events/licenses-added
+   :application.event/marked-ready :t.applications.events/marked-ready
    :application.event/member-added :t.applications.events/member-added
    :application.event/member-invited :t.applications.events/member-invited
    :application.event/member-joined :t.applications.events/member-joined
@@ -221,6 +222,8 @@
    :application.event/reviewer-joined :t.applications.events/reviewer-joined
    :application.event/revoked :t.applications.events/revoked
    :application.event/submitted :t.applications.events/submitted
+   :application.event/supervision-approved :t.applications.events/supervision-approved
+   :application.event/supervisor-designated :t.applications.events/supervisor-designated
    :application.event/voted :t.applications.events/voted})
 
 (defn localize-user
@@ -259,6 +262,7 @@
     :application.event/resources-changed        {:catalogue-items (->> (:application/resources event)
                                                                        (map (comp localized :catalogue-item/title))
                                                                        (str/join ", "))}
+    :application.event/supervisor-designated    {:supervisor (localize-user (:application/supervisor event))}
     :application.event/reviewer-invited         {:invited-user (localize-invitation (:application/reviewer event))}
     :application.event/review-requested         {:requested-users (->> (:application/reviewers event)
                                                                        (map localize-user)
@@ -319,6 +323,7 @@
    :past-reviewer :t.roles/past-reviewer
    ;; :reporter
    :reviewer :t.roles/reviewer
+   :supervisor :t.roles/supervisor
    ;; :user-owner
    })
 
@@ -331,6 +336,7 @@
    :application.command/add-licenses :t.commands/add-licenses
    :application.command/add-member :t.commands/add-member
    :application.command/approve :t.commands/approve
+   :application.command/approve-supervision :t.commands/approve-supervision
    :application.command/assign-external-id :t.commands/assign-external-id
    :application.command/change-applicant :t.commands/change-applicant
    :application.command/change-processing-state :t.commands/change-processing-state
@@ -340,9 +346,11 @@
    ;; :application.command/create
    :application.command/decide :t.commands/decide
    :application.command/delete :t.commands/delete
+   :application.command/designate-supervisor :t.commands/designate-supervisor
    :application.command/invite-decider :t.commands/invite-decider
    :application.command/invite-member :t.commands/invite-member
    :application.command/invite-reviewer :t.commands/invite-reviewer
+   :application.command/mark-ready :t.commands/mark-ready
    :application.command/redact-attachments :t.commands/redact-attachments
    :application.command/reject :t.commands/reject
    :application.command/remark :t.commands/remark
