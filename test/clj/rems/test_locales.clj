@@ -26,6 +26,9 @@
 (defn loc-sv []
   (read-string (slurp (io/resource "translations/sv.edn"))))
 
+(defn loc-hu []
+  (read-string (slurp (io/resource "translations/hu.edn"))))
+
 (deftest test-all-languages-defined
   (is (= #{} (clojure.set/difference (recursive-keys (loc-en))
                                      (recursive-keys (loc-da))))
@@ -35,7 +38,10 @@
       "en matches fi")
   (is (= #{} (clojure.set/difference (recursive-keys (loc-en))
                                      (recursive-keys (loc-sv))))
-      "en matches sv"))
+      "en matches sv")
+  (is (= #{} (clojure.set/difference (recursive-keys (loc-en))
+                                     (recursive-keys (loc-hu))))
+      "en matches hu"))
 
 (defn- translation-keywords-in-use []
   ;; git grep would be nice, but circleci's git grep doesn't have -o
@@ -52,7 +58,7 @@
 (deftest test-translation-keywords-in-use
   (let [keys-in-source (set (translation-keywords-in-use))]
     (assert (seq keys-in-source))
-    (doseq [lang [:en :fi :sv]]
+    (doseq [lang [:en :fi :sv :hu]]
       (testing lang
         (let [dictionary (-> (locales/load-translations {:languages [lang]
                                                          :translations-directory "translations/"})
