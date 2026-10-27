@@ -1,0 +1,32 @@
+# Multi-stage build of REMS from source, used for the EPKEB test deployment.
+# See docs/epkeb/telepites.md
+
+FROM clojure:temurin-21-lein-2.11.2-alpine AS build
+
+RUN apk add --no-cache nodejs npm git bash
+
+WORKDIR /build
+
+COPY project.clj package.json package-lock.json shadow-cljs.edn /build/
+RUN npm ci
+RUN lein deps
+
+COPY . /build/
+RUN lein uberjar
+
+FROM eclipse-temurin:25-jre-alpine
+
+RUN apk add --no-cache bash~=5 && \
+    apk upgrade
+
+RUN mkdir /rems
+WORKDIR /rems
+
+ENTRYPOINT ["bash","./docker-entrypoint.sh"]
+
+COPY empty-config.edn /rems/config/config.edn
+COPY example-theme/extra-styles.css /rems/example-theme/extra-styles.css
+COPY --from=build /build/target/uberjar/rems.jar /rems/rems.jar
+COPY docker-entrypoint.sh /rems/docker-entrypoint.sh
+
+RUN chmod 664 /opt/java/openjdk/lib/security/cacerts
