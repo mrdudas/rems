@@ -636,6 +636,46 @@
                                                 dummy-submitted-event
                                                 dummy-returned-event]))))))
 
+(deftest test-save-draft-by-member
+  (let [cmd {:type :application.command/save-draft
+             :actor "somebody"
+             :field-values [{:form 1 :field "1" :value "foo"}]}
+        member-editing (assoc application-injections :get-config (constantly {:enable-member-editing true}))]
+    (testing "forbidden for a member by default"
+      (is (= {:errors [{:type :forbidden}]}
+             (fail-command cmd (build-application-view [dummy-created-event
+                                                        dummy-member-added-event])))))
+    (testing "allowed for a member when member editing is enabled"
+      (is (= {:event/type :application.event/draft-saved
+              :event/time test-time
+              :event/actor "somebody"
+              :application/id app-id
+              :application/field-values [{:form 1 :field "1" :value "foo"}
+                                         {:form 1 :field "2" :value ""}]}
+             (ok-command cmd (build-application-view [dummy-created-event
+                                                      dummy-member-added-event]
+                                                     member-editing)))))
+    (testing "allowed for a member in a returned application"
+      (is (= :application.event/draft-saved
+             (:event/type (ok-command cmd (build-application-view [dummy-created-event
+                                                                   dummy-member-added-event
+                                                                   dummy-submitted-event
+                                                                   dummy-returned-event]
+                                                                  member-editing))))))
+    (testing "forbidden for a member in a submitted application"
+      (is (= {:errors [{:type :forbidden}]}
+             (fail-command cmd (build-application-view [dummy-created-event
+                                                        dummy-member-added-event
+                                                        dummy-submitted-event]
+                                                       member-editing)))))
+    (testing "submitting is still reserved for the applicant"
+      (is (= {:errors [{:type :forbidden}]}
+             (fail-command {:type :application.command/submit
+                            :actor "somebody"}
+                           (build-application-view [dummy-created-event
+                                                    dummy-member-added-event]
+                                                   member-editing)))))))
+
 (deftest test-accept-licenses
   (is (= {:event/type :application.event/licenses-accepted
           :event/time test-time

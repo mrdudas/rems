@@ -471,6 +471,11 @@
  ;; organization of the contact who created it.
  :enable-organization-contacts false
 
+ ;; When true, members of an application (e.g. the researcher invited by an
+ ;; organization contact) may also fill in and save the draft. Submitting is
+ ;; still reserved for the applicant.
+ :enable-member-editing false
+
  ;; If `:scanner-path` is defined, it is assumed to be an executable that:
  ;; can take a binary file from `STDIN` and return a status code of zero if and only if the file passes the scan.
  ;;

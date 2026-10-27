@@ -795,6 +795,14 @@
                                       {:permission (:command command)
                                        :role role}))))))
 
+(defn enrich-member-editing [application get-config]
+  (if (:enable-member-editing (get-config))
+    application
+    (permissions/blacklist application
+                           (permissions/compile-rules
+                            [{:permission :application.command/save-draft
+                              :role :member}]))))
+
 (defn- update-voting-permissions [application voting]
   (case (:type voting)
     :reviewers-vote
@@ -946,6 +954,7 @@
       (enrich-deadline get-config)
       (enrich-super-users get-users-with-role)
       (enrich-workflow-disable-commands get-config get-workflow)
+      (enrich-member-editing get-config)
       (enrich-workflow-voting get-config get-workflow)
       (enrich-attachments get-attachments-for-application get-user) ; users enriched roles
       (enrich-processing-states get-config get-workflow)

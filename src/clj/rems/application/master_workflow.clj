@@ -65,11 +65,19 @@
         :application.command/reject
         :application.command/request-decision))
 
+(def ^:private member-commands
+  #{:application.command/accept-licenses
+    :application.command/copy-as-new})
+
+;; Members may edit the draft only when `:enable-member-editing` is on,
+;; see rems.application.model/enrich-member-editing
+(def ^:private member-editing-commands
+  (conj member-commands :application.command/save-draft))
+
 (def ^:private created-permissions
   {:applicant (conj submittable-application-commands
                     :application.command/delete)
-   :member #{:application.command/accept-licenses
-             :application.command/copy-as-new}
+   :member member-editing-commands
    :reporter #{:see-everything}
    :expirer #{:application.command/delete
               :application.command/send-expiration-notifications}
@@ -79,6 +87,7 @@
 
 (def ^:private submitted-permissions
   {:applicant non-submittable-application-commands
+   :member member-commands
    :handler (conj handler-all-commands :see-everything)
    :reviewer #{:see-everything
                :application.command/redact-attachments
@@ -102,6 +111,7 @@
 (def ^:private returned-permissions
   {:applicant (conj submittable-application-commands
                     :application.command/close)
+   :member member-editing-commands
    :handler (conj handler-returned-commands :see-everything)
    :decider #{:see-everything
               :application.command/redact-attachments
@@ -110,6 +120,7 @@
 
 (def ^:private approved-permissions
   {:applicant non-submittable-application-commands
+   :member member-commands
    :handler #{:see-everything
               :application.command/redact-attachments
               :application.command/remark
