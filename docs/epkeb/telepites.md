@@ -100,8 +100,7 @@ Frissítés menete: `git fetch upstream --tags`, majd az új kiadási tag beolva
 
 - Kiindulás: a `/opt/analyst.hu/rems/translations/hu.edn` (2026-09), az EPKEB-re szabott változat („Kérelem”, „Kérelmező”, „Kutató”).
 - Az `epkeb` ágon a `resources/translations/hu.edn` a telepített változat, javítva: a „Kérlemező” elírás javítva, a hiányzó `:t.actions/pre-actions-info` kulcs pótolva. A `test/clj/rems/test_locales.clj` a magyart is ellenőrzi (kulcsegyezés az angollal, és hogy a forráskódban használt kulcsok mind megvannak).
-- Még nyitott: a resource/application fogalmak fordítása (lásd [rems-lekepezes.md](rems-lekepezes.md#fogalmak)).
-- A felületen még sok helyen „Jelentkezés” áll (az eredeti „application” fordítása); ezt a fogalmi tisztázással együtt kell javítani.
+- Szóhasználat (2026-10-28): a [szojegyzek.md](szojegyzek.md) szerint. A „Jelentkezés” helyett „Kérelem”, a „Kezelő” helyett „Elnök”, a „Véleményező” helyett „Bíráló”, a resource/katalógustétel „Eljárás”. A névtelenített elnök és bíráló a kérelmező oldalon „Bizottság” néven jelenik meg (angolul „Committee”). Az angol felületen a szerepnevek is EPKEB-esek (Contact person, Researcher, Chair).
 
 ## Hibák
 

@@ -81,7 +81,7 @@ Elkészült az `epkeb` ágon:
   - a kérelem oldalán megjelenik az intézmény;
   - a katalógusban a „Jelentkezés” (kérelem indítása) gomb csak kapcsolattartónak látszik.
 
-A tagintézmény itt még nem különül el az `EPKEB` admin szervezettől: bármely szervezet kaphat kapcsolattartót. Az illetékes elnök mező egyelőre csak nyilvántartás; az értesítések és a bírálói szabályok későbbi lépésben használják.
+A tagintézmény itt még nem különül el az `EPKEB` admin szervezettől: bármely szervezet kaphat kapcsolattartót. Az illetékes elnök mező alapján kapják az elnökök az e-maileket: ha a kérelem szervezetének van illetékes elnöke a munkafolyamat elnökei között, csak ő kap értesítést (lásd [jogosultsagok.md](jogosultsagok.md#elkészült-fejlesztések)). A bírálói szabályok későbbi lépésben használják.
 
 Bekapcsolás a próbarendszeren (`/opt/analyst.hu/rems/config.edn`):
 

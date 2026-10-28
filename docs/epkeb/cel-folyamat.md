@@ -15,7 +15,7 @@ Ez a dokumentum a rendszer **cél-folyamatát** írja le. Nem a mostani PDF-űrl
 |---|---|---|---|
 | **Kapcsolattartó** | tagintézményenként 1–2 fő | kérelmet hoz létre, meghívja a kérelmezőt, formailag ellenőriz, benyújt; visszautasíthatja, ha nem az EPKEB illetékes | applicant; a létrehozás joga **új korlátozás** |
 | **Kérelmező (kutató)** | a kapcsolattartó hívja meg | kitölti az űrlapot és a mellékleteket, jelzi, hogy a kérelem beadható; válaszol a bírálók kérdéseire; módosítja a kérelmet | member, **bővített jogokkal** |
-| **Felügyelő (szupervizor)** | fokozat nélküli kérelmezőnél kötelező | előzetesen hozzájárul (vállalja a felelősséget a tartalomért) | member + **új jóváhagyó lépés** |
+| **Felügyelő (szupervizor)** | fokozat nélküli kérelmezőnél kötelező | előzetesen hozzájárul (vállalja a felelősséget a tartalomért); nem szerkeszt | **új** `supervisor` szerep |
 | **Elnök / társelnök** | több is lehet | mindent lát; bírálókat jelöl ki; dönt; engedélyt ad ki | handler |
 | **Elnök nevében eljáró** (titkár) | | az elnök adminisztratív lépéseit végzi | handler |
 | **Bíráló** | bírálói körből | letölti/olvassa a kérelmet, kérdez, kiegészítést kér, javaslatot tesz | reviewer |
@@ -26,10 +26,10 @@ Ez a dokumentum a rendszer **cél-folyamatát** írja le. Nem a mostani PDF-űrl
 ### 1. Létrehozás és kitöltés
 
 1. A kapcsolattartó létrehozza a kérelmet (normál vagy rövidített eljárás).
-2. Meghívja a kérelmezőt e-mailben (REMS `invite-member`). Ha a kérelmezőnek nincs tudományos fokozata, a felügyelőt is.
+2. Meghívja a kérelmezőt e-mailben (REMS `invite-member`). Ha a kérelmezőnek nincs tudományos fokozata, a kérelmező (vagy a kapcsolattartó) e-mailben meghívja a felügyelőt is („Felügyelő meghívása”); a felügyelő a csatlakozáskor felügyelő szerepet kap.
 3. A kérelmező kitölti az űrlapot és feltölti a mellékleteket. Mentheti, folytathatja.
-4. A felügyelő a rendszerben jóváhagyja a kérelmet (aláírás helyett).
-5. A kérelmező jelzi, hogy a kérelem beadható. A kapcsolattartó értesítést kap.
+4. A kérelmező jelzi, hogy a kérelem beadható. Ha van felügyelő, ő kap értesítést, és a rendszerben jóváhagyja a kérelmet (aláírás helyett).
+5. A kapcsolattartó akkor kap értesítést, amikor a kérelem ténylegesen benyújtható: beadhatónak jelölték, és a felügyelő (ha van) jóváhagyta. Ha a jóváhagyás után módosul a kérelem, a jóváhagyás érvényét veszti, és ez a kérelem oldalán látszik.
 
 ### 2. Formai ellenőrzés és benyújtás
 
@@ -94,7 +94,7 @@ A REMS processing state funkciója (`:enable-processing-states`) a finomabb áll
 | Létrehozás csak kapcsolattartónak | nincs | **kész**: `:enable-organization-contacts`, kapcsolattartók és illetékes elnökök a szervezeten (lásd [szervezetek.md](szervezetek.md#megvalósítás-1-lépés)) |
 | A meghívott tag szerkesztheti az űrlapot | csak az applicant szerkeszthet | **kész**: `:enable-member-editing` |
 | „Beadható” jelzés | nincs | **kész**: `mark-ready` parancs, értesítés a kapcsolattartónak (lásd [jogosultsagok.md](jogosultsagok.md#elkészült-fejlesztések)) |
-| Felügyelői jóváhagyás | nincs | **kész**: `designate-supervisor` és `approve-supervision`, a benyújtás feltétele |
+| Felügyelői jóváhagyás | nincs | **kész**: `invite-supervisor`, `designate-supervisor` és `approve-supervision`, a benyújtás feltétele; a felügyelő nem szerkeszt |
 | Benyújtás, visszaadás, másolat elutasítás után | `submit`, `return`, `copy-as-new` | – |
 | Bírálói kör, jelentkezés, terhelés, saját intézmény kizárása | `request-review` bármely felhasználóra | **fejlesztés** |
 | Bírálói kérdés és kérelmezői válasz | a bíráló `remark`-ja lehet nyilvános, de a kérelmező nem tud válaszolni | **kész**: `:enable-applicant-remarks`, a kérelmező oldal válasza mindig nyilvános, értesítés az elnököknek és a bírálóknak (lásd [jogosultsagok.md](jogosultsagok.md#elkészült-fejlesztések)) |
@@ -102,4 +102,4 @@ A REMS processing state funkciója (`:enable-processing-states`) a finomabb áll
 | Kiegészítés után vissza ugyanahhoz a két bírálóhoz | kézzel `request-review` | **fejlesztés**: automatikus újrafelkérés |
 | Bizottsági szavazás | `vote` csak handlernek vagy bírálónak | **fejlesztés**: a bizottsági tagok meghívása szavazásra, többségi szabály, elnöki döntés egyenlőségnél |
 | Határidők, emlékeztetők, felfüggesztés 30 nap után | nincs | **fejlesztés** |
-| Illetékes társelnök | minden handler kap értesítést | **fejlesztés** |
+| Illetékes társelnök | minden handler kap értesítést | **kész** az értesítésekre: csak a tagintézmény illetékes elnökei kapnak e-mailt (lásd [jogosultsagok.md](jogosultsagok.md#elkészült-fejlesztések)); az engedélyen szereplő név a virtuális engedéllyel jön |
