@@ -8,6 +8,7 @@
             [rems.service.attachment]
             [rems.service.command :as command]
             [rems.service.licenses]
+            [rems.service.my-tasks]
             [rems.service.reviewer-calendar]
             [rems.service.reviewer-pool]
             [rems.service.users]
@@ -49,6 +50,30 @@
    :review/requested DateTime
    :review/deadline (s/maybe DateTime)
    :review/overdue-days s/Int})
+
+(s/defschema MyTask
+  {:application/id s/Int
+   :application/external-id (s/maybe s/Str)
+   :application/description (s/maybe s/Str)
+   :application/state s/Keyword
+   :application/last-activity DateTime
+   :task/type (s/enum :answer-question :returned :submit :waiting-for-supervisor :draft
+                      :fill-in :approve-supervision :review
+                      :reviews-overdue :request-reviews :reviews-in-progress :decide)
+   (s/optional-key :task/marked-ready) s/Bool
+   (s/optional-key :task/reviewers) s/Int
+   (s/optional-key :task/open-reviews) s/Int
+   (s/optional-key :task/overdue-days) s/Int
+   (s/optional-key :review/requested) DateTime
+   (s/optional-key :review/deadline) (s/maybe DateTime)
+   (s/optional-key :review/overdue-days) s/Int})
+
+(s/defschema MyTasks
+  {:applicant [MyTask]
+   :member [MyTask]
+   :supervisor [MyTask]
+   :reviewer [MyTask]
+   :handler [MyTask]})
 
 (s/defschema ReviewerCalendar
   {:reviewers [(merge schema-base/UserWithAttributes
@@ -206,6 +231,12 @@
       :query-params [{application-id :- (describe s/Int "the application to review") nil}]
       :return Reviewers
       (ok (get-reviewers application-id)))
+
+    (GET "/my-tasks" []
+      :summary "The tasks of the current user on the applications, by role: e.g. drafts to submit, approvals of the supervisor, reviews with their deadline and applications waiting for reviewers or a decision."
+      :roles #{:logged-in}
+      :return MyTasks
+      (ok (rems.service.my-tasks/get-my-tasks (getx-user-id))))
 
     (GET "/reviewer-calendar" []
       :summary "The open reviews of the reviewer pool with their deadlines, and the applications waiting for reviewers, for the applications that the user handles. Only with `:reviewer-pool-organization`."

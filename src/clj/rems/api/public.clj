@@ -53,6 +53,8 @@
    (s/optional-key :enable-organization-contacts) s/Bool
    (s/optional-key :reviewer-pool-organization) (s/maybe s/Str)
    (s/optional-key :restrict-organization-owners) s/Bool
+   (s/optional-key :review-deadline-days) (s/maybe s/Int)
+   (s/optional-key :re-review-deadline-days) (s/maybe s/Int)
    (s/optional-key :tables) {s/Keyword {s/Keyword s/Any}}})
 
 (def translations-api

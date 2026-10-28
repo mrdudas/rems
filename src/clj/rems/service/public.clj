@@ -46,6 +46,8 @@
                     :enable-organization-contacts
                     :reviewer-pool-organization
                     :restrict-organization-owners
+                    :review-deadline-days
+                    :re-review-deadline-days
                     :tables])
       (update :extra-pages filter-extra-pages)))
 

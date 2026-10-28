@@ -19,7 +19,7 @@
   ;; the users of enriched events are users, not userids
   (map #(if (map? %) (:userid %) %) users))
 
-(defn- review-deadline-days [application request-time]
+(defn review-deadline-days [application request-time]
   ;; a review requested after the application was returned for changes is a
   ;; re-review of the changed application
   (if (some #(and (= :application.event/returned (:event/type %))
@@ -28,7 +28,7 @@
     (:re-review-deadline-days env)
     (:review-deadline-days env)))
 
-(defn- open-reviews
+(defn open-reviews
   "The reviews requested from `userid` that are not done yet, i.e. the user
   still has the reviewer role, with the time of the latest request."
   [application]
@@ -54,7 +54,7 @@
                                 (time/in-days (time/interval deadline now))
                                 0)}))))
 
-(defn- reviewers-since-submission
+(defn reviewers-since-submission
   "The users requested to review since the latest submission."
   [application]
   (let [events (:application/events application)

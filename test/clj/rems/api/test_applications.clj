@@ -3599,3 +3599,85 @@
                     first
                     :reviews
                     (mapv (juxt :application/id :review/overdue-days)))))))))
+
+;; EPKEB: the tasks of the user by role
+(deftest test-my-tasks
+  (doseq [userid ["tasks-researcher" "tasks-reviewer1" "tasks-reviewer2"]]
+    (test-helpers/create-user! {:userid userid}))
+  (with-redefs [rems.config/env (assoc rems.config/env
+                                       :enable-member-editing true
+                                       :enable-applicant-remarks true)]
+    (let [form-id (test-helpers/create-form! {:form/fields [{:field/id "fld1"
+                                                             :field/type :description
+                                                             :field/title {:en "Title" :fi "Title" :sv "Title"}
+                                                             :field/optional false}]})
+          workflow-id (test-helpers/create-workflow! {:type :workflow/default
+                                                      :handlers ["handler"]})
+          cat-item-id (test-helpers/create-catalogue-item! {:form-id form-id
+                                                            :workflow-id workflow-id})
+          app-id (test-helpers/create-application! {:catalogue-item-ids [cat-item-id]
+                                                    :actor "alice"})
+          tasks (fn [userid role]
+                  (->> (api-call :get "/api/applications/my-tasks" nil +test-api-key+ userid)
+                       role
+                       (filter #(= app-id (:application/id %)))
+                       (mapv :task/type)))]
+      (is (= {:success true}
+             (send-command "alice" {:type :application.command/invite-member
+                                    :application-id app-id
+                                    :member {:name "researcher" :email "researcher@example.com"}})))
+      (let [token (-> (rems.db.applications/get-application-internal app-id)
+                      :application/events
+                      last
+                      :invitation/token)]
+        (is (= {:success true :application-id app-id}
+               (api-call :post (str "/api/applications/accept-invitation?invitation-token=" token) nil
+                         +test-api-key+ "tasks-researcher"))))
+      (testing "the draft"
+        (is (= ["draft"] (tasks "alice" :applicant)))
+        (is (= ["fill-in"] (tasks "tasks-researcher" :member))))
+      (testing "marked ready by the researcher"
+        (is (= {:success true}
+               (send-command "tasks-researcher" {:type :application.command/save-draft
+                                                 :application-id app-id
+                                                 :field-values [{:form form-id :field "fld1" :value "Study"}]})))
+        (is (= {:success true}
+               (send-command "tasks-researcher" {:type :application.command/mark-ready
+                                                 :application-id app-id})))
+        (is (= ["submit"] (tasks "alice" :applicant)))
+        (is (= [] (tasks "tasks-researcher" :member))))
+      (testing "submitted"
+        (is (= {:success true} (send-command "alice" {:type :application.command/submit
+                                                      :application-id app-id})))
+        (is (= [] (tasks "alice" :applicant)))
+        (is (= ["request-reviews"] (tasks "handler" :handler))))
+      (testing "reviews requested"
+        (is (= {:success true} (send-command "handler" {:type :application.command/request-review
+                                                        :application-id app-id
+                                                        :reviewers ["tasks-reviewer1" "tasks-reviewer2"]
+                                                        :comment ""})))
+        (is (= ["reviews-in-progress"] (tasks "handler" :handler)))
+        (is (= ["review"] (tasks "tasks-reviewer1" :reviewer)))
+        (is (= 0 (-> (api-call :get "/api/applications/my-tasks" nil +test-api-key+ "tasks-reviewer1")
+                     :reviewer
+                     first
+                     :review/overdue-days))))
+      (testing "a question of the reviewer"
+        (is (= {:success true} (send-command "tasks-reviewer1" {:type :application.command/remark
+                                                                :application-id app-id
+                                                                :comment "question"
+                                                                :public true})))
+        (is (= ["answer-question"] (tasks "alice" :applicant)))
+        (is (= ["answer-question"] (tasks "tasks-researcher" :member)))
+        (is (= {:success true} (send-command "tasks-researcher" {:type :application.command/remark
+                                                                 :application-id app-id
+                                                                 :comment "answer"
+                                                                 :public true})))
+        (is (= [] (tasks "alice" :applicant))))
+      (testing "the reviews are done"
+        (doseq [reviewer ["tasks-reviewer1" "tasks-reviewer2"]]
+          (is (= {:success true} (send-command reviewer {:type :application.command/review
+                                                         :application-id app-id
+                                                         :comment "ok"}))))
+        (is (= [] (tasks "tasks-reviewer1" :reviewer)))
+        (is (= ["decide"] (tasks "handler" :handler)))))))

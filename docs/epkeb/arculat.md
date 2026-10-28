@@ -59,6 +59,20 @@ Az áttekintés (2026-10-28) a kapcsolattartó, az elnök és a bíráló nézet
 
 ### 2. Szerepenkénti teendőlista
 
+**Kész (2026-10-28):** „Teendőim” oldal (`/my-tasks`, API: `GET /api/applications/my-tasks`). Belépés után mindenki ide érkezik (`:enable-organization-contacts` mellett). A teendők szerepenként csoportosítva, sürgősség szerint színezve (piros: késés, kék: most a felhasználón múlik, szürke: másra vár):
+
+| Szerep | Teendők |
+|---|---|
+| Kapcsolattartó | benyújtható; a felügyelőre vár; kitöltés alatt; kiegészítésre visszaküldve; kérdés érkezett. „Új kérelem” gomb. |
+| Kutató | kitöltendő (még nincs beadhatónak jelölve); kiegészítésre visszaküldve; kérdés érkezett |
+| Felügyelő | jóváhagyásra vár (kiemelve, ha már beadhatónak jelölték) |
+| Bíráló | bírálat a határidővel és a hátralévő napokkal, illetve a késéssel |
+| Elnök | bírálat késik; bírálókra vár (kevesebb mint két bíráló felkérve); bírálat folyamatban; döntésre vár (minden bírálat beérkezett, vagy rövidített eljárás). Link a bírálói naptárra. |
+
+„Kérdés érkezett”: a bírálók vagy az elnökök legutóbbi nyilvános megjegyzésére még nem válaszolt senki a kérelmező oldalról. A kérelem oldalán a bíráló a bírálata határidejét is látja (piros, ha késik).
+
+A teendők minden elnöknél megjelennek, nem csak az illetékesnél.
+
 Belépés után mindenki a saját teendőit lássa:
 
 - kapcsolattartó: a kérelmei állapottal és a következő lépéssel, „Új kérelem” gomb (a katalógus mint külön lépés elmarad);

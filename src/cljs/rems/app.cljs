@@ -9,6 +9,7 @@
             [reagent.core :as r]
             [reagent.dom :as rd]
             [rems.actions :refer [actions-page]]
+            [rems.my-tasks :refer [my-tasks-page]]
             [rems.reviewer-calendar :refer [reviewer-calendar-page]]
             [rems.actions.accept-invitation :refer [accept-invitation-page]]
             [rems.accept-invitation :as accept-invitation]
@@ -157,6 +158,11 @@
        (println "Selecting landing page based on roles" roles)
        (.removeItem js/sessionStorage "rems-redirect-url")
        (cond
+         ;; EPKEB: everybody with tasks on applications starts from their tasks
+         (and (:enable-organization-contacts @rems.globals/config)
+              (some (conj roles/+handling-roles+ :organization-contact :applicant :member :supervisor) roles))
+         (navigate! "/my-tasks")
+
          (some roles/+handling-roles+ roles) (navigate! "/actions")
          (roles/show-admin-pages? roles) (navigate! "/administration")
          ;; only organization contacts can apply, see :enable-organization-contacts
@@ -273,6 +279,7 @@
    :guide guide-page
    :actions actions-page
    :reviewer-calendar reviewer-calendar-page
+   :my-tasks my-tasks-page
    :application application-page
    :new-application new-application-page
    :applications applications-page
@@ -377,6 +384,10 @@
 (secretary/defroute "/actions" []
   (rf/dispatch [:rems.actions/enter-page])
   (rf/dispatch [:set-active-page :actions]))
+
+(secretary/defroute "/my-tasks" []
+  (rf/dispatch [:rems.my-tasks/enter-page])
+  (rf/dispatch [:set-active-page :my-tasks]))
 
 (secretary/defroute "/reviewer-calendar" []
   (rf/dispatch [:rems.reviewer-calendar/enter-page])

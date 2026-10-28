@@ -93,6 +93,10 @@
      (when-not @rems.globals/user
        [nav-link "/" (text :t.navigation/home) :exact])
 
+     (when (and @roles/logged-in?
+                (:enable-organization-contacts @rems.globals/config))
+       [nav-link "/my-tasks" (text :t.navigation/my-tasks)])
+
      (when (and (or @roles/logged-in?
                     (:catalogue-is-public @rems.globals/config))
                 (show-catalogue? user-roles))

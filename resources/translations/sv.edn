@@ -215,6 +215,8 @@
                    :researcher-status "Forskarestatus" ; TODO check!
                    :username "Användarnamn"}
   :applications {:all-applications "Alla ansökningar"
+                 :review-deadline "Tidsfristen för din granskning: %1 (%2 dagar kvar)."
+                 :review-deadline-overdue "Tidsfristen för din granskning var %1, den är %2 dagar försenad."
                  :applicant "Sökande"
                  :application "Ansökan"
                  :applications "Ansökningar"
@@ -621,6 +623,7 @@
           :title ""}
   :missing "Översättning hittades inte: %1"
   :navigation {:actions "Funktioner"
+               :my-tasks "Mina uppgifter"
                :reviewer-calendar "Granskarkalender"
                :administration "Administration"
                :applications "Ansökningar"
@@ -653,6 +656,28 @@
             :settings "Inställningar"
             :warning-about-missing-email [:<> "Du måste " [:a {:href "/profile"} "lägga till din e-postadress i dina inställningar"] ", för att kunna ta emot meddelanden om din ansökan."]
             :your-details "Dina användardetaljer"} ; TODO check
+  :my-tasks {:answer-question "En fråga har kommit – svara med knappen Anmärkning"
+             :approve-supervision "Väntar på ditt godkännande"
+             :approve-supervision-ready "Markerad som klar – godkänn den"
+             :as-applicant "Som kontaktperson"
+             :as-handler "Som ordförande"
+             :as-member "Som forskare"
+             :as-reviewer "Som granskare"
+             :as-supervisor "Som handledare"
+             :decide "Granskningarna har kommit in – väntar på beslut"
+             :draft "Pågår"
+             :fill-in "Fyll i och markera som klar"
+             :new-application "Ny ansökan"
+             :no-tasks "Du har inga uppgifter just nu."
+             :no-title "(ingen titel)"
+             :request-reviews "Väntar på granskare (%1 begärda)"
+             :returned "Returnerad för komplettering"
+             :review "Granskning – tidsfrist %1 (%2 dagar kvar)"
+             :review-overdue "Granskning – tidsfrist %1, %2 dagar försenad"
+             :reviews-in-progress "Granskningar pågår (%1 / %2)"
+             :reviews-overdue "Granskning försenad (%1 dagar)"
+             :submit "Klar – skicka in"
+             :waiting-for-supervisor "Väntar på handledaren"}
   :reviewer-calendar {:already-requested "Begärd"
                       :deadline "tidsfrist %1"
                       :intro "Granskarpoolens pågående granskningar. Stapeln varar från begäran till tidsfristen; den röda delen visar hur många dagar granskningen är försenad. Klicka på en stapel för att öppna ansökan."

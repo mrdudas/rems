@@ -1332,8 +1332,38 @@
            (for [resource resources]
              [:li (localized (:catalogue-item/title resource))]))]))
 
+(defn- review-deadline
+  "The deadline of the open review of `userid`, counted from the latest review
+  request like in the reviewer calendar, see `:review-deadline-days`."
+  [application userid]
+  (when (contains? (set (:application/roles application)) :reviewer)
+    (let [events (:application/events application)
+          request (last (filter (fn [event]
+                                  (and (= :application.event/review-requested (:event/type event))
+                                       (some #(= userid (if (map? %) (:userid %) %))
+                                             (:application/reviewers event))))
+                                events))
+          requested (some-> request :event/time js/Date. .getTime)
+          returned? (some #(and (= :application.event/returned (:event/type %))
+                                (< (.getTime (js/Date. (:event/time %))) requested))
+                          events)
+          days (if returned?
+                 (:re-review-deadline-days @rems.globals/config)
+                 (:review-deadline-days @rems.globals/config))]
+      (when (and requested days)
+        (+ requested (* days 24 60 60 1000))))))
+
+(defn- review-deadline-alert [application userid]
+  (when-some [deadline (review-deadline application userid)]
+    (let [days-left (js/Math.ceil (/ (- deadline (.getTime (js/Date.))) (* 24 60 60 1000)))
+          date (subs (.toISOString (js/Date. deadline)) 0 10)]
+      (if (neg? days-left)
+        [:div.alert.alert-danger (text-format :t.applications/review-deadline-overdue date (- days-left))]
+        [:div.alert.alert-info (text-format :t.applications/review-deadline date days-left)]))))
+
 (defn- render-application [{:keys [application userid]}]
   [:<>
+   [review-deadline-alert application userid]
    (when (can-see-everything? application) ; XXX: should these be shown only to handling users?
      [disabled-items-warning application])
    (when (can-see-everything? application) ; XXX: should these be shown only to handling users?
