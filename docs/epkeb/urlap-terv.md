@@ -49,6 +49,30 @@ Az #4-es űrlap a #3 javított változata: kikerült belőle a beadás dátuma, 
 
 **Hiányzik** a PDF-hez képest: a tanszék, a tudományos fokozat (5.), a beleegyezés módja korcsoportonként (21.) és az adatkezelés (22.).
 
+## Az új űrlap (2026-10-28)
+
+**Elkészült** a terv szerint, a próbarendszeren **#6** (normál eljárás) és **#7** (rövidített eljárás: a normál űrlap plusz az eredeti engedély száma és az eltérések leírása). A mezőket a [`urlap/urlap.py`](urlap/urlap.py) állítja elő (`python3 urlap.py normal`, illetve `abbreviated`), a kimenet a REMS `/api/forms/create` bemenete. Minden címke magyar és angol.
+
+### Tanulságok egy valódi kérelemből
+
+Egy beadott (angol nyelvű, v5 sablonú) kérelmet **álnevesítve** vettünk fel: a nevek, a lakcím, az e-mail-címek kitaláltak, aláírás nincs, a mellékletekből álnevesített PDF készült; az eredeti nem került a próbarendszerre. A régi (#5) űrlapon ez nem volt benyújtható, az újon igen (2026/15).
+
+| Gond a régi űrlapon | Megoldás az újon |
+|---|---|
+| A kockázati kérdésre (23.) a „mind nem” nem adható meg: a kötelező többválasztós mező üresen kitöltetlennek számít, a benyújtás elakad | „Egyikkel sem” lehetőség; a kármegelőzés csak „igen” esetén jelenik meg, és akkor kötelező |
+| Az adatkezelésnek (22.) nincs mezője | „Az adatok bizalmas kezelése” (kötelező) és „Gyűjt-e személyes adatot?” (GDPR-súgóval) |
+| Nincs tanszék (2.) és fokozat (5.) | Tanszék / kutatócsoport; beosztás és fokozat választólistával; fokozat nélkül súgó a felügyelő meghívásáról |
+| A dátum napra pontos, a kérelmezők hónapot írnak („November 2026”) | A várható kezdés szöveges mező |
+| A kérdőívtáblázatban csak név és link fér el, a leírás (pontozás, alskálák, hivatkozások) nem | Táblázat: megnevezés / sztenderd vagy saját / hivatkozás, plusz „Az eszközök leírása” és a kérdőívek másolata mellékletként |
+| Nincs előregisztráció (27.) | Előregisztráció linkje (nem kötelező) |
+| A kérelmező nevét, e-mail-címét, postacímét, intézményét és a beadás dátumát újra be kell írni | Kimaradnak: a felhasználói fiókból, a kapcsolattartó szervezetéből és a benyújtás időpontjából jönnek |
+| Aláírások (kérelmező, témavezető) | A kutató „beadható” jelzése és a felügyelő rendszerbeli jóváhagyása váltja ki |
+
+Ami még javítandó:
+
+- A levelek tárgyába a REMS a kérelem teljes címét is beteszi; a hosszú kutatási címek miatt a tárgy 200 karakter fölé nő. Elég a sorszám.
+- A REMS-ben a használatban lévő űrlap nem módosítható, és a munkafolyamathoz csatolt űrlap sem cserélhető: minden űrlapváltozás új űrlapot, új munkafolyamatot és a katalóguselem átállítását jelenti. Az éles indulás előtt az űrlapot véglegesíteni kell.
+
 ## Az új űrlap terve
 
 Elvek: a kérelmező tölt ki mindent; ami a rendszerből tudható, azt nem kérdezzük; a feltételes mezők csak akkor jelennek meg (és akkor kötelezőek), ha kellenek; egy adat egyszer.

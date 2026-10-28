@@ -83,7 +83,10 @@ Az állapot 2026-10-27-i felmérése. A beállításokat (űrlapok, workflow-k, 
 | Workflow #4 „Rövidített eljárás” | *anonymize handling* be; tiltások: `copy-as-new` a tagnak, `change-applicant`, `request-review`, `invite-reviewer`, `request-decision`, `invite-decider`, `vote` |
 | Űrlap #5 | az #3 másolata, „A kutatás címe” címmezőként (description), így a listákban a kérelem címe látszik. A használatban lévő űrlap nem szerkeszthető, ezért kellett másolat. |
 | Workflow #5 „próba munkafolyamat” és #6 „Rövidített eljárás” | a #3 és #4 másolata (elnökök, nyilatkozatok, tiltások, névtelenítés, állapotcímkék) az #5 űrlappal. A munkafolyamathoz csatolt űrlap utólag nem cserélhető, és a katalóguselem űrlapja a munkafolyamaté mellé kerül (két űrlap), ezért kellett új munkafolyamat. A #3 és #4 neve „(régi)”; a korábbi kérelmek azokon maradnak. |
-| Katalóguselem #6 „Normál eljárás” és #7 „Rövidített eljárás” (2026-10-28 óta) | workflow #5 és #6, saját űrlap nélkül |
+| Katalóguselem #6 „Normál eljárás” és #7 „Rövidített eljárás” | workflow #5 és #6, saját űrlap nélkül (kivezetve) |
+| Űrlap #6 és #7, workflow #7 és #8, katalóguselem #8 „Normál eljárás” és #9 „Rövidített eljárás” (2026-10-28 óta) | az új űrlap ([urlap-terv.md](urlap-terv.md#az-új-űrlap-2026-10-28)); a #5 és #6 workflow neve „(régi, #5 űrlap)” |
+| Szervezet `DE-PI` „Debreceni Egyetem Pszichológiai Intézet” | bemutató tagintézmény: kapcsolattartó `alice`, illetékes elnök az EPKEB-é; a bírálói körben `malice` innen delegált (így a debreceni kérelmeknél nem kérhető fel) |
+| Kérelem 2026/15 | álnevesített valódi kérelem az új űrlapon, benyújtva |
 | Kérelem 2026/8 | a kapcsolattartós létrehozás próbája |
 
 ## Upstream verzió
