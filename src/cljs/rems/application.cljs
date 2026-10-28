@@ -1125,7 +1125,7 @@
                   [invite-decider-form app-id reload]
                   [invite-reviewer-form app-id reload]
                   [review-form app-id reload]
-                  [remark-form app-id reload]
+                  [remark-form app-id (not show-comment-field?) reload]
                   [redact-attachments-form app-id reload]
                   [close-form app-id show-comment-field? reload]
                   [revoke-form app-id reload]

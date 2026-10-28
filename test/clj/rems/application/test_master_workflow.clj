@@ -68,14 +68,16 @@
       (is (= #{:application.command/copy-as-new
                :application.command/remove-member
                :application.command/accept-licenses
-               :application.command/uninvite-member}
+               :application.command/uninvite-member
+               :application.command/remark}
              (permissions/user-permissions original "applicant")))
-      (is (= #{:application.command/copy-as-new :application.command/accept-licenses}
+      (is (= #{:application.command/copy-as-new :application.command/accept-licenses :application.command/remark}
              (permissions/user-permissions original "new")))
-      (is (= #{:application.command/copy-as-new :application.command/accept-licenses}
+      (is (= #{:application.command/copy-as-new :application.command/accept-licenses :application.command/remark}
              (permissions/user-permissions changed "applicant")))
       (is (= #{:application.command/copy-as-new
                :application.command/remove-member
                :application.command/accept-licenses
-               :application.command/uninvite-member}
+               :application.command/uninvite-member
+               :application.command/remark}
              (permissions/user-permissions changed "new"))))))

@@ -70,9 +70,10 @@
     :application.command/copy-as-new})
 
 ;; Members may edit the draft and mark it ready only when
-;; `:enable-member-editing` is on, and supervisors are used only when
-;; `:enable-supervisor-approval` is on, see
-;; rems.application.model/enrich-member-editing
+;; `:enable-member-editing` is on, supervisors are used only when
+;; `:enable-supervisor-approval` is on, and the applicant and members may
+;; remark on a submitted application only when `:enable-applicant-remarks`
+;; is on, see rems.application.model/enrich-member-editing
 (def ^:private member-editing-commands
   (conj member-commands
         :application.command/save-draft
@@ -80,6 +81,9 @@
 
 (def ^:private supervisor-commands
   #{:application.command/approve-supervision})
+
+(def ^:private submitted-member-commands
+  (conj member-commands :application.command/remark))
 
 (def ^:private created-permissions
   {:applicant (conj submittable-application-commands
@@ -95,8 +99,9 @@
    :everyone-else #{:application.command/accept-invitation}})
 
 (def ^:private submitted-permissions
-  {:applicant non-submittable-application-commands
-   :member member-commands
+  {:applicant (conj non-submittable-application-commands
+                    :application.command/remark)
+   :member submitted-member-commands
    :supervisor #{}
    :handler (conj handler-all-commands :see-everything)
    :reviewer #{:see-everything

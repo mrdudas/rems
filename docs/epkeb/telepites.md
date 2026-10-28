@@ -46,6 +46,7 @@ Az állapot 2026-10-27-i felmérése. A beállításokat (űrlapok, workflow-k, 
 :enable-organization-contacts true
 :enable-member-editing true
 :enable-supervisor-approval true
+:enable-applicant-remarks true
 :enable-processing-states true
 :disable-commands [:application.command/change-resources
                    :application.command/assign-external-id

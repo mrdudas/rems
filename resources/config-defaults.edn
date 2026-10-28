@@ -483,6 +483,13 @@
  ;; the approval.
  :enable-supervisor-approval false
 
+ ;; When true, the applicant and the members may add remarks to a submitted
+ ;; application, for example to answer the questions of the reviewers. Their
+ ;; remarks are always public, and the handlers and reviewers are notified.
+ ;; Public remarks of the handlers and reviewers are then also emailed to the
+ ;; members, not only the applicant.
+ :enable-applicant-remarks false
+
  ;; If `:scanner-path` is defined, it is assumed to be an executable that:
  ;; can take a binary file from `STDIN` and return a status code of zero if and only if the file passes the scan.
  ;;

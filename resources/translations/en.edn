@@ -615,6 +615,7 @@
          :add-comment "Add comment"
          :add-comments-not-shown-to-applicant "Add comment (not shown to applicant)"
          :add-comments-shown-to-applicant "Add comment (shown to applicant)"
+         :add-applicant-remark "Remark to the committee (shown to the handlers and reviewers)"
          :add-remark "Add remark"
          :add-row "Add row"
          :alert-blacklisted-users "These members of the application are blacklisted for some of the applied resources:"

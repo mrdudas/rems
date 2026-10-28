@@ -3405,3 +3405,97 @@
                 "application.event/supervision-approved"
                 "application.event/submitted"]
                (map :event/type (:application/events (get-application-for-user app-id contact)))))))))
+
+(deftest test-applicant-remarks
+  (test-helpers/create-user! {:userid "researcher"})
+  (test-helpers/create-user! {:userid "remark-reviewer"})
+  (let [contact "alice"
+        form-id (test-helpers/create-form! {:form/fields [{:field/id "fld1"
+                                                           :field/type :text
+                                                           :field/title {:en "Title" :fi "Title" :sv "Title"}
+                                                           :field/optional false}]})
+        workflow-id (test-helpers/create-workflow! {:type :workflow/default
+                                                    :handlers ["handler"]})
+        cat-item-id (test-helpers/create-catalogue-item! {:form-id form-id
+                                                          :workflow-id workflow-id})
+        app-id (test-helpers/create-application! {:catalogue-item-ids [cat-item-id]
+                                                  :actor contact})
+        emails (atom [])
+        recipients (fn [] (sort (map #(get-in % [:outbox/email :to-user]) @emails)))
+        remark! (fn [actor comment public]
+                  (send-command actor {:type :application.command/remark
+                                       :application-id app-id
+                                       :comment comment
+                                       :public public}))
+        permissions (fn [userid]
+                      (set (:application/permissions (get-application-for-user app-id userid))))]
+    (is (= {:success true}
+           (send-command contact {:type :application.command/invite-member
+                                  :application-id app-id
+                                  :member {:name "researcher" :email "researcher@example.com"}})))
+    (let [token (-> (rems.db.applications/get-application-internal app-id)
+                    :application/events
+                    last
+                    :invitation/token)]
+      (is (= {:success true :application-id app-id}
+             (api-call :post (str "/api/applications/accept-invitation?invitation-token=" token) nil
+                       +test-api-key+ "researcher"))))
+    (is (= {:success true}
+           (send-command contact {:type :application.command/save-draft
+                                  :application-id app-id
+                                  :field-values [{:form form-id :field "fld1" :value "x"}]})))
+    (is (= {:success true}
+           (send-command contact {:type :application.command/submit
+                                  :application-id app-id})))
+    (is (= {:success true}
+           (send-command "handler" {:type :application.command/request-review
+                                    :application-id app-id
+                                    :reviewers ["remark-reviewer"]
+                                    :comment ""})))
+
+    (testing "the applicant side cannot remark by default"
+      (is (not (contains? (permissions contact) "application.command/remark")))
+      (is (not (contains? (permissions "researcher") "application.command/remark")))
+      (is (= {:success false :errors [{:type "forbidden"}]}
+             (remark! contact "answer" true))))
+
+    (with-redefs [rems.config/env (assoc rems.config/env :enable-applicant-remarks true)
+                  rems.db.outbox/puts! (fn [new-emails] (swap! emails concat new-emails))]
+      (testing "the reviewer's public question is emailed to the applicant and the members"
+        (is (= {:success true} (remark! "remark-reviewer" "question" true)))
+        (is (= ["alice" "handler" "researcher"] (recipients))))
+
+      (testing "the answer of the contact is public and emailed to the handlers and reviewers"
+        (reset! emails [])
+        (is (contains? (permissions contact) "application.command/remark"))
+        (is (= {:success true} (remark! contact "answer of the contact" false)))
+        (is (= ["handler" "remark-reviewer"] (recipients))))
+
+      (testing "the researcher can answer too, also after the review"
+        (is (= {:success true}
+               (send-command "remark-reviewer" {:type :application.command/review
+                                                :application-id app-id
+                                                :comment "ok"})))
+        (reset! emails [])
+        (is (= {:success true} (remark! "researcher" "answer of the researcher" false)))
+        (is (= ["handler" "remark-reviewer"] (recipients))))
+
+      (testing "the handler's private remark is not emailed to the applicant side"
+        (reset! emails [])
+        (is (= {:success true} (remark! "handler" "internal note" false)))
+        (is (= [] (recipients))))
+
+      (testing "the researcher sees the question and the answers, but not the private remark"
+        (is (= ["question" "answer of the contact" "answer of the researcher"]
+               (->> (get-application-for-user app-id "researcher")
+                    :application/events
+                    (filter #(= "application.event/remarked" (:event/type %)))
+                    (map :application/comment)))))
+
+      (testing "remarking is not possible after the decision"
+        (is (= {:success true}
+               (send-command "handler" {:type :application.command/approve
+                                        :application-id app-id
+                                        :comment ""})))
+        (is (= {:success false :errors [{:type "forbidden"}]}
+               (remark! contact "late" true)))))))

@@ -97,7 +97,7 @@ A REMS processing state funkciója (`:enable-processing-states`) a finomabb áll
 | Felügyelői jóváhagyás | nincs | **kész**: `designate-supervisor` és `approve-supervision`, a benyújtás feltétele |
 | Benyújtás, visszaadás, másolat elutasítás után | `submit`, `return`, `copy-as-new` | – |
 | Bírálói kör, jelentkezés, terhelés, saját intézmény kizárása | `request-review` bármely felhasználóra | **fejlesztés** |
-| Bírálói kérdés és kérelmezői válasz | a bíráló `remark`-ja lehet nyilvános, de a kérelmező nem tud válaszolni | **fejlesztés**: kérdés–válasz, névtelenül |
+| Bírálói kérdés és kérelmezői válasz | a bíráló `remark`-ja lehet nyilvános, de a kérelmező nem tud válaszolni | **kész**: `:enable-applicant-remarks`, a kérelmező oldal válasza mindig nyilvános, értesítés az elnököknek és a bírálóknak (lásd [jogosultsagok.md](jogosultsagok.md#elkészült-fejlesztések)) |
 | Strukturált bírálat javaslattal | `review` (szabad szöveg) + kísérleti `vote` (elfogad/elutasít, `:reviewers-vote`) | **fejlesztés**: bírálati lap űrlap, három javaslattal |
 | Kiegészítés után vissza ugyanahhoz a két bírálóhoz | kézzel `request-review` | **fejlesztés**: automatikus újrafelkérés |
 | Bizottsági szavazás | `vote` csak handlernek vagy bírálónak | **fejlesztés**: a bizottsági tagok meghívása szavazásra, többségi szabály, elnöki döntés egyenlőségnél |

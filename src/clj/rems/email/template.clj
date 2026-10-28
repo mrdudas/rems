@@ -6,6 +6,7 @@
             [rems.config :refer [env]]
             [rems.context :as context]
             [rems.db.user-settings]
+            [rems.db.users]
             [rems.permissions :as permissions]
             [rems.text :refer [localize-user localize-utc-date text text-no-fallback text-format-map with-language]]))
 
@@ -41,6 +42,16 @@
 
 (defn- other-handlers [event application]
   (filter #(not= (:userid %) (:event/actor event)) (handlers application)))
+
+(defn- reviewers [application]
+  (->> (:application/user-roles application)
+       (filter (fn [[_userid roles]] (some #{:reviewer :past-reviewer} roles)))
+       (map key)
+       sort
+       (mapv rems.db.users/get-user)))
+
+(defn- applicant-side-actor? [event application]
+  (not (application-util/is-handling-user? application (:event/actor event))))
 
 (defn- apply-event-privacy [event application userid]
   (cond
@@ -178,10 +189,24 @@
                         :t.email.reviewed/message))
 
 (defmethod event-to-emails :application.event/remarked [event application]
-  (emails-to-recipients (concat (other-handlers event application)
-                                (when (:event/public event)
-                                  ;; no need to email members on non-actionable things
-                                  [(:application/applicant application)]))
+  (emails-to-recipients (->> (cond
+                               ;; answers of the applicant and members to the questions of the reviewers
+                               (and (:enable-applicant-remarks env)
+                                    (applicant-side-actor? event application))
+                               (concat (handlers application)
+                                       (reviewers application))
+
+                               (and (:enable-applicant-remarks env)
+                                    (:event/public event))
+                               (concat (other-handlers event application)
+                                       (application-util/applicant-and-members application))
+
+                               :else
+                               (concat (other-handlers event application)
+                                       (when (:event/public event)
+                                         ;; no need to email members on non-actionable things
+                                         [(:application/applicant application)])))
+                             (remove #(= (:userid %) (:event/actor event))))
                         event application
                         :t.email.remarked/subject
                         :t.email.remarked/message))

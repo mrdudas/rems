@@ -615,6 +615,7 @@
          :add-comment "Megjegyzés hozzáadása"
          :add-comments-not-shown-to-applicant "Megjegyzés hozzáadása (nem látható a jelentkező számára)"
          :add-comments-shown-to-applicant "Megjegyzés hozzáadása (látható a jelentkező számára)"
+         :add-applicant-remark "Válasz vagy megjegyzés a bizottságnak (a bírálók és az elnökök látják)"
          :add-remark "Megjegyzés hozzáadása"
          :add-row "Sor hozzáadása"
          :alert-blacklisted-users "A jelentkezés ezen tagjai feketelistán szerepelnek néhány igényelt kérelemhoz:"

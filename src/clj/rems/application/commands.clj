@@ -663,9 +663,12 @@
 
 (defmethod command-handler :application.command/remark
   [cmd application injections]
-  (add-comment-and-attachments cmd application injections
-                               {:event/type :application.event/remarked
-                                :event/public (:public cmd)}))
+  ;; remarks of the applicant and members are always public, since they are
+  ;; meant for the handlers and reviewers
+  (let [applicant-side? (not (application-util/is-handling-user? application (:actor cmd)))]
+    (add-comment-and-attachments cmd application injections
+                                 {:event/type :application.event/remarked
+                                  :event/public (or applicant-side? (:public cmd))})))
 
 (defmethod command-handler :application.command/add-licenses
   [cmd application injections]

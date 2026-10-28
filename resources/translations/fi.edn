@@ -514,6 +514,7 @@
          :add-comment "Kommentoi"
          :add-comments-not-shown-to-applicant "Kommentoi (ei näy hakijalle)"
          :add-comments-shown-to-applicant "Kommentoi (näkyy hakijalle)"
+         :add-applicant-remark "Huomautus käsittelijöille (näytetään käsittelijöille ja katselmoijille)"
          :add-remark "Lisää huomio"
          :add-row "Lisää rivi"
          :alert-blacklisted-users "Nämä jäsenet ovat joittenkin haettujen resurssien kieltolistalla:"

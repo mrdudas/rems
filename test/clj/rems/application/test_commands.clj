@@ -2011,6 +2011,65 @@
                                                 dummy-review-requested-event
                                                 dummy-reviewed-event]))))))
 
+;; EPKEB: the applicant and members answer the questions of the reviewers
+(deftest test-applicant-remark
+  (let [applicant-remarks (assoc application-injections :get-config (constantly {:enable-applicant-remarks true}))
+        events [dummy-created-event
+                dummy-member-added-event
+                dummy-submitted-event]]
+    (testing "forbidden by default"
+      (is (= {:errors [{:type :forbidden}]}
+             (fail-command {:type :application.command/remark
+                            :actor applicant-user-id
+                            :comment "answer"
+                            :public true}
+                           (build-application-view events)))))
+    (testing "forbidden in a draft"
+      (is (= {:errors [{:type :forbidden}]}
+             (fail-command {:type :application.command/remark
+                            :actor applicant-user-id
+                            :comment "answer"
+                            :public true}
+                           (build-application-view [dummy-created-event
+                                                    dummy-member-added-event]
+                                                   applicant-remarks)))))
+    (testing "applicant can remark when enabled, always publicly"
+      (is (= {:event/type :application.event/remarked
+              :event/time test-time
+              :event/actor applicant-user-id
+              :application/id app-id
+              :application/comment "answer"
+              :event/public true}
+             (ok-command {:type :application.command/remark
+                          :actor applicant-user-id
+                          :comment "answer"
+                          :public false}
+                         (build-application-view events applicant-remarks)))))
+    (testing "member can remark when enabled"
+      (is (= {:event/type :application.event/remarked
+              :event/time test-time
+              :event/actor "somebody"
+              :application/id app-id
+              :application/comment "answer"
+              :event/public true}
+             (ok-command {:type :application.command/remark
+                          :actor "somebody"
+                          :comment "answer"
+                          :public false}
+                         (build-application-view events applicant-remarks)))))
+    (testing "handler remarks are still private unless public"
+      (is (= {:event/type :application.event/remarked
+              :event/time test-time
+              :event/actor handler-user-id
+              :application/id app-id
+              :application/comment "note"
+              :event/public false}
+             (ok-command {:type :application.command/remark
+                          :actor handler-user-id
+                          :comment "note"
+                          :public false}
+                         (build-application-view events applicant-remarks)))))))
+
 (deftest test-copy-as-new
   (let [created-event (merge dummy-created-event {:application/external-id "2018/55"
                                                   :application/resources [{:catalogue-item/id 1 :resource/ext-id "res1"}

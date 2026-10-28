@@ -31,7 +31,7 @@
                   :on-click #(rf/dispatch [::open-form])}])
 
 (defn remark-view
-  [{:keys [application-id disabled on-send]}]
+  [{:keys [application-id applicant-side? disabled on-send]}]
   [action-form-view action-form-id
    (text :t.actions/remark)
    [[perform-action-button {:id action-form-id
@@ -41,20 +41,25 @@
                             :on-click on-send}]]
    [:div
     [comment-field {:field-key action-form-id
-                    :label (text :t.form/add-remark)}]
+                    :label (text (if applicant-side?
+                                   :t.form/add-applicant-remark
+                                   :t.form/add-remark))}]
     [action-attachment {:field-key action-form-id
                         :application-id application-id}]
-    [event-public-field {:field-key action-form-id}]]])
+    ;; remarks of the applicant and members are always public
+    (when-not applicant-side?
+      [event-public-field {:field-key action-form-id}])]])
 
-(defn remark-form [application-id on-finished]
+(defn remark-form [application-id applicant-side? on-finished]
   (let [attachments @(rf/subscribe [:rems.actions.components/attachments action-form-id])
         comment @(rf/subscribe [:rems.actions.components/comment action-form-id])
         public @(rf/subscribe [:rems.actions.components/event-public action-form-id])]
     [remark-view {:application-id application-id
+                  :applicant-side? applicant-side?
                   :disabled (and (empty? comment)
                                  (empty? attachments))
                   :on-send #(rf/dispatch [::send-remark {:application-id application-id
                                                          :comment comment
-                                                         :public public
+                                                         :public (or applicant-side? public)
                                                          :attachments attachments
                                                          :on-finished on-finished}])}]))

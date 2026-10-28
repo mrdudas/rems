@@ -514,6 +514,7 @@
          :add-comment "Kommentar"
          :add-comments-not-shown-to-applicant "Kommentar, dold för sökande"
          :add-comments-shown-to-applicant "Kommentar, synlig för sökande"
+         :add-applicant-remark "Anmärkning till handläggarna (visas för handläggare och granskare)"
          :add-remark "Anteckning"
          :add-row "Lägg till rad"
          :alert-blacklisted-users "Dessa användare har blockerats från någon av de ansökta resurserna"

@@ -25,7 +25,7 @@ További beépített kapcsolók:
 | Igény ([cel-folyamat.md](cel-folyamat.md)) | Megoldás tiltással vagy kapcsolóval |
 |---|---|
 | **A bíráló névtelen a kérelmező felé** (eljárásrend) | *anonymize handling* a workflow-n. Ez a bírálóra is vonatkozik, mert a bíráló „handling” szerep. |
-| **A bíráló kérdez a kérelmezőtől** | A bíráló `remark` parancsa nyilvánosra állítva megjelenik a kérelmezőnek, névtelenítve. *(A kérelmező válaszolni nem tud, lásd lent.)* |
+| **A bíráló kérdez a kérelmezőtől** | A bíráló `remark` parancsa nyilvánosra állítva megjelenik a kérelmezőnek, névtelenítve. A válaszhoz a `:enable-applicant-remarks` kapcsoló kell (lásd lent). |
 | **Teljes bizottsági szavazás elutasítási javaslatnál** | `request-decision` a bizottsági tagoknak (decider), mindenki `decide`-dal szavaz (elfogad/elutasít, indoklással). A handler a többség szerint dönt. A szavazatszámlálás kézi. |
 | **Rövidített eljárás bírálók nélkül** | Külön workflow, ahol tiltva: `request-review`, `invite-reviewer`, `request-decision`, `invite-decider`, `vote`. |
 | **Elutasítás után újra beadható, de csak a kapcsolattartó másolhat** | `copy-as-new` tiltva a `member` szerepre (a kérelmező), az `applicant` (kapcsolattartó) megtartja. |
@@ -71,7 +71,6 @@ Ezekhez a master workflow-t vagy új parancsot kell fejleszteni:
 
 | Igény | Miért nem megy | Teendő |
 |---|---|---|
-| A kérelmező válaszol a bíráló kérdésére | A benyújtott kérelemnél az applicant és a member nem írhat megjegyzést | `remark` engedése az applicant/member szerepnek submitted állapotban, vagy kérdés–válasz funkció |
 | Bírálati lap három javaslattal | A `review` szabad szöveg; a `vote` csak elfogad/elutasít | Strukturált bírálat |
 | Bírálói kör, saját intézmény kizárása, terhelés | A `request-review` bármely felhasználót elfogad | Szűrés és statisztika |
 | Kiegészítés után automatikus újrafelkérés ugyanazoknak | Nincs ilyen automatizmus | Folyamatkezelő (process manager) |
@@ -80,12 +79,13 @@ Ezekhez a master workflow-t vagy új parancsot kell fejleszteni:
 
 ## Elkészült fejlesztések
 
-Mindhárom kapcsolóval bekapcsolható; alapból ki vannak kapcsolva, így a gyári működés nem változik.
+Mind kapcsolóval bekapcsolható; alapból ki vannak kapcsolva, így a gyári működés nem változik.
 
 | Igény | Megoldás | Kapcsoló |
 |---|---|---|
 | A meghívott kérelmező (member) kitöltheti az űrlapot | `save-draft` a `member` szerepnek piszkozat és visszaküldött állapotban (mellékletfeltöltéssel együtt). Benyújtani továbbra is csak a kapcsolattartó tud. | `:enable-member-editing` |
 | „Beadható” jelzés | Új parancs: `mark-ready` (a tagnak, piszkozat és visszaküldött állapotban), esemény: `marked-ready`. A kapcsolattartó e-mailt kap; a kérelem oldalán „Beadhatónak jelölve” és az időpont látszik. | `:enable-member-editing` |
+| A kérelmező válaszol a bíráló kérdésére | Benyújtott (bírálat alatti) kérelemnél a kapcsolattartó (`applicant`) és a kutatók (`member`) is írhatnak megjegyzést (`remark`, a felületen „Válasz vagy megjegyzés a bizottságnak”). Ez **mindig nyilvános**; az elnökök (handlerek) és a bírálók – a bírálatot már leadottak is – e-mailt kapnak róla. A bírálók és az elnökök nyilvános megjegyzéséről (kérdéséről) ilyenkor a kutatók is e-mailt kapnak, nem csak a kapcsolattartó. Névtelenítés mellett a kérelmező oldal továbbra sem látja a kérdező nevét. Piszkozatban, visszaküldött és lezárt kérelemnél nem elérhető. | `:enable-applicant-remarks` |
 | Felügyelői jóváhagyás | Új szerep: `supervisor`. A kapcsolattartó egy már csatlakozott tagot kijelöl felügyelőnek (`designate-supervisor`, a tag dobozában „Kijelölés felügyelőnek”); a felügyelő e-mailt kap, és jóváhagyja (`approve-supervision`, „Jóváhagyom felügyelőként”). A kapcsolattartó jóváhagyáskor e-mailt kap. Ha van felügyelő, a `submit` csak az ő jóváhagyása után sikerül (`t.actions.errors/supervision-not-approved`). | `:enable-supervisor-approval` |
 
 Szabályok:

@@ -841,7 +841,12 @@
                                 {:permission :application.command/mark-ready}])
                              (when-not (:enable-supervisor-approval config)
                                [{:permission :application.command/designate-supervisor}
-                                {:permission :application.command/approve-supervision}]))))))
+                                {:permission :application.command/approve-supervision}])
+                             (when-not (:enable-applicant-remarks config)
+                               [{:permission :application.command/remark
+                                 :role :applicant}
+                                {:permission :application.command/remark
+                                 :role :member}]))))))
 
 (defn- update-voting-permissions [application voting]
   (case (:type voting)
