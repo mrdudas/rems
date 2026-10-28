@@ -114,6 +114,8 @@
          :event/type (s/enum :application.event/member-invited)
          :application/member {:name s/Str
                               :email s/Str}
+         ;; invited with invite-supervisor
+         (s/optional-key :invitation/supervisor) s/Bool
          :invitation/token s/Str))
 (s/defschema MemberJoinedEvent
   (assoc schema-base/EventBase

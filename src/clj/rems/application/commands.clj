@@ -81,6 +81,8 @@
   (assoc CommandBase
          :member {:name s/Str
                   :email s/Str}))
+(s/defschema InviteSupervisorCommand
+  InviteMemberCommand)
 (s/defschema DesignateSupervisorCommand
   (assoc CommandWithComment
          :supervisor schema-base/User))
@@ -155,6 +157,7 @@
    :application.command/invite-decider InviteDeciderCommand
    :application.command/invite-member InviteMemberCommand
    :application.command/invite-reviewer InviteReviewerCommand
+   :application.command/invite-supervisor InviteSupervisorCommand
    :application.command/mark-ready MarkReadyCommand
    :application.command/redact-attachments RedactAttachmentsCommand
    :application.command/reject RejectCommand
@@ -235,6 +238,7 @@
           :application.command/save-draft
           :application.command/submit
           :application.command/mark-ready
+          :application.command/invite-supervisor
           :application.command/designate-supervisor
           :application.command/approve-supervision
           ;; will not change the application's state, so they
@@ -541,6 +545,8 @@
   (let [userid (:userid (:supervisor cmd))]
     (or (when-not (some #(= userid (:userid %)) (:application/members application))
           {:errors [{:type :user-not-member :user (:supervisor cmd)}]})
+        (when (= userid (:actor cmd))
+          {:errors [{:type :t.actions.errors/cannot-designate-self}]})
         (add-comment-and-attachments cmd application injections
                                      {:event/type :application.event/supervisor-designated
                                       :application/supervisor (select-keys (:supervisor cmd) [:userid])}))))
@@ -697,7 +703,7 @@
 (defmethod command-handler :application.command/add-member
   [cmd application injections]
   (or (invalid-user-error (:userid (:member cmd)) injections)
-      (already-joined-error application (:userid (:member cmd)) :member)
+      (already-joined-error application (:userid (:member cmd)) :member :supervisor)
       (ok {:event/type :application.event/member-added
            :application/member (:member cmd)})))
 
@@ -705,6 +711,13 @@
   [cmd _application {:keys [secure-token]}]
   (ok {:event/type :application.event/member-invited
        :application/member (:member cmd)
+       :invitation/token (secure-token)}))
+
+(defmethod command-handler :application.command/invite-supervisor
+  [cmd _application {:keys [secure-token]}]
+  (ok {:event/type :application.event/member-invited
+       :application/member (:member cmd)
+       :invitation/supervisor true
        :invitation/token (secure-token)}))
 
 (defmethod command-handler :application.command/invite-decider
@@ -729,12 +742,18 @@
         invitation (get-in application [:application/invitation-tokens token])]
     (cond
       (:application/member invitation)
-      (or (already-joined-error application actor :member)
+      (or (already-joined-error application actor :member :supervisor)
           (token-used-error invitation token)
           (ok-with-data {:application-id application-id}
-                        [{:event/type :application.event/member-joined
-                          :application/id application-id
-                          :invitation/token token}]))
+                        (cond-> [{:event/type :application.event/member-joined
+                                  :application/id application-id
+                                  :invitation/token token}]
+                          ;; the supervisor invited with invite-supervisor
+                          ;; is designated when joining
+                          (:invitation/supervisor invitation)
+                          (conj {:event/type :application.event/supervisor-designated
+                                 :application/id application-id
+                                 :application/supervisor {:userid actor}}))))
 
       (:application/reviewer invitation)
       (or (already-joined-error application actor :reviewer)

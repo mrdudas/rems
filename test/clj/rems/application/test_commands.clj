@@ -777,10 +777,14 @@
       (is (= {:errors [{:type :user-not-member :user {:userid applicant-user-id}}]}
              (fail-command (assoc designate-cmd :supervisor {:userid applicant-user-id})
                            (build-application-view base-events supervision)))))
-    (testing "members cannot designate"
-      (is (= {:errors [{:type :forbidden}]}
-             (fail-command (assoc designate-cmd :actor "somebody")
-                           (build-application-view base-events supervision)))))
+    (testing "members can designate another member"
+      (let [events (conj base-events (assoc dummy-member-added-event :application/member {:userid "somebody2"}))]
+        (is (= (assoc designated-event :event/actor "somebody2")
+               (ok-command (assoc designate-cmd :actor "somebody2")
+                           (build-application-view events supervision))))
+        (is (= {:errors [{:type :t.actions.errors/cannot-designate-self}]}
+               (fail-command (assoc designate-cmd :actor "somebody")
+                           (build-application-view events supervision))))))
     (testing "only the designated supervisor can approve"
       (is (= {:errors [{:type :forbidden}]}
              (fail-command approve-cmd (build-application-view base-events supervision))))
@@ -798,8 +802,37 @@
       (is (= :application.event/submitted
              (:event/type (ok-command submit-cmd (build-application-view (conj base-events designated-event approved-event dummy-draft-saved-event) supervision))))))
     (testing "changing the answers resets the approval"
-      (is (= {:errors [{:type :t.actions.errors/supervision-not-approved}]}
-             (fail-command submit-cmd (build-application-view (conj base-events designated-event approved-event changed-draft-event) supervision)))))
+      (let [application (build-application-view (conj base-events designated-event approved-event changed-draft-event) supervision)]
+        (is (= {:errors [{:type :t.actions.errors/supervision-not-approved}]}
+               (fail-command submit-cmd application)))
+        (is (= test-time (:application/supervision-outdated application)))
+        (is (nil? (:application/supervision-outdated
+                   (build-application-view (conj base-events designated-event approved-event changed-draft-event approved-event) supervision))))))
+    (testing "the supervisor only approves and does not edit"
+      (let [editing (assoc application-injections :get-config (constantly {:enable-supervisor-approval true
+                                                                           :enable-member-editing true}))
+            application (build-application-view (conj base-events designated-event) editing)]
+        (is (= {:errors [{:type :forbidden}]}
+               (fail-command {:type :application.command/save-draft
+                              :actor "somebody"
+                              :field-values []}
+                             application)))
+        (is (= {:errors [{:type :forbidden}]}
+               (fail-command {:type :application.command/mark-ready
+                              :actor "somebody"}
+                             application)))
+        (testing "until another member is designated"
+          (let [application (build-application-view [dummy-created-event
+                                                     dummy-member-added-event
+                                                     (assoc dummy-member-added-event :application/member {:userid "somebody2"})
+                                                     dummy-draft-saved-event
+                                                     designated-event
+                                                     (assoc designated-event :application/supervisor {:userid "somebody2"})]
+                                                    editing)]
+            (is (= :application.event/marked-ready
+                   (:event/type (ok-command {:type :application.command/mark-ready
+                                             :actor "somebody"}
+                                            application))))))))
     (testing "removing the supervisor from the members removes the requirement"
       (let [application (build-application-view (conj base-events designated-event member-removed-event) supervision)]
         (is (nil? (:application/supervisor application)))
@@ -823,6 +856,55 @@
     (testing "the supervisor cannot approve a submitted application"
       (is (= {:errors [{:type :forbidden}]}
              (fail-command approve-cmd (build-application-view (conj base-events designated-event dummy-submitted-event) supervision)))))))
+
+(deftest test-invite-supervisor
+  (let [supervision (assoc application-injections :get-config (constantly {:enable-supervisor-approval true}))
+        cmd {:type :application.command/invite-supervisor
+             :actor applicant-user-id
+             :member {:name "Supervisor"
+                      :email "supervisor@example.com"}}
+        invited-event {:event/type :application.event/member-invited
+                       :event/time test-time
+                       :event/actor applicant-user-id
+                       :application/id app-id
+                       :application/member {:name "Supervisor"
+                                            :email "supervisor@example.com"}
+                       :invitation/supervisor true
+                       :invitation/token "very-secure"}]
+    (testing "forbidden by default"
+      (is (= {:errors [{:type :forbidden}]}
+             (fail-command cmd (build-application-view [dummy-created-event])))))
+    (testing "the applicant and members can invite the supervisor"
+      (is (= invited-event
+             (ok-command cmd (build-application-view [dummy-created-event] supervision))))
+      (is (= (assoc invited-event :event/actor "somebody")
+             (ok-command (assoc cmd :actor "somebody")
+                         (build-application-view [dummy-created-event dummy-member-added-event] supervision)))))
+    (testing "forbidden in a submitted application"
+      (is (= {:errors [{:type :forbidden}]}
+             (fail-command cmd (build-application-view [dummy-created-event dummy-submitted-event] supervision)))))
+    (testing "the invited supervisor is designated when joining"
+      (let [joined (ok-command {:type :application.command/accept-invitation
+                                :actor "somebody2"
+                                :token "very-secure"}
+                               (build-application-view [dummy-created-event invited-event] supervision))]
+        (is (= [{:event/type :application.event/member-joined
+                 :event/time test-time
+                 :event/actor "somebody2"
+                 :application/id app-id
+                 :invitation/token "very-secure"}
+                {:event/type :application.event/supervisor-designated
+                 :event/time test-time
+                 :event/actor "somebody2"
+                 :application/id app-id
+                 :application/supervisor {:userid "somebody2"}}]
+               joined))
+        (let [application (build-application-view (concat [dummy-created-event invited-event] joined) supervision)]
+          (is (= "somebody2" (get-in application [:application/supervisor :userid])))
+          (is (= :application.event/supervision-approved
+                 (:event/type (ok-command {:type :application.command/approve-supervision
+                                           :actor "somebody2"}
+                                          application)))))))))
 
 (deftest test-accept-licenses
   (is (= {:event/type :application.event/licenses-accepted

@@ -24,6 +24,7 @@
             [rems.actions.designate-supervisor :refer [designate-supervisor-action-button designate-supervisor-form]]
             [rems.actions.invite-decider-reviewer :refer [invite-decider-action-link invite-reviewer-action-link invite-decider-form invite-reviewer-form]]
             [rems.actions.invite-member :refer [invite-member-action-button invite-member-form]]
+            [rems.actions.invite-supervisor :refer [invite-supervisor-action-button invite-supervisor-form]]
             [rems.actions.mark-ready :refer [mark-ready-action-button mark-ready-form]]
             [rems.actions.redact-attachments :refer [redact-attachments-action-button redact-attachments-form]]
             [rems.actions.remark :refer [remark-action-button remark-form]]
@@ -844,8 +845,14 @@
       [:<>
        (get-member-name supervisor)
        " – "
-       (if-some [approved (:application/supervision-approved application)]
-         (str (text :t.applications/supervision-approved) " (" (localize-time approved) ")")
+       (cond
+         (:application/supervision-approved application)
+         (str (text :t.applications/supervision-approved) " (" (localize-time (:application/supervision-approved application)) ")")
+
+         (:application/supervision-outdated application)
+         (text :t.applications/supervision-outdated)
+
+         :else
          (text :t.applications/supervision-pending))]
       {:inline? true}])
 
@@ -1003,9 +1010,11 @@
         permissions (:application/permissions application)
         can-add? (contains? permissions :application.command/add-member)
         can-invite? (contains? permissions :application.command/invite-member)
+        can-invite-supervisor? (contains? permissions :application.command/invite-supervisor)
         ;; XXX: we could have the application model include this information more reliably
         only-one-applicant? (and (not can-add?)
                                  (not can-invite?)
+                                 (not can-invite-supervisor?)
                                  (= 1
                                     (count (concat [(:application/applicant application)]
                                                    (:application/members application)
@@ -1017,9 +1026,11 @@
                    :footer [:div
                             [:div.commands
                              (when can-invite? [invite-member-action-button])
+                             (when can-invite-supervisor? [invite-supervisor-action-button])
                              (when can-add? [add-member-action-button])]
                             [:div#member-action-forms
                              [invite-member-form application-id (partial reload! application-id)]
+                             [invite-supervisor-form application-id (partial reload! application-id)]
                              [add-member-form application-id (partial reload! application-id)]]]}]
     [collapsible/component
      (cond (is-handler? application userid)

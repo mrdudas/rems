@@ -54,7 +54,9 @@
       (assoc :application/modified (:event/time event))
       ;; the ready signal and the supervisor's approval refer to the answers at that time
       (cond-> (answers-changed? (::draft-answers application) (:application/field-values event))
-        (dissoc :application/marked-ready :application/supervision-approved))
+        (-> (cond-> (:application/supervision-approved application)
+              (assoc :application/supervision-outdated (:event/time event)))
+            (dissoc :application/marked-ready :application/supervision-approved)))
       (assoc ::draft-answers (:application/field-values event))
       (assoc-some-in [:application/duo :duo/codes] (:application/duo-codes event))))
 
@@ -78,7 +80,7 @@
   [application event]
   (-> application
       (assoc-in [:application/invitation-tokens (:invitation/token event)]
-                (select-keys event [:event/actor :application/member]))))
+                (select-keys event [:event/actor :application/member :invitation/supervisor]))))
 
 (defmethod application-base-view :application.event/member-uninvited
   [application event]
@@ -108,7 +110,7 @@
       (update :application/past-members conj (:application/member event))
       (cond-> (= (:userid (:application/member event))
                  (get-in application [:application/supervisor :userid]))
-        (dissoc :application/supervisor :application/supervision-approved))))
+        (dissoc :application/supervisor :application/supervision-approved :application/supervision-outdated))))
 
 (defmethod application-base-view :application.event/marked-ready
   [application event]
@@ -118,11 +120,13 @@
   [application event]
   (-> application
       (assoc :application/supervisor (:application/supervisor event))
-      (dissoc :application/supervision-approved)))
+      (dissoc :application/supervision-approved :application/supervision-outdated)))
 
 (defmethod application-base-view :application.event/supervision-approved
   [application event]
-  (assoc application :application/supervision-approved (:event/time event)))
+  (-> application
+      (assoc :application/supervision-approved (:event/time event))
+      (dissoc :application/supervision-outdated)))
 
 (defmethod application-base-view :application.event/applicant-changed
   [application event]
@@ -336,6 +340,7 @@
     {:permission :application.command/invite-decider}
     {:permission :application.command/invite-member}
     {:permission :application.command/invite-reviewer}
+    {:permission :application.command/invite-supervisor}
     {:permission :application.command/mark-ready}
     {:permission :application.command/redact-attachments}
     {:permission :application.command/remark}
@@ -373,6 +378,7 @@
     {:permission :application.command/designate-supervisor}
     {:permission :application.command/invite-member}
     {:permission :application.command/invite-reviewer}
+    {:permission :application.command/invite-supervisor}
     {:permission :application.command/mark-ready}
     {:permission :application.command/redact-attachments}
     {:permission :application.command/remark}
@@ -840,13 +846,16 @@
                                  :role :member}
                                 {:permission :application.command/mark-ready}])
                              (when-not (:enable-supervisor-approval config)
-                               [{:permission :application.command/designate-supervisor}
+                               [{:permission :application.command/invite-supervisor}
+                                {:permission :application.command/designate-supervisor}
                                 {:permission :application.command/approve-supervision}])
                              (when-not (:enable-applicant-remarks config)
                                [{:permission :application.command/remark
                                  :role :applicant}
                                 {:permission :application.command/remark
-                                 :role :member}]))))))
+                                 :role :member}
+                                {:permission :application.command/remark
+                                 :role :supervisor}]))))))
 
 (defn- update-voting-permissions [application voting]
   (case (:type voting)

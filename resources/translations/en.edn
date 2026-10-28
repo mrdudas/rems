@@ -14,10 +14,12 @@
             :approve-end-date "Date for access rights to expire (optional)"
             :approve-reject "Approve or reject"
             :mark-ready "Mark as ready for submission"
-            :mark-ready-intro "The applicant will be notified that the application is ready to be submitted."
+            :mark-ready-intro "The contact person will be notified that the application can be submitted. If there is a supervisor who has not approved the application yet, the supervisor is notified first."
             :approve-supervision "Approve as supervisor"
             :approve-supervision-intro "By approving, you take responsibility for the content of the application as its supervisor. If the answers are changed later, a new approval is needed."
             :designate-supervisor "Designate as supervisor"
+            :invite-supervisor "Invite supervisor"
+            :invite-supervisor-intro "The supervisor is invited by email. When joining the application, they become its supervisor: they can approve the application but not edit it."
             :assign-external-id "Assign external id"
             :assign-external-id-info "External id"
             :bundling-intro [:div.intro [:p "Note that only resources that have the same application workflow can be bundled together."]]
@@ -36,6 +38,7 @@
                      ;; %1 - invitation token
                      :invalid-token [:div [:p "Joining the application failed."] [:p "Check the invitation token " [:code "%1"]]]
                      :licenses-not-accepted "Terms of use not accepted."
+                     :cannot-designate-self "You cannot designate yourself as the supervisor."
                      :supervision-not-approved "The supervisor has not approved the current version of the application."
                      ;; %1 - organization name
                      :not-organization-contact "Only the contacts of an organization can create applications."
@@ -191,12 +194,12 @@
                    :workflow-disabled-commands-explanation "This workflow disables actions for users when conditions apply."
                    :workflow-processing-states-explanation "This workflow allows handler to set and update application processing state."
                    :workflow-type "Workflow type"}
-  :applicant-info {:applicant "Applicant"
+  :applicant-info {:applicant "Contact person"
                    :applicants "Applicants"
                    :email "Email"
                    :email-idp "Email (from identity provider)"
-                   :invited-member "Invited member"
-                   :member "Member"
+                   :invited-member "Invited researcher"
+                   :member "Researcher"
                    :name "Name"
                    :notification-email "Email (set by user)"
                    :organization "Organization"
@@ -307,6 +310,7 @@
                  :marked-ready "Marked ready for submission"
                  :supervisor "Supervisor"
                  :supervision-approved "Approved by the supervisor"
+                 :supervision-outdated "The application was changed after the approval, a new approval is needed"
                  :supervision-pending "Waiting for the supervisor's approval"
                  :not-shown-to-applying-users "Not shown to applicants"
                  :redacted-attachments "Redacted attachments"
@@ -372,6 +376,7 @@
              :approve "Approve"
              :approve-supervision "Approve as supervisor"
              :designate-supervisor "Designate as supervisor"
+             :invite-supervisor "Invite supervisor"
              :mark-ready "Mark as ready for submission"
              :assign-external-id "Assign external id"
              :change-applicant "Make applicant"
@@ -564,9 +569,13 @@
                              :message "Dear %:recipient%,\n\nThe following applications are in progress and may require your actions:\n\n%:applications%\n\nYou can view the applications at %:actions-url%"
                              :subject "Applications in progress"}
           :marked-ready {:subject "(%:application-id%) Application is ready for submission"
-                         :message "Dear %:recipient%,\n\n%:event-actor% has marked the application %:application-id% ready for submission.\n\nYou can view and submit the application at %:application-url%"}
+                         :message "Dear %:recipient%,\n\n%:event-actor% has marked the application %:application-id% ready for submission.\n\nYou can view and submit the application at %:application-url%"
+                         :subject-to-supervisor "(%:application-id%) Application is waiting for your approval"
+                         :message-to-supervisor "Dear %:recipient%,\n\n%:event-actor% has marked the application %:application-id% ready for submission. As its supervisor, please review and approve it; the application can be submitted only after your approval.\n\nYou can view and approve the application at %:application-url%"}
           :supervision-approved {:subject "(%:application-id%) The supervisor has approved the application"
-                                 :message "Dear %:recipient%,\n\n%:event-actor% has approved the application %:application-id% as the supervisor.\n\nYou can view the application at %:application-url%"}
+                                 :message "Dear %:recipient%,\n\n%:event-actor% has approved the application %:application-id% as the supervisor.\n\nYou can view the application at %:application-url%"
+                                 :subject-ready "(%:application-id%) Application is ready for submission"
+                                 :message-ready "Dear %:recipient%,\n\n%:event-actor% has approved the application %:application-id% as the supervisor, and it has been marked ready for submission.\n\nYou can view and submit the application at %:application-url%"}
           :supervisor-designated {:subject "(%:application-id%) You have been designated as a supervisor"
                                   :message "Dear %:recipient%,\n\n%:event-actor% has designated you as the supervisor of the application %:application-id%. The application can be submitted only after your approval.\n\nYou can view and approve the application at %:application-url%"}
           :member-added {:subject "Added as a member of an application %:application-id%"
@@ -576,6 +585,8 @@
           ;; %2 - %:applicant% - name of applicant
           ;; %3 - %:application-id% - id of application (+ description of application if available)
           ;; %4 - %:invitation-url% - invitation link
+          :supervisor-invited {:subject "Invitation to be the supervisor of application %:application-id%"
+                               :message "Dear %:recipient%,\n\nYou have been invited to be the supervisor of application %:application-id%, by %:applicant%. As the supervisor, you approve the application before it is submitted.\n\nYou can view the application and accept the invitation at %:invitation-url%"}
           :member-invited {:subject "Invitation to participate in application %:application-id%"
                            :message "Dear %:recipient%,\n\nYou have been invited to participate in application %:application-id%, by %:applicant%.\n\nYou can view the application and accept the terms of use at %:invitation-url%"}
           :regards "\n\nKind regards,\n\nREMS\n"
@@ -615,7 +626,7 @@
          :add-comment "Add comment"
          :add-comments-not-shown-to-applicant "Add comment (not shown to applicant)"
          :add-comments-shown-to-applicant "Add comment (shown to applicant)"
-         :add-applicant-remark "Remark to the committee (shown to the handlers and reviewers)"
+         :add-applicant-remark "Remark to the committee (shown to the chairs and reviewers)"
          :add-remark "Add remark"
          :add-row "Add row"
          :alert-blacklisted-users "These members of the application are blacklisted for some of the applied resources:"
@@ -731,11 +742,11 @@
             :settings "Settings"
             :warning-about-missing-email [:<> "You will need to " [:a {:href "/profile"} "add an email address to your settings"] ", so that you can receive notifications about your applications."]
             :your-details "Your user details"}
-  :roles {:anonymous-handler :en.t.roles/handler ; use handler as default translation for workflow anonymized handlers
-          :applicant "Applicant"
+  :roles {:anonymous-handler "Committee"
+          :applicant "Contact person"
           :decider "Decider"
-          :handler "Handler"
-          :member "Member"
+          :handler "Chair"
+          :member "Researcher"
           :past-decider "Past decider"
           :past-reviewer "Past reviewer"
           :reviewer "Reviewer"

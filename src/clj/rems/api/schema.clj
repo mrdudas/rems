@@ -262,6 +262,9 @@
    (s/optional-key :application/supervision-approved) (rjs/field
                                                        DateTime
                                                        {:description "When the supervisor approved the current answers"})
+   (s/optional-key :application/supervision-outdated) (rjs/field
+                                                       DateTime
+                                                       {:description "When the answers were changed after the supervisor's approval, until the supervisor approves again"})
    (s/optional-key :application/marked-ready) (rjs/field
                                                DateTime
                                                {:description "When a member marked the current answers ready for submission"})

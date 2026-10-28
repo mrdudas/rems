@@ -233,7 +233,7 @@
       (is (= #{"assistant" "applicant"} (email-recipients mails)))
       (is (= {:to-user "applicant"
               :subject "(2001/3, \"Application title\") Application has been commented"
-              :body "Dear Alice Applicant,\n\nHandler has commented your application 2001/3, \"Application title\", submitted by Alice Applicant.\n\nYou can view the application and the comment at http://example.com/application/7"}
+              :body "Dear Alice Applicant,\n\nCommittee has commented your application 2001/3, \"Application title\", submitted by Alice Applicant.\n\nYou can view the application and the comment at http://example.com/application/7"}
              (email-to "applicant" mails)))
       (is (= {:to-user "assistant"
               :subject "(2001/3, \"Application title\") Application has been commented"
@@ -273,7 +273,7 @@
         (is (= #{"applicant" "member" "somebody"} (email-recipients mails)))
         (is (= {:to-user "applicant"
                 :subject "Your application's 2001/3, \"Application title\" terms of use have changed"
-                :body "Dear Alice Applicant,\n\nHandler has requested your approval for changed terms of use to application 2001/3, \"Application title\".\n\nYou can view the application and approve the changed terms of use at http://example.com/application/7"}
+                :body "Dear Alice Applicant,\n\nCommittee has requested your approval for changed terms of use to application 2001/3, \"Application title\".\n\nYou can view the application and approve the changed terms of use at http://example.com/application/7"}
                (email-to "applicant" mails)))))
     (testing "approved"
       (let [mails (emails member-events {:application/id 7
@@ -461,11 +461,11 @@
         (is (= #{"applicant" "handler" "bob"} (email-recipients mails)))
         (is (= {:to-user "applicant"
                 :subject "Applicant for application 2001/3, \"Application title\" changed"
-                :body "Dear Alice Applicant,\n\nThe applicant for application 2001/3, \"Application title\" has been changed to Bob Boss by Handler.\n\nYou can view the application at http://example.com/application/7."}
+                :body "Dear Alice Applicant,\n\nThe applicant for application 2001/3, \"Application title\" has been changed to Bob Boss by Committee.\n\nYou can view the application at http://example.com/application/7."}
                (email-to "applicant" mails)))
         (is (= {:to-user "bob"
                 :subject "Applicant for application 2001/3, \"Application title\" changed"
-                :body "Dear Bob Boss,\n\nThe applicant for application 2001/3, \"Application title\" has been changed to Bob Boss by Handler.\n\nYou can view the application at http://example.com/application/7."}
+                :body "Dear Bob Boss,\n\nThe applicant for application 2001/3, \"Application title\" has been changed to Bob Boss by Committee.\n\nYou can view the application at http://example.com/application/7."}
                (email-to "bob" mails)))
         (is (= {:to-user "handler"
                 :subject "(2001/3, \"Application title\") Applicant changed"

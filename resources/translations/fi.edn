@@ -14,10 +14,12 @@
             :approve-end-date "Päivä jolloin pääsyoikeudet vanhenevat (valinnainen)"
             :approve-reject "Hyväksy tai hylkää"
             :mark-ready "Merkitse valmiiksi lähetettäväksi"
-            :mark-ready-intro "Hakijalle ilmoitetaan, että hakemus on valmis lähetettäväksi."
+            :mark-ready-intro "Hakijalle ilmoitetaan, että hakemus voidaan lähettää. Jos ohjaaja ei ole vielä hyväksynyt hakemusta, ohjaajalle ilmoitetaan ensin."
             :approve-supervision "Hyväksy ohjaajana"
             :approve-supervision-intro "Hyväksymällä otat ohjaajana vastuun hakemuksen sisällöstä. Jos vastauksia muutetaan myöhemmin, tarvitaan uusi hyväksyntä."
             :designate-supervisor "Nimeä ohjaajaksi"
+            :invite-supervisor "Kutsu ohjaaja"
+            :invite-supervisor-intro "Ohjaaja kutsutaan sähköpostilla. Liittyessään hän tulee hakemuksen ohjaajaksi: hän voi hyväksyä hakemuksen mutta ei muokata sitä."
             :assign-external-id "Aseta tunniste"
             :assign-external-id-info "Tunniste"
             :bundling-intro [:div.intro [:p "Huomaa, että vain resursseja, joilla on sama työvuo, voidaan liittää yhteen."]]
@@ -35,6 +37,7 @@
             :errors {:duplicate-id "Tunnus on jo käytössä."
                      :invalid-token [:div [:p "Hakemukseen liittyminen epäonnistui."] [:p "Tarkista kutsukoodi " [:code "%1"]]]
                      :licenses-not-accepted "Käyttöehtoja ei ole hyväksytty."
+                     :cannot-designate-self "Et voi nimetä itseäsi ohjaajaksi."
                      :supervision-not-approved "Ohjaaja ei ole hyväksynyt hakemuksen nykyistä versiota."
                      :not-organization-contact "Vain organisaation yhteyshenkilöt voivat luoda hakemuksia."
                      :organization-does-not-exist "Organisaatiota \"%1\" ei ole olemassa"
@@ -266,6 +269,7 @@
                  :marked-ready "Merkitty valmiiksi lähetettäväksi"
                  :supervisor "Ohjaaja"
                  :supervision-approved "Ohjaaja on hyväksynyt"
+                 :supervision-outdated "Hakemusta on muutettu hyväksynnän jälkeen, tarvitaan uusi hyväksyntä"
                  :supervision-pending "Odottaa ohjaajan hyväksyntää"
                  :not-shown-to-applying-users "Ei näytetä hakijoille"
                  :redacted-attachments "Poistetut liitetiedostot"
@@ -326,6 +330,7 @@
              :approve "Hyväksy"
              :approve-supervision "Hyväksy ohjaajana"
              :designate-supervisor "Nimeä ohjaajaksi"
+             :invite-supervisor "Kutsu ohjaaja"
              :mark-ready "Merkitse valmiiksi lähetettäväksi"
              :assign-external-id "Aseta tunniste"
              :change-applicant "Tee hakija"
@@ -485,13 +490,19 @@
                              :message "Hyvä %1,\n\nSeuraavat hakemukset ovat avoinna ja saattavat vaatia toimenpiteitä:\n\n%2\n\nVoit tarkastella hakemuksia osoitteessa %3"
                              :subject "Avoimet hakemukset"}
           :marked-ready {:subject "(%3) Hakemus on valmis lähetettäväksi"
-                         :message "Hyvä %1,\n\n%2 on merkinnyt hakemuksen %3 valmiiksi lähetettäväksi.\n\nVoit tarkastella ja lähettää hakemuksen osoitteessa %6"}
+                         :message "Hyvä %1,\n\n%2 on merkinnyt hakemuksen %3 valmiiksi lähetettäväksi.\n\nVoit tarkastella ja lähettää hakemuksen osoitteessa %6"
+                         :subject-to-supervisor "(%3) Hakemus odottaa hyväksyntääsi"
+                         :message-to-supervisor "Hyvä %1,\n\n%2 on merkinnyt hakemuksen %3 valmiiksi lähetettäväksi. Tarkista ja hyväksy hakemus ohjaajana; hakemus voidaan lähettää vasta hyväksyntäsi jälkeen.\n\nVoit tarkastella ja hyväksyä hakemuksen osoitteessa %6"}
           :supervision-approved {:subject "(%3) Ohjaaja on hyväksynyt hakemuksen"
-                                 :message "Hyvä %1,\n\n%2 on hyväksynyt hakemuksen %3 ohjaajana.\n\nVoit tarkastella hakemusta osoitteessa %6"}
+                                 :message "Hyvä %1,\n\n%2 on hyväksynyt hakemuksen %3 ohjaajana.\n\nVoit tarkastella hakemusta osoitteessa %6"
+                                 :subject-ready "(%3) Hakemus on valmis lähetettäväksi"
+                                 :message-ready "Hyvä %1,\n\n%2 on hyväksynyt hakemuksen %3 ohjaajana, ja hakemus on merkitty valmiiksi lähetettäväksi.\n\nVoit tarkastella ja lähettää hakemuksen osoitteessa %6"}
           :supervisor-designated {:subject "(%3) Sinut on nimetty ohjaajaksi"
                                   :message "Hyvä %1,\n\n%2 on nimennyt sinut hakemuksen %3 ohjaajaksi. Hakemuksen voi lähettää vasta hyväksyntäsi jälkeen.\n\nVoit tarkastella ja hyväksyä hakemuksen osoitteessa %6"}
           :member-added {:subject "Lisätty hakemuksen %3 jäseneksi"
                          :message "Hyvä %1,\n\nSinut on lisätty käyttäjän %4 jättämän hakemuksen %3 jäseneksi.\n\nVoit tarkastella hakemusta ja hyväksyä käyttöehdot osoitteessa %6"}
+          :supervisor-invited {:subject "Kutsu hakemuksen %3 ohjaajaksi"
+                               :message "Hyvä %1,\n\n%2 on kutsunut sinut hakemuksen %3 ohjaajaksi. Ohjaajana hyväksyt hakemuksen ennen sen lähettämistä.\n\nVoit tarkastella hakemusta ja hyväksyä kutsun osoitteessa %4"}
           :member-invited {:subject "Kutsu osallistumaan hakemukseen %3"
                            :message "Hyvä %1,\n\nSinut on kutsuttu osallistumaan käyttäjän %2 jättämään hakemukseen %3.\n\nVoit tarkastella hakemusta ja hyväksyä käyttöehdot osoitteessa %4"}
           :regards "\n\nYstävällisin terveisin,\n\nREMS\n"

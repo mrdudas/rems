@@ -14,10 +14,12 @@
             :approve-end-date "Datum då rättigheterna upphör (valfritt)"
             :approve-reject "Godkänn eller avslå"
             :mark-ready "Markera som klar att skicka in"
-            :mark-ready-intro "Sökanden meddelas att ansökan är klar att skickas in."
+            :mark-ready-intro "Den sökande meddelas att ansökan kan skickas in. Om handledaren inte har godkänt ansökan ännu meddelas handledaren först."
             :approve-supervision "Godkänn som handledare"
             :approve-supervision-intro "Genom att godkänna tar du som handledare ansvar för ansökans innehåll. Om svaren ändras senare behövs ett nytt godkännande."
             :designate-supervisor "Utse till handledare"
+            :invite-supervisor "Bjud in handledare"
+            :invite-supervisor-intro "Handledaren bjuds in via e-post. Vid anslutning blir hen ansökans handledare: hen kan godkänna ansökan men inte redigera den."
             :assign-external-id "Ange externt id" ; ELLER Ange id för den resurs ansökan (vai arbetsflödet gäller?
             :assign-external-id-info "Externt id"
             :bundling-intro [:div.intro [:p "Notera att endast resurser med gemensam ansökningsblankett och gemensamt arbetsflöde kan kopplas samman."]]
@@ -35,6 +37,7 @@
             :errors {:duplicate-id "Id:et är redan upptaget."
                      :invalid-token [:div [:p "Det gick inte att ansluta till ansökningen."] [:p "Vänligen kontrollera koden för inbjudan." [:code "%1"]]]
                      :licenses-not-accepted "Du har inte godkänt användarvillkoren."
+                     :cannot-designate-self "Du kan inte utse dig själv till handledare."
                      :supervision-not-approved "Handledaren har inte godkänt den aktuella versionen av ansökan."
                      :not-organization-contact "Endast organisationens kontaktpersoner kan skapa ansökningar."
                      :organization-does-not-exist "Organisationen \"%1\" hittades inte."
@@ -266,6 +269,7 @@
                  :marked-ready "Markerad som klar att skicka in"
                  :supervisor "Handledare"
                  :supervision-approved "Godkänd av handledaren"
+                 :supervision-outdated "Ansökan har ändrats efter godkännandet, ett nytt godkännande behövs"
                  :supervision-pending "Väntar på handledarens godkännande"
                  :not-shown-to-applying-users "Dold för sökande"
                  :redacted-attachments "Borttagna bilagor"
@@ -326,6 +330,7 @@
              :approve "Godkänn"
              :approve-supervision "Godkänn som handledare"
              :designate-supervisor "Utse till handledare"
+             :invite-supervisor "Bjud in handledare"
              :mark-ready "Markera som klar att skicka in"
              :assign-external-id "Ange externt id"
              :change-applicant "Gör till sökanden"
@@ -485,13 +490,19 @@
                              :message "%1,\n\nFöljande ansökningar är öppna och kräver eventuellt åtgärder:\n\n%2\n\nDu kan granska ansökningar här: %3"
                              :subject "Öppna ansökningar"}
           :marked-ready {:subject "(%3) Ansökan är klar att skicka in"
-                         :message "Hej %1,\n\n%2 har markerat ansökan %3 som klar att skicka in.\n\nDu kan se och skicka in ansökan på %6"}
+                         :message "Hej %1,\n\n%2 har markerat ansökan %3 som klar att skicka in.\n\nDu kan se och skicka in ansökan på %6"
+                         :subject-to-supervisor "(%3) Ansökan väntar på ditt godkännande"
+                         :message-to-supervisor "Hej %1,\n\n%2 har markerat ansökan %3 som klar att skicka in. Granska och godkänn ansökan som handledare; ansökan kan skickas in först efter ditt godkännande.\n\nDu kan se och godkänna ansökan på %6"}
           :supervision-approved {:subject "(%3) Handledaren har godkänt ansökan"
-                                 :message "Hej %1,\n\n%2 har godkänt ansökan %3 som handledare.\n\nDu kan se ansökan på %6"}
+                                 :message "Hej %1,\n\n%2 har godkänt ansökan %3 som handledare.\n\nDu kan se ansökan på %6"
+                                 :subject-ready "(%3) Ansökan är klar att skicka in"
+                                 :message-ready "Hej %1,\n\n%2 har godkänt ansökan %3 som handledare, och ansökan har markerats som klar att skicka in.\n\nDu kan se och skicka in ansökan på %6"}
           :supervisor-designated {:subject "(%3) Du har utsetts till handledare"
                                   :message "Hej %1,\n\n%2 har utsett dig till handledare för ansökan %3. Ansökan kan skickas in först efter ditt godkännande.\n\nDu kan se och godkänna ansökan på %6"}
           :member-added {:subject "Tillagd som deltagare i ansökan %3"
                          :message "%1,\n\nDu har blivit tillagd som deltagare i ansökan %3 av %4.\n\nDu kan granska ansökningen och godkänna användarvillkoren här: %6"}
+          :supervisor-invited {:subject "Inbjudan att vara handledare för ansökan %3"
+                               :message "Hej %1,\n\n%2 har bjudit in dig att vara handledare för ansökan %3. Som handledare godkänner du ansökan innan den skickas in.\n\nDu kan se ansökan och acceptera inbjudan på %4"}
           :member-invited {:subject "Inbjudan att delta i ansökan %3"
                            :message "%1,\n\nDu är inbjuden att delta i %2s ansökan %3 om tillgång till material.\n\nDu kan granska ansökningen och godkänna användarvillkoren här: %4"}
           :regards "\n\nMed vänlig hälsning,\n\nREMS\n"

@@ -347,6 +347,7 @@
    :application.command/decide :t.commands/decide
    :application.command/delete :t.commands/delete
    :application.command/designate-supervisor :t.commands/designate-supervisor
+   :application.command/invite-supervisor :t.commands/invite-supervisor
    :application.command/invite-decider :t.commands/invite-decider
    :application.command/invite-member :t.commands/invite-member
    :application.command/invite-reviewer :t.commands/invite-reviewer

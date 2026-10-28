@@ -71,14 +71,19 @@
 
 ;; Members may edit the draft and mark it ready only when
 ;; `:enable-member-editing` is on, supervisors are used only when
-;; `:enable-supervisor-approval` is on, and the applicant and members may
-;; remark on a submitted application only when `:enable-applicant-remarks`
-;; is on, see rems.application.model/enrich-member-editing
+;; `:enable-supervisor-approval` is on, and the applicant, members and the
+;; supervisor may remark on a submitted application only when
+;; `:enable-applicant-remarks` is on, see
+;; rems.application.model/enrich-member-editing
 (def ^:private member-editing-commands
   (conj member-commands
         :application.command/save-draft
-        :application.command/mark-ready))
+        :application.command/mark-ready
+        :application.command/invite-supervisor
+        :application.command/designate-supervisor))
 
+;; The supervisor is not a member while designated, so that the supervisor
+;; only approves and does not edit the answers.
 (def ^:private supervisor-commands
   #{:application.command/approve-supervision})
 
@@ -88,6 +93,7 @@
 (def ^:private created-permissions
   {:applicant (conj submittable-application-commands
                     :application.command/delete
+                    :application.command/invite-supervisor
                     :application.command/designate-supervisor)
    :member member-editing-commands
    :supervisor supervisor-commands
@@ -102,7 +108,7 @@
   {:applicant (conj non-submittable-application-commands
                     :application.command/remark)
    :member submitted-member-commands
-   :supervisor #{}
+   :supervisor #{:application.command/remark}
    :handler (conj handler-all-commands :see-everything)
    :reviewer #{:see-everything
                :application.command/redact-attachments
@@ -126,6 +132,7 @@
 (def ^:private returned-permissions
   {:applicant (conj submittable-application-commands
                     :application.command/close
+                    :application.command/invite-supervisor
                     :application.command/designate-supervisor)
    :member member-editing-commands
    :supervisor supervisor-commands
@@ -206,9 +213,13 @@
   [application event]
   (let [previous (for [[user roles] (:application/user-roles application)
                        :when (contains? roles :supervisor)]
-                   user)]
+                   user)
+        supervisor (get-in event [:application/supervisor :userid])]
+    ;; the previous supervisor becomes an ordinary member again
     (-> (reduce #(permissions/remove-role-from-user %1 :supervisor %2) application previous)
-        (permissions/give-role-to-users :supervisor [(get-in event [:application/supervisor :userid])]))))
+        (permissions/give-role-to-users :member previous)
+        (permissions/remove-role-from-user :member supervisor)
+        (permissions/give-role-to-users :supervisor [supervisor]))))
 
 (defmethod application-permissions-view :application.event/applicant-changed
   [application event]

@@ -5,6 +5,7 @@
             [rems.common.util :refer [getx]]
             [rems.config :refer [env]]
             [rems.context :as context]
+            [rems.db.organizations]
             [rems.db.user-settings]
             [rems.db.users]
             [rems.permissions :as permissions]
@@ -36,9 +37,26 @@
        (map #(get-in % [:catalogue-item/title context/*lang*]))
        (str/join ", ")))
 
-(defn- handlers [application]
+(defn- responsible-chairs
+  "The chairs of the organization of the application, see
+  `:enable-organization-contacts`."
+  [application]
+  (when (:enable-organization-contacts env)
+    (when-some [organization-id (get-in application [:application/organization :organization/id])]
+      (->> (rems.db.organizations/get-organization-by-id-raw organization-id)
+           :organization/chairs
+           (map :userid)
+           set))))
+
+(defn- handlers
+  "The handlers to notify: only the responsible chairs of the organization
+  of the application, if any of them is a handler, otherwise all handlers."
+  [application]
   (when (:enable-handler-emails env)
-    (get-in application [:application/workflow :workflow.dynamic/handlers])))
+    (let [all-handlers (get-in application [:application/workflow :workflow.dynamic/handlers])
+          chairs (responsible-chairs application)]
+      (or (seq (filter #(contains? chairs (:userid %)) all-handlers))
+          all-handlers))))
 
 (defn- other-handlers [event application]
   (filter #(not= (:userid %) (:event/actor event)) (handlers application)))
@@ -233,16 +251,21 @@
 (defmethod event-to-emails :application.event/member-invited [event application]
   (with-language (:default-language env)
     (let [invited-user (:application/member event)
+          supervisor? (:invitation/supervisor event)
           params {:applicant (application-util/get-applicant-name application)
                   :application-id (format-application-for-email application)
                   :invitation-url (invitation-link (:invitation/token event))
                   :recipient (application-util/get-member-name invited-user)}]
       [{:to (:email invited-user)
-        :subject (text-format-map :t.email.member-invited/subject
+        :subject (text-format-map (if supervisor?
+                                    :t.email.supervisor-invited/subject
+                                    :t.email.member-invited/subject)
                                   params
                                   [:recipient :applicant :application-id :invitation-url])
         :body (str
-               (text-format-map :t.email.member-invited/message
+               (text-format-map (if supervisor?
+                                  :t.email.supervisor-invited/message
+                                  :t.email.member-invited/message)
                                 params
                                 [:recipient :applicant :application-id :invitation-url])
                (text :t.email/regards)
@@ -315,23 +338,43 @@
                  (text :t.email/regards)
                  (text :t.email/footer))})))))
 
+(defn- waiting-for-supervisor? [application]
+  (and (:application/supervisor application)
+       (not (:application/supervision-approved application))))
+
+;; The applicant is notified only when the application can be submitted:
+;; it has been marked ready and the supervisor, if any, has approved it.
+
 (defmethod event-to-emails :application.event/marked-ready [event application]
-  (emails-to-recipients [(:application/applicant application)]
-                        event application
-                        :t.email.marked-ready/subject
-                        :t.email.marked-ready/message))
+  (if (waiting-for-supervisor? application)
+    (emails-to-recipients [(:application/supervisor application)]
+                          event application
+                          :t.email.marked-ready/subject-to-supervisor
+                          :t.email.marked-ready/message-to-supervisor)
+    (emails-to-recipients [(:application/applicant application)]
+                          event application
+                          :t.email.marked-ready/subject
+                          :t.email.marked-ready/message)))
 
 (defmethod event-to-emails :application.event/supervisor-designated [event application]
-  (emails-to-recipients [(:application/supervisor event)]
-                        event application
-                        :t.email.supervisor-designated/subject
-                        :t.email.supervisor-designated/message))
+  ;; the supervisor who joined with an invitation was designated by themselves
+  (when-not (= (:event/actor event) (get-in event [:application/supervisor :userid]))
+    (emails-to-recipients [(:application/supervisor event)]
+                          event application
+                          :t.email.supervisor-designated/subject
+                          :t.email.supervisor-designated/message)))
 
 (defmethod event-to-emails :application.event/supervision-approved [event application]
-  (emails-to-recipients [(:application/applicant application)]
-                        event application
-                        :t.email.supervision-approved/subject
-                        :t.email.supervision-approved/message))
+  (if (:application/marked-ready application)
+    (emails-to-recipients [(:application/applicant application)]
+                          event application
+                          :t.email.supervision-approved/subject-ready
+                          :t.email.supervision-approved/message-ready)
+    (emails-to-recipients (remove #(= (:userid %) (:event/actor event))
+                                  (:application/members application))
+                          event application
+                          :t.email.supervision-approved/subject
+                          :t.email.supervision-approved/message)))
 
 ;; TODO member-joined?
 

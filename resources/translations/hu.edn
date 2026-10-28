@@ -6,27 +6,29 @@
                                :invalid-token [:span "A meghívás elfogadása sikertelen. Ellenőrizze a meghívó tokent: " [:code "%1"]]
                                :invalid-workflow "A meghívás elfogadása sikertelen."}}
   :actions {:accept-invitation "Meghívás elfogadása"
-            :accept-invitation-success "Sikeresen csatlakozott a jelentkezéshez."
+            :accept-invitation-success "Sikeresen csatlakozott a kérelemhez."
             :accept-licenses "Felhasználási feltételek elfogadása"
             :add-licenses "Felhasználási feltételek hozzáadása"
-            :add-member "Tag hozzáadása"
+            :add-member "Kutató hozzáadása"
             :approve "Jóváhagyás"
             :approve-end-date "Hozzáférési jogok lejárati dátuma (opcionális)"
             :approve-reject "Jóváhagyás vagy elutasítás"
             :mark-ready "Beadhatónak jelölöm"
-            :mark-ready-intro "A kapcsolattartó értesítést kap, hogy a kérelem benyújtható."
+            :mark-ready-intro "A kapcsolattartó értesítést kap, hogy a kérelem benyújtható. Ha van felügyelő, aki még nem hagyta jóvá a kérelmet, előbb ő kap értesítést."
             :approve-supervision "Jóváhagyom felügyelőként"
             :approve-supervision-intro "A jóváhagyással felügyelőként felelősséget vállal a kérelem tartalmáért. Ha a válaszok később módosulnak, újra jóvá kell hagynia."
             :designate-supervisor "Kijelölés felügyelőnek"
+            :invite-supervisor "Felügyelő meghívása"
+            :invite-supervisor-intro "A felügyelő e-mailben kap meghívót. Csatlakozáskor a kérelem felügyelője lesz: jóváhagyhatja a kérelmet, de nem szerkesztheti."
             :assign-external-id "Külső azonosító hozzárendelése"
             :assign-external-id-info "Külső azonosító"
-            :bundling-intro [:div.intro [:p "Megjegyzés: Csak az azonos munkafolyamattal rendelkező kérelmek vonhatók össze."]]
-            :change-applicant "Jelentkező módosítása"
-            :change-resources "Kérelmek módosítása"
+            :bundling-intro [:div.intro [:p "Megjegyzés: Csak az azonos munkafolyamattal rendelkező eljárások vonhatók össze."]]
+            :change-applicant "Kapcsolattartó módosítása"
+            :change-resources "Eljárások módosítása"
             :change-processing-state "Állapot módosítása"
             :clear "Törlés"
-            :close "Jelentkezés lezárása"
-            :close-intro [:div.intro [:p "Megjegyzés: Ha a jelentkezés le van zárva, többé nem módosítható és nem nyújtható be."]]
+            :close "Kérelem lezárása"
+            :close-intro [:div.intro [:p "Megjegyzés: Ha a kérelem le van zárva, többé nem módosítható és nem nyújtható be."]]
             :commands "Műveletek"
             :decide "Döntés"
             :delete "Piszkozat törlése"
@@ -34,8 +36,9 @@
             :download-pdf "PDF letöltése"
             :errors {:duplicate-id "Az azonosító már használatban van."
                      ;; %1 - invitation token
-                     :invalid-token [:div [:p "A csatlakozás a jelentkezéshez sikertelen."] [:p "Ellenőrizze a meghívó tokent: " [:code "%1"]]]
+                     :invalid-token [:div [:p "A csatlakozás a kérelemhez sikertelen."] [:p "Ellenőrizze a meghívó tokent: " [:code "%1"]]]
                      :licenses-not-accepted "A felhasználási feltételek nincsenek elfogadva."
+                     :cannot-designate-self "Saját magát nem jelölheti ki felügyelőnek."
                      :supervision-not-approved "A felügyelő még nem hagyta jóvá a kérelem jelenlegi változatát."
                      ;; %1 - organization name
                      :not-organization-contact "Kérelmet csak az intézmény kapcsolattartója hozhat létre."
@@ -43,11 +46,11 @@
                      :validation-errors "Ellenőrizze a következő hibákat:"
                      :validation-warnings "Ellenőrizze a következőket benyújtás előtt:"
                      :entitlement-end-not-in-future "A hozzáférési jogok lejárati dátumának a jövőben kell lennie."}
-            :handled-applications "Feldolgozott jelentkezések"
-            :handled-applications-count "%:count% feldolgozott jelentkezés van."
-            :invite-member "Tag meghívása"
+            :handled-applications "Feldolgozott kérelmek"
+            :handled-applications-count "%:count% feldolgozott kérelem van."
+            :invite-member "Kutató meghívása"
             :licenses-selection "Felhasználási feltételek hozzáadása"
-            :member "Tag"
+            :member "Kutató"
             :member-email "E-mail"
             :member-name "Név"
             :modify "Módosítás"
@@ -57,7 +60,7 @@
             :reject "Elutasítás"
             :remark "Megjegyzés"
             :remove-attachments "Mellékletek eltávolítása"
-            :remove-member "Tag eltávolítása"
+            :remove-member "Kutató eltávolítása"
             :replace-attachments "Mellékletek cseréje"
             :request-decision "Döntés kérése"
             :request-decision-dropdown "Döntés kérése"
@@ -72,37 +75,37 @@
             :request-review-from-user "Bírálat kérése meglévő felhasználótól"
             :request-review-via-email "Bírálat kérése e-mailben"
             :request-selections "Felkérés címzettjei"
-            :resources-selection "A jelentkezésben szereplő erőforrások:"
+            :resources-selection "A kérelemben szereplő eljárások:"
             :return "Visszaküldés a kérelmezőnek"
             :review "Bírálat"
             :revoke "Jogosultság visszavonása"
             :show-to-applying-users "Megjelenítés a kérelmezőknek"
-            :todo-applications "Nyitott jelentkezések"
-            :todo-applications-count "%:count% nyitott jelentkezés van."
+            :todo-applications "Nyitott kérelmek"
+            :todo-applications-count "%:count% nyitott kérelem van."
             :vote "Szavazás"}
   :administration {:active "Aktív"
                    :add "Hozzáadás"
                    :added-at "Hozzáadva"
                    :added-by "Hozzáadta"
                    :anonymize-handling "Anonimizált kezelés"
-                   :application-state "Jelentkezés állapota"
+                   :application-state "Kérelem állapota"
                    :archive "Archiválás"
                    :back "Vissza"
                    :blacklist "Feketelista"
                    :cancel "Mégse"
-                   :catalogue-item "Katalógus tétel"
-                   :catalogue-items "Katalógus tételek"
+                   :catalogue-item "Katalógustétel"
+                   :catalogue-items "Katalógustételek"
                    :categories "Kategóriák"
                    :category "Kategória"
                    :category-children "Alkategóriák"
                    :comment "Megjegyzés"
                    :copy-as-new "Másolás újként"
-                   :create-catalogue-item "Katalógus tétel létrehozása"
+                   :create-catalogue-item "Katalógustétel létrehozása"
                    :create-category "Kategória létrehozása"
                    :create-form "Űrlap létrehozása"
                    :create-license "Licenc létrehozása"
                    :create-organization "Szervezet létrehozása"
-                   :create-resource "Kérelem létrehozása"
+                   :create-resource "Eljárás létrehozása"
                    :create-workflow "Munkafolyamat létrehozása"
                    :created "Létrehozva"
                    :delete "Törlés"
@@ -111,7 +114,7 @@
                    :disable "Letiltás"
                    :disabled-command "Letiltott művelet"
                    :disabled-commands "Letiltott műveletek"
-                   :disabled-and-archived-explanation "A letiltás elrejti a tételt a jelentkezők elől. Az archiválás az adminisztrációs nézetben is elrejti."
+                   :disabled-and-archived-explanation "A letiltás elrejti a tételt a kérelmezők elől. Az archiválás az adminisztrációs nézetben is elrejti."
                    :display-archived "Archiváltak megjelenítése"
                    :display-order "Megjelenítési sorrend"
                    :display-own-organization-only-explanation "Csak a saját szervezet tételei jelenjenek meg?"
@@ -119,7 +122,7 @@
                    :do-not-change-form "Ne módosítsa az űrlapot"
                    :do-not-change-workflow "Ne módosítsa a munkafolyamatot"
                    :edit "Szerkesztés"
-                   :edit-catalogue-item "Katalógus tétel szerkesztése"
+                   :edit-catalogue-item "Katalógustétel szerkesztése"
                    :edit-category "Kategória szerkesztése"
                    :edit-form "Űrlap szerkesztése"
                    :edit-organization "Szervezet szerkesztése"
@@ -132,11 +135,11 @@
                             :dependencies-not-found "Hiányzó függőségek:"
                             :self-as-subcategory-disallowed "A kategória nem állítható be saját alkategóriájaként"
                             :ancestor-as-subcategory-disallowed "A kategória nem állítható be alkategóriaként, mert hurok jönne létre"}
-                   :export-applications "Jelentkezések exportálása"
+                   :export-applications "Kérelmek exportálása"
                    :external-title "Cím"
                    :form "Űrlap"
                    :forms "Űrlapok"
-                   :handlers-vote "Kezelők szavazata"
+                   :handlers-vote "Elnökök szavazata"
                    :has-errors "Hibák"
                    :id "Azonosító"
                    :internal-name "Név"
@@ -165,12 +168,12 @@
                    :remove "Eltávolítás"
                    :remove-attachment "Melléklet eltávolítása"
                    :reports "Jelentések"
-                   :resource "Kérelem"
-                   :resources "Kérelmek"
+                   :resource "Eljárás"
+                   :resources "Eljárások"
                    ;; %1 - number
-                   :review-email-n "%1. véleményező e-mail"
-                   :review-emails "Véleményező e-mailek"
-                   :reviewers-vote "Véleményezők szavazata"
+                   :review-email-n "%1. bíráló e-mail"
+                   :review-emails "Bíráló e-mailek"
+                   :reviewers-vote "Bírálók szavazata"
                    :save "Mentés"
                    :save-attachment "Melléklet mentése"
                    :short-name "Rövid név"
@@ -179,7 +182,7 @@
                    :title "Cím"
                    :type "Típus"
                    :unarchive "Archiválás feloldása"
-                   :update-catalogue-item "Katalógus tétel frissítése"
+                   :update-catalogue-item "Katalógustétel frissítése"
                    :user "Felhasználó"
                    :userid "Felhasználó azonosító"
                    :user-role "Felhasználói szerepkör"
@@ -187,27 +190,27 @@
                    :voting "Szavazás"
                    :workflow "Munkafolyamat"
                    :workflows "Munkafolyamatok"
-                   :workflow-anonymize-handling-explanation "Ez a munkafolyamat elrejti a kezelő felhasználók személyes adatait (pl. név és e-mail) a jelentkezők elől."
+                   :workflow-anonymize-handling-explanation "Ez a munkafolyamat elrejti az elnökök személyes adatait (pl. név és e-mail) a kérelmezők elől."
                    :workflow-disabled-commands-explanation "Ez a munkafolyamat letiltja a műveleteket a felhasználók számára bizonyos feltételek esetén."
-                   :workflow-processing-states-explanation "Ez a munkafolyamat lehetővé teszi a kezelő számára a jelentkezés feldolgozási állapotának beállítását és frissítését."
+                   :workflow-processing-states-explanation "Ez a munkafolyamat lehetővé teszi az elnök számára a kérelem feldolgozási állapotának beállítását és frissítését."
                    :workflow-type "Munkafolyamat típusa"}
-  :applicant-info {:applicant "Kérelmező"
+  :applicant-info {:applicant "Kapcsolattartó"
                    :applicants "Kérelmezők"
                    :email "E-mail"
                    :email-idp "E-mail (azonosító szolgáltatótól)"
-                   :invited-member "Meghívott Kutató"
+                   :invited-member "Meghívott kutató"
                    :member "Kutató"
                    :name "Név"
                    :notification-email "E-mail (felhasználó által beállítva)"
                    :organization "Szervezet"
-                   :researcher-status "Jelentkező kutatói státusza"
+                   :researcher-status "Kapcsolattartó kutatói státusza"
                    :username "Felhasználónév"}
-  :applications {:all-applications "Összes jelentkezés"
-                 :applicant "Jelentkező"
-                 :application "Jelentkezés"
-                 :applications "Jelentkezések"
+  :applications {:all-applications "Összes kérelem"
+                 :applicant "Kapcsolattartó"
+                 :application "Kérelem"
+                 :applications "Kérelmek"
                  :attachment-filename-redacted "Melléklet anonimizálva"
-                 :continue-existing-application "Jelentkezés folytatása"
+                 :continue-existing-application "Kérelem folytatása"
                  :copied-from "másolva innen:"
                  :copied-to "másolva ide:"
                  :created "Létrehozva"
@@ -215,8 +218,8 @@
                  ;;   code to match the term in UI.
                  :description "Cím"
                  :details "Részletek"
-                 :duos {:validation {:missing-duo-codes "Az kérelmekben megadott Data Use Ontology kódok hiányoznak a jelentkezésből:"}}
-                 :empty "Nincsenek jelentkezések."
+                 :duos {:validation {:missing-duo-codes "Az eljárásokban megadott Data Use Ontology kódok hiányoznak a kérelemből:"}}
+                 :empty "Nincsenek kérelmek."
                  ;; %1 - date
                  :entitlement-end "A hozzáférési jogok lejárnak: %1."
 
@@ -227,16 +230,16 @@
                  ;; They cannot be mixed with named format parameters, and have fixed positions.
                  :events {;; Extra parameters for applicant-changed:
                           ;; %2 - %:new-applicant% - Name of the new applicant
-                          :applicant-changed "%:event-actor% megváltoztatta a jelentkezőt erre: %:new-applicant%."
-                          :approved "%:event-actor% jóváhagyta a jelentkezést."
+                          :applicant-changed "%:event-actor% megváltoztatta a kapcsolattartót erre: %:new-applicant%."
+                          :approved "%:event-actor% jóváhagyta a kérelmet."
                           :attachments-redacted "%:event-actor% anonimizálta a mellékleteket."
-                          :closed "%:event-actor% lezárta a jelentkezést."
-                          :copied-from "Ez a jelentkezés egy régi jelentkezés másolata."
-                          :copied-to "%:event-actor% átmásolta a jelentkezést egy új jelentkezésbe."
+                          :closed "%:event-actor% lezárta a kérelmet."
+                          :copied-from "Ez a kérelem egy régi kérelem másolata."
+                          :copied-to "%:event-actor% átmásolta a kérelmet egy új kérelembe."
                           ;; Extra parameters for created:
                           ;; %2 - %:application-external-id% - External id of the new application
-                          :created "%:event-actor% létrehozta a(z) %:application-external-id% azonosítójú jelentkezést."
-                          :decided "%:event-actor% döntést hozott a jelentkezésről."
+                          :created "%:event-actor% létrehozta a(z) %:application-external-id% azonosítójú kérelmet."
+                          :decided "%:event-actor% döntést hozott a kérelemről."
                           ;; Extra parameters for decider-invited:
                           ;; %2 - %:invited-user% - Name & email of decider
                           :decider-invited "%:event-actor% meghívta %:invited-user% felhasználót döntéshozatalra."
@@ -245,7 +248,7 @@
                           ;; %2 - %:requested-users% - Comma-separated list of requested deciders names
                           :decision-requested "%:event-actor% döntést kért a következőktől: %:requested-users%."
                           :deleted "%:event-actor% törölte a piszkozatot."
-                          :draft-saved "%:event-actor% frissítette a jelentkezést."
+                          :draft-saved "%:event-actor% frissítette a kérelmet."
                           ;; Extra parameters for external-id-assigned:
                           ;; %2 - %:application-external-id% - External id of the application
                           :external-id-assigned "%:event-actor% hozzárendelte a(z) %:application-external-id% külső azonosítót."
@@ -257,63 +260,64 @@
                           :supervisor-designated "%:event-actor% felügyelőnek jelölte: %:supervisor%."
                           ;; Extra parameters for member-added:
                           ;; %2 - %:added-user% - Name of the added member
-                          :member-added "%:event-actor% hozzáadta %:added-user% felhasználót a jelentkezéshez."
+                          :member-added "%:event-actor% hozzáadta %:added-user% felhasználót a kérelemhez."
                           ;; Extra parameters for member-invited:
                           ;; %2 - %:invited-user% - Name of the invited member
-                          :member-invited "%:event-actor% meghívta %:invited-user% felhasználót a jelentkezésbe."
-                          :member-joined "%:event-actor% csatlakozott a jelentkezéshez."
+                          :member-invited "%:event-actor% meghívta %:invited-user% felhasználót a kérelembe."
+                          :member-joined "%:event-actor% csatlakozott a kérelemhez."
                           ;; Extra parameters for member-removed:
                           ;; %2 - %:removed-user% - Name of the removed member
-                          :member-removed "%:event-actor% eltávolította %:removed-user% felhasználót a jelentkezésből."
+                          :member-removed "%:event-actor% eltávolította %:removed-user% felhasználót a kérelemből."
                           ;; Extra parameters for member-uninvited:
                           ;; %2 - %:uninvited-user% - Name of the uninvited member
-                          :member-uninvited "%:event-actor% eltávolította %:uninvited-user% felhasználót a jelentkezésből."
+                          :member-uninvited "%:event-actor% eltávolította %:uninvited-user% felhasználót a kérelemből."
                           ;; Extra parameters for processing-state-changed:
                           ;; %2 - %:state% - Localized name of the new state
-                          :processing-state-changed "%:event-actor% megváltoztatta a jelentkezés feldolgozási állapotát erre: \"%:state%\"."
-                          :rejected "%:event-actor% elutasította a jelentkezést."
+                          :processing-state-changed "%:event-actor% megváltoztatta a kérelem feldolgozási állapotát erre: \"%:state%\"."
+                          :rejected "%:event-actor% elutasította a kérelmet."
                           :remarked "%:event-actor% megjegyzést fűzött hozzá."
                           ;; Extra parameters for resources-changed:
                           ;; %2 - %:catalogue-items% - Comma-separated list of catalogue item anems
-                          :resources-changed "%:event-actor% megváltoztatta az kérelmekat. Új kérelmek: %:catalogue-items%."
-                          :returned "%:event-actor% módosításokat kért a jelentkezéshez."
+                          :resources-changed "%:event-actor% megváltoztatta az eljárásokat. Új eljárások: %:catalogue-items%."
+                          :returned "%:event-actor% módosításokat kért a kérelemhez."
                           ;; Extra parameters for review-requested:
                           ;; %2 - %:requested-users% - Comma-separated list of requested reviewers names
-                          :review-requested "%:event-actor% véleményezést kért a következőktől: %:requested-users%."
-                          :reviewed "%:event-actor% véleményezte a jelentkezést."
+                          :review-requested "%:event-actor% bírálatot kért a következőktől: %:requested-users%."
+                          :reviewed "%:event-actor% bírálta a kérelmet."
                           ;; Extra parameters for reviewer-invited:
                           ;; %2 - %:invited-user% - Name & email of the invited reviewer
-                          :reviewer-invited "%:event-actor% meghívta %:invited-user% felhasználót a jelentkezés véleményezésére."
-                          :reviewer-joined "%:event-actor% elfogadta a véleményezői meghívást."
+                          :reviewer-invited "%:event-actor% meghívta %:invited-user% felhasználót a kérelem bírálatára."
+                          :reviewer-joined "%:event-actor% elfogadta a bírálói felkérést."
                           :revoked "%:event-actor% visszavonta a hozzáférést."
-                          :submitted "%:event-actor% benyújtotta a jelentkezést véleményezésre."
+                          :submitted "%:event-actor% benyújtotta a kérelmet bírálatra."
                           :unknown "Ismeretlen"
                           ;; Extra parameters for voted:
                           ;; %2 - %:vote% - Localized value of the vote
                           :voted "%:event-actor% szavazata: %:vote%."}
-                 :export {:applicant "Jelentkező"
+                 :export {:applicant "Kapcsolattartó"
                           :external-id "Külső azonosító"
                           :first-submitted "Benyújtva"
                           :id "Azonosító"
-                          :resources "Kérelmek"
+                          :resources "Eljárások"
                           :state "Állapot"}
-                 :handlers "Kezelők"
+                 :handlers "Elnökök"
                  :id "Azonosító"
-                 :intro [:div.intro [:p "Töltse ki és nyújtsa be a jelentkezést. Több jelentkező is meghívható a jelentkezés tagjaként, és minden tagnak el kell fogadnia a felhasználási feltételeket a hozzáférés megszerzéséhez."]]
+                 :intro [:div.intro [:p "Töltse ki és nyújtsa be a kérelmet. A kérelemhez további kutatók is meghívhatók, és minden kutatónak el kell fogadnia a felhasználási feltételeket a hozzáférés megszerzéséhez."]]
                  :last-activity "Utolsó aktivitás"
                  :latest-activity "Legutóbbi aktivitás"
                  :organization "Intézmény"
-                 :my-applications "Saját jelentkezéseim"
+                 :my-applications "Saját kérelmeim"
                  :marked-ready "Beadhatónak jelölve"
                  :supervisor "Felügyelő"
                  :supervision-approved "A felügyelő jóváhagyta"
+                 :supervision-outdated "A kérelem a jóváhagyás után módosult, új jóváhagyás kell"
                  :supervision-pending "A felügyelő jóváhagyására vár"
-                 :not-shown-to-applying-users "Nem látható a jelentkezők számára"
+                 :not-shown-to-applying-users "Nem látható a kérelmezők számára"
                  :redacted-attachments "Anonimizált mellékletek"
                  :redacted-attachments-replaced "Az új mellékletek helyettesítik az anonimizált mellékleteket."
                  :replacing-attachments "Új mellékletek"
-                 :resource "Kérelem"
-                 :shown-to-applying-users "Látható a jelentkezők számára"
+                 :resource "Eljárás"
+                 :shown-to-applying-users "Látható a kérelmezők számára"
                  :state "Állapot"
                  :states {:approved "Jóváhagyva"
                           :closed "Lezárva"
@@ -325,21 +329,21 @@
                           :unknown "Ismeretlen"}
                  :submitted "Beküldve"
                  :todo "Teendő"
-                 :todos {:new-application "Új jelentkezés"
+                 :todos {:new-application "Új kérelem"
                          :no-pending-requests "Minden kérés megválaszolva"
-                         :resubmitted-application "Újra benyújtott jelentkezés"
+                         :resubmitted-application "Újra benyújtott kérelem"
                          :unknown "Ismeretlen"
                          :waiting-for-decision "Döntésre vár"
-                         :waiting-for-review "Véleményezésre vár"
+                         :waiting-for-review "Bírálatra vár"
                          :waiting-for-your-decision "Az Ön döntésére vár"
-                         :waiting-for-your-review "Az Ön véleményezésére vár"}
+                         :waiting-for-your-review "Az Ön bírálatára vár"}
                  :view "Megtekintés"
                  ;; %1 - application id
                  ;; %2 - application description
-                 :view-application-with-description "Jelentkezés megtekintése (%1): %2"
+                 :view-application-with-description "Kérelem megtekintése (%1): %2"
                  ;; %1 - application id
                  ;; %2 - comma-separated list of catalogue item names
-                 :view-application-without-description "Jelentkezés megtekintése (%1) a következő kérelmekhez: %2"
+                 :view-application-without-description "Kérelem megtekintése (%1) a következő eljárásokhoz: %2"
                  :voting {:previously-voted [:p "Korábban így szavazott: %1. Itt megváltoztathatja a szavazatát."]
                           :votes {:accept "Elfogadás"
                                   :empty "Üres"
@@ -347,57 +351,58 @@
                                   :reject "Elutasítás"}
                           :voting "Szavazás"}}
   :cart {:add "Kosárba"
-         :apply "Jelentkezés"
+         :apply "Kérelem indítása"
          ;; %1 - number of resources
-         :apply-for-bundle "Jelentkezés %1 kérelemra csomagként"
-         :header "%1 kérelem a kosárban"
-         :intro [:div.intro [:p "Jelentkezzen a hozzáférési jogokért kérelmek kosárba helyezésével. Az azonos jelentkezést használó kérelmek a kosárban összevonásra kerülnek."]]
+         :apply-for-bundle "Kérelem %1 eljárásra csomagként"
+         :header "%1 eljárás a kosárban"
+         :intro [:div.intro [:p "Kérelmet az eljárások kosárba helyezésével indíthat. Az azonos kérelmet használó eljárások a kosárban összevonásra kerülnek."]]
          :remove "Eltávolítás a kosárból"}
   :catalogue {:catalogue "Katalógus"
-              :header "Kérelem"
+              :header "Eljárás"
               :intro ""
               :more-info "További infó"
-              :continue-existing-application "Jelentkezés folytatása"
+              :continue-existing-application "Kérelem folytatása"
               :continue-existing-application-intro ""
-              :apply-resources "Jelentkezés a hozzáférésért"}
+              :apply-resources "Kérelem indítása"}
   :collapse {:hide "Kevesebb"
              :show "Több"}
-  :update-catalogue-item {:update-catalogue-item-intro "A következő katalógus tételek frissítése előtt áll. A változtatások egyenként történnek meg, így minden régi tétel megszűnik, és egy új másolat fogja használni a választott űrlapot és munkafolyamatot."
+  :update-catalogue-item {:update-catalogue-item-intro "A következő katalógustételek frissítése előtt áll. A változtatások egyenként történnek meg, így minden régi tétel megszűnik, és egy új másolat fogja használni a választott űrlapot és munkafolyamatot."
                           :form-selection "Űrlap"
                           :workflow-selection "Munkafolyamat"}
   :commands {:accept-invitation "Meghívás elfogadása"
              :accept-licenses "Felhasználási feltételek elfogadása"
              :add-licenses "Felhasználási feltételek hozzáadása"
-             :add-member "Tag hozzáadása"
+             :add-member "Kutató hozzáadása"
              :approve "Jóváhagyás"
              :approve-supervision "Jóváhagyás felügyelőként"
              :designate-supervisor "Kijelölés felügyelőnek"
+             :invite-supervisor "Felügyelő meghívása"
              :mark-ready "Beadhatónak jelölés"
              :assign-external-id "Külső azonosító hozzárendelése"
-             :change-applicant "Jelentkező módosítása"
-             :change-resources "Kérelmek módosítása"
+             :change-applicant "Kapcsolattartó módosítása"
+             :change-resources "Eljárások módosítása"
              :change-processing-state "Állapot módosítása"
-             :close "Jelentkezés lezárása"
-             :copy-as-new "Másolás új jelentkezésként"
+             :close "Kérelem lezárása"
+             :copy-as-new "Másolás új kérelemként"
              ;; :create
              :decide "Döntés"
              :delete "Piszkozat törlése"
              :invite-decider "Döntéshozó meghívása"
-             :invite-member "Tag meghívása"
-             :invite-reviewer "Véleményező meghívása"
+             :invite-member "Kutató meghívása"
+             :invite-reviewer "Bíráló meghívása"
              :redact-attachments "Mellékletek anonimizálása"
              :reject "Elutasítás"
              :remark "Megjegyzés"
-             :remove-member "Tag eltávolítása"
+             :remove-member "Kutató eltávolítása"
              :request-decision "Döntés kérése"
-             :request-review "Véleményezés kérése"
-             :return "Visszaküldés a jelentkezőnek"
-             :review "Véleményezés"
+             :request-review "Bírálat kérése"
+             :return "Visszaküldés a kapcsolattartónak"
+             :review "Bírálat"
              :revoke "Hozzáférés visszavonása"
              :save-draft "Mentés piszkozatként"
              ;; :send-expiration-notifications
-             :submit "Jelentkezés beküldése"
-             :uninvite-member "Tag meghívásának visszavonása"
+             :submit "Kérelem benyújtása"
+             :uninvite-member "Kutató meghívásának visszavonása"
              :vote "Szavazás"}
   :create-form {:add-column "Oszlop hozzáadása"
                 :add-form-field "Mező hozzáadása"
@@ -428,7 +433,7 @@
                 :required-table "Legalább egy sor kitöltése kötelező"
                 :type-attachment "Melléklet"
                 :type-date "Dátum mező"
-                :type-description "Jelentkezés címe"
+                :type-description "Kérelem címe"
                 :type-email "E-mail cím"
                 :type-header "Fejléc"
                 :type-ip-address "IP cím"
@@ -454,29 +459,29 @@
                    :link-to-license "Hivatkozás a licencre"
                    :title "Cím"}
   :create-resource {:licenses-selection "Licencek"
-                    :resid "Kérelem azonosító"
+                    :resid "Eljárásazonosító"
                     :resid-placeholder "urn:test:fi:valamilyen-uuid"}
-  :create-workflow {:anonymize-handling-explanation "Elrejtheti a kezelő felhasználók személyes adatait (pl. név és e-mail) a jelentkezők elől."
+  :create-workflow {:anonymize-handling-explanation "Elrejtheti az elnökök személyes adatait (pl. név és e-mail) a kérelmezők elől."
                     :create-new-processing-state "Új feldolgozási állapot"
                     :create-new-rule "Új szabály"
                     :decider-workflow "Döntéshozói munkafolyamat"
-                    :decider-workflow-description "A kezelőnek nincs felhatalmazása a jóváhagyásra vagy elutasításra, csak egy külön döntéshozónak."
+                    :decider-workflow-description "Az elnöknek nincs felhatalmazása a jóváhagyásra vagy elutasításra, csak egy külön döntéshozónak."
                     :default-workflow "Alapértelmezett munkafolyamat"
-                    :default-workflow-description "A kezelő teljes mértékben ellenőrzi a jelentkezési folyamatot. A kezelő szükség szerint kérhet véleményezést és döntést másoktól."
+                    :default-workflow-description "Az elnök teljes mértékben ellenőrzi a kérelem folyamatát. Az elnök szükség szerint kérhet bírálatot és döntést másoktól."
                     :disable-commands "Műveletek letiltása"
-                    :disable-commands-explanation [:<> "Letilthatja a műveleteket a felhasználók számára bizonyos feltételek esetén. A műveletek, jelentkezési állapotok és felhasználói szerepkörök megtalálhatók a " [:a {:href "https://github.com/CSCfi/rems/blob/master/docs/application-permissions.md" :target :_blank} "REMS Github oldalán."]]
-                    :handlers "Kezelők"
+                    :disable-commands-explanation [:<> "Letilthatja a műveleteket a felhasználók számára bizonyos feltételek esetén. A műveletek, kérelemállapotok és felhasználói szerepkörök megtalálhatók a " [:a {:href "https://github.com/CSCfi/rems/blob/master/docs/application-permissions.md" :target :_blank} "REMS Github oldalán."]]
+                    :handlers "Elnökök"
                     :master-workflow "Mester munkafolyamat"
                     :master-workflow-description "CSAK TESZTELÉSRE. Az összes lehetséges munkafolyamat uniója."
-                    :processing-states-explanation "A kezelők a \"%:command%\" művelettel beállíthatják és frissíthetik a jelentkezés feldolgozási állapotát. A feldolgozási állapot változásai használhatók pl. automatikus értesítések küldésére más rendszereknek."
+                    :processing-states-explanation "Az elnökök a \"%:command%\" művelettel beállíthatják és frissíthetik a kérelem feldolgozási állapotát. A feldolgozási állapot változásai használhatók pl. automatikus értesítések küldésére más rendszereknek."
                     :rule "Szabály"
                     :title "Cím"
-                    :voting-explanation "A jelentkezésről való döntéshez szavazást is előírhat."}
+                    :voting-explanation "A kérelemről való döntéshez szavazást is előírhat."}
   :dropdown {:no-results "Nincs találat"
              :placeholder "Válasszon..."
              :loading "Betöltés..."
              :placeholder-any-selection "Bármely"}
-  :duo {:fields {:more-info "További infó a jelentkezőnek (opcionális)"}
+  :duo {:fields {:more-info "További infó a kérelmezőknek (opcionális)"}
         :no-duo-codes "Nincsenek Data Use Ontology kódok"
         :restriction {:collaboration "Elsődleges kutató(k)"
                       :date "Publikációs moratórium (dátumig)"
@@ -501,57 +506,57 @@
   ;;
   ;; Vector parameters (%1, %2, ...) in extra translations are supported for backwards compatibility.
   ;; They cannot be mixed with named format parameters, and have fixed positions.
-  :email {:applicant-changed {:subject-to-member "A(z) %:application-id% jelentkezés jelentkezője megváltozott"
-                              :message-to-member "Tisztelt %:recipient%!\n\nA(z) %:application-id% jelentkezés jelentkezőjét %:event-actor% megváltoztatta a következőre: %:applicant%.\n\nA jelentkezést itt tekintheti meg: %:application-url%."
-                              :subject-to-handler "(%:application-id%) Jelentkező megváltozott"
-                              :message-to-handler "Tisztelt %:recipient%!\n\nA(z) %:application-id% jelentkezés jelentkezőjét %:event-actor% megváltoztatta a következőre: %:applicant%.\n\nA jelentkezést itt tekintheti meg: %:application-url%."}
-          :application-approved {:subject-to-applicant "A(z) %:application-id% jelentkezését jóváhagyták"
-                                 :message-to-applicant "Tisztelt %:recipient%!\n\nA(z) %:application-id% jelentkezését jóváhagyták.\n\nA jelentkezést és a döntést itt tekintheti meg: %:application-url%"
-                                 :subject-to-handler "(%:application-id%) A jelentkezést jóváhagyták"
-                                 :message-to-handler "Tisztelt %:recipient%!\n\n%:event-actor% jóváhagyta %:applicant% %:application-id% azonosítójú jelentkezését.\n\nA jelentkezést és a döntést itt tekintheti meg: %:application-url%"}
-          :application-rejected {:subject-to-applicant "A(z) %:application-id% jelentkezését elutasították"
-                                 :message-to-applicant "Tisztelt %:recipient%!\n\nA(z) %:application-id% jelentkezését elutasították.\n\nA jelentkezést és a döntést itt tekintheti meg: %:application-url%"
-                                 :subject-to-handler "(%:application-id%) A jelentkezést elutasították"
-                                 :message-to-handler "Tisztelt %:recipient%!\n\n%:event-actor% elutasította %:applicant% %:application-id% azonosítójú jelentkezését.\n\nA jelentkezést és a döntést itt tekintheti meg: %:application-url%"}
-          :application-closed {:subject-to-applicant "A(z) %:application-id% jelentkezését lezárták"
-                               :message-to-applicant "Tisztelt %:recipient%!\n\nA(z) %:application-id% jelentkezését lezárták.\n\nA jelentkezést továbbra is megtekintheti itt: %:application-url%"
-                               :subject-to-handler "(%:application-id%) A jelentkezést lezárták"
-                               :message-to-handler "Tisztelt %:recipient%!\n\n%:event-actor% lezárta %:applicant% %:application-id% azonosítójú jelentkezését.\n\nA jelentkezést itt tekintheti meg: %:application-url%"}
+  :email {:applicant-changed {:subject-to-member "A(z) %:application-id% kérelem kapcsolattartója megváltozott"
+                              :message-to-member "Tisztelt %:recipient%!\n\nA(z) %:application-id% kérelem kapcsolattartóját %:event-actor% megváltoztatta a következőre: %:applicant%.\n\nA kérelmet itt tekintheti meg: %:application-url%."
+                              :subject-to-handler "(%:application-id%) Kapcsolattartó megváltozott"
+                              :message-to-handler "Tisztelt %:recipient%!\n\nA(z) %:application-id% kérelem kapcsolattartóját %:event-actor% megváltoztatta a következőre: %:applicant%.\n\nA kérelmet itt tekintheti meg: %:application-url%."}
+          :application-approved {:subject-to-applicant "A(z) %:application-id% kérelmét jóváhagyták"
+                                 :message-to-applicant "Tisztelt %:recipient%!\n\nA(z) %:application-id% kérelmét jóváhagyták.\n\nA kérelmet és a döntést itt tekintheti meg: %:application-url%"
+                                 :subject-to-handler "(%:application-id%) A kérelmet jóváhagyták"
+                                 :message-to-handler "Tisztelt %:recipient%!\n\n%:event-actor% jóváhagyta %:applicant% %:application-id% azonosítójú kérelmét.\n\nA kérelmet és a döntést itt tekintheti meg: %:application-url%"}
+          :application-rejected {:subject-to-applicant "A(z) %:application-id% kérelmét elutasították"
+                                 :message-to-applicant "Tisztelt %:recipient%!\n\nA(z) %:application-id% kérelmét elutasították.\n\nA kérelmet és a döntést itt tekintheti meg: %:application-url%"
+                                 :subject-to-handler "(%:application-id%) A kérelmet elutasították"
+                                 :message-to-handler "Tisztelt %:recipient%!\n\n%:event-actor% elutasította %:applicant% %:application-id% azonosítójú kérelmét.\n\nA kérelmet és a döntést itt tekintheti meg: %:application-url%"}
+          :application-closed {:subject-to-applicant "A(z) %:application-id% kérelmét lezárták"
+                               :message-to-applicant "Tisztelt %:recipient%!\n\nA(z) %:application-id% kérelmét lezárták.\n\nA kérelmet továbbra is megtekintheti itt: %:application-url%"
+                               :subject-to-handler "(%:application-id%) A kérelmet lezárták"
+                               :message-to-handler "Tisztelt %:recipient%!\n\n%:event-actor% lezárta %:applicant% %:application-id% azonosítójú kérelmét.\n\nA kérelmet itt tekintheti meg: %:application-url%"}
           ;; Format parameters for application-expiration-notification:
           ;; %1 - %:recipient% - name of recipient
           ;; %2 - %:application-id% - id of application (+ description of application if available)
           ;; %3 - %:last-activity% - date of last activity in application
           ;; %4 - %:expires-on% - date of application expiration (after which draft application will be removed)
           ;; %5 - %:application-url% - link to application
-          :application-expiration-notification {:subject-to-member "A be nem nyújtott %:application-id% jelentkezése hamarosan törlésre kerül"
-                                                :message-to-member "Tisztelt %:recipient%!\n\nA be nem nyújtott jelentkezése %:last-activity% óta inaktív, és %:expires-on% után törlésre kerül, ha nem módosítja.\n\nA jelentkezést itt tekintheti meg és szerkesztheti: %:application-url%"}
-          :application-returned {:subject-to-applicant "A(z) %:application-id% jelentkezését módosítani kell"
-                                 :message-to-applicant "Tisztelt %:recipient%!\n\nA(z) %:application-id% jelentkezését visszaküldték módosításra. Kérjük, végezze el a kért javításokat és nyújtsa be újra.\n\nA jelentkezést itt tekintheti meg és szerkesztheti: %:application-url%"
-                                 :subject-to-handler "(%:application-id%) A jelentkezést visszaküldték a jelentkezőnek"
-                                 :message-to-handler "Tisztelt %:recipient%!\n\n%:event-actor% visszaküldte a(z) %:application-id% jelentkezést %:applicant% jelentkezőnek módosításra.\n\nA jelentkezést itt tekintheti meg: %:application-url%"}
-          :application-revoked {:subject-to-applicant "A(z) %:application-id% jelentkezéshez kapcsolódó hozzáféréseket visszavonták"
-                                :message-to-applicant "Tisztelt %:recipient%!\n\nA(z) %:application-id% jelentkezéshez kapcsolódó hozzáféréseket visszavonták.\n\nA jelentkezést itt tekintheti meg: %:application-url%"
+          :application-expiration-notification {:subject-to-member "A be nem nyújtott %:application-id% kérelme hamarosan törlésre kerül"
+                                                :message-to-member "Tisztelt %:recipient%!\n\nA be nem nyújtott kérelme %:last-activity% óta inaktív, és %:expires-on% után törlésre kerül, ha nem módosítja.\n\nA kérelmet itt tekintheti meg és szerkesztheti: %:application-url%"}
+          :application-returned {:subject-to-applicant "A(z) %:application-id% kérelmét módosítani kell"
+                                 :message-to-applicant "Tisztelt %:recipient%!\n\nA(z) %:application-id% kérelmét visszaküldték módosításra. Kérjük, végezze el a kért javításokat és nyújtsa be újra.\n\nA kérelmet itt tekintheti meg és szerkesztheti: %:application-url%"
+                                 :subject-to-handler "(%:application-id%) A kérelmet visszaküldték a kapcsolattartónak"
+                                 :message-to-handler "Tisztelt %:recipient%!\n\n%:event-actor% visszaküldte a(z) %:application-id% kérelmet %:applicant% kapcsolattartónak módosításra.\n\nA kérelmet itt tekintheti meg: %:application-url%"}
+          :application-revoked {:subject-to-applicant "A(z) %:application-id% kérelemhez kapcsolódó hozzáféréseket visszavonták"
+                                :message-to-applicant "Tisztelt %:recipient%!\n\nA(z) %:application-id% kérelemhez kapcsolódó hozzáféréseket visszavonták.\n\nA kérelmet itt tekintheti meg: %:application-url%"
                                 :subject-to-handler "(%:application-id%) A hozzáféréseket visszavonták"
-                                :message-to-handler "Tisztelt %:recipient%!\n\n%:event-actor% visszavonta a(z) %:application-id% jelentkezéshez kapcsolódó hozzáféréseket %:applicant% felhasználótól.\n\nA jelentkezést itt tekintheti meg: %:application-url%"}
-          :application-licenses-added {:subject "A(z) %:application-id% jelentkezés felhasználási feltételei megváltoztak"
-                                       :message "Tisztelt %:recipient%!\n\n%:event-actor% a jóváhagyását kéri a(z) %:application-id% jelentkezés megváltozott felhasználási feltételeihez.\n\nA jelentkezést megtekintheti és a feltételeket elfogadhatja itt: %:application-url%"}
-          :application-resubmitted {:subject-to-handler "(%:application-id%) A jelentkezést újra benyújtották"
-                                    :message-to-handler "Tisztelt %:recipient%!\n\nA(z) %:application-id% jelentkezést %:applicant% újra benyújtotta.\n\nA jelentkezést itt véleményezheti: %:application-url%"}
-          :application-submitted {:subject-to-applicant "A(z) %:application-id% jelentkezését benyújtották"
-                                  :message-to-applicant "Tisztelt %:recipient%!\n\nA(z) %:application-id% jelentkezését benyújtották. E-mailben értesítjük, amint a jelentkezést feldolgozták.\n\nA jelentkezést itt tekintheti meg: %:application-url%"
-                                  :subject-to-handler "(%:application-id%) Új jelentkezést nyújtottak be"
-                                  :message-to-handler "Tisztelt %:recipient%!\n\n%:applicant% új jelentkezést (%:application-id%) nyújtott be a következő kérelem(ok)hoz: %:catalogue-items%.\n\nA jelentkezést itt véleményezheti: %:application-url%"}
-          :decided {:subject "(%:application-id%) Értesítés jelentkezési döntésről"
-                    :message "Tisztelt %:recipient%!\n\n%:event-actor% döntést hozott %:applicant% %:application-id% azonosítójú jelentkezéséről.\n\nA jelentkezést itt tekintheti meg: %:application-url%"}
+                                :message-to-handler "Tisztelt %:recipient%!\n\n%:event-actor% visszavonta a(z) %:application-id% kérelemhez kapcsolódó hozzáféréseket %:applicant% felhasználótól.\n\nA kérelmet itt tekintheti meg: %:application-url%"}
+          :application-licenses-added {:subject "A(z) %:application-id% kérelem felhasználási feltételei megváltoztak"
+                                       :message "Tisztelt %:recipient%!\n\n%:event-actor% a jóváhagyását kéri a(z) %:application-id% kérelem megváltozott felhasználási feltételeihez.\n\nA kérelmet megtekintheti és a feltételeket elfogadhatja itt: %:application-url%"}
+          :application-resubmitted {:subject-to-handler "(%:application-id%) A kérelmet újra benyújtották"
+                                    :message-to-handler "Tisztelt %:recipient%!\n\nA(z) %:application-id% kérelmet %:applicant% újra benyújtotta.\n\nA kérelmet itt bírálhatja el: %:application-url%"}
+          :application-submitted {:subject-to-applicant "A(z) %:application-id% kérelmét benyújtották"
+                                  :message-to-applicant "Tisztelt %:recipient%!\n\nA(z) %:application-id% kérelmét benyújtották. E-mailben értesítjük, amint a kérelmet feldolgozták.\n\nA kérelmet itt tekintheti meg: %:application-url%"
+                                  :subject-to-handler "(%:application-id%) Új kérelmet nyújtottak be"
+                                  :message-to-handler "Tisztelt %:recipient%!\n\n%:applicant% új kérelmet (%:application-id%) nyújtott be a következő eljárás(ok)hoz: %:catalogue-items%.\n\nA kérelmet itt bírálhatja el: %:application-url%"}
+          :decided {:subject "(%:application-id%) Értesítés kérelemmel kapcsolatos döntésről"
+                    :message "Tisztelt %:recipient%!\n\n%:event-actor% döntést hozott %:applicant% %:application-id% azonosítójú kérelméről.\n\nA kérelmet itt tekintheti meg: %:application-url%"}
           ;; Format parameters for decider-invited:
           ;; %1 - %:recipient% - name of recipient
           ;; %2 - %:applicant% - name of applicant
           ;; %3 - %:application-id% - id of application (+ description of application if available)
           ;; %4 - %:invitation-url% - invitation link
-          :decider-invited {:subject "Meghívás a(z) %:application-id% jelentkezés kezelésében való részvételre"
-                            :message "Tisztelt %:recipient%!\n\nMeghívást kapott a(z) %:application-id% jelentkezés kezelésében való részvételre %:applicant% által.\n\nA jelentkezést itt tekintheti meg: %:invitation-url%"}
-          :decision-requested {:subject "(%:application-id%) Döntési kérelem"
-                               :message "Tisztelt %:recipient%!\n\n%:event-actor% a döntését kéri %:applicant% %:application-id% azonosítójú jelentkezésével kapcsolatban.\n\nA jelentkezést itt tekintheti meg: %:application-url%"}
+          :decider-invited {:subject "Meghívás a(z) %:application-id% kérelem elbírálásában való részvételre"
+                            :message "Tisztelt %:recipient%!\n\nMeghívást kapott a(z) %:application-id% kérelem elbírálásában való részvételre %:applicant% által.\n\nA kérelmet itt tekintheti meg: %:invitation-url%"}
+          :decision-requested {:subject "(%:application-id%) Döntéskérés"
+                               :message "Tisztelt %:recipient%!\n\n%:event-actor% a döntését kéri %:applicant% %:application-id% azonosítójú kérelmével kapcsolatban.\n\nA kérelmet itt tekintheti meg: %:application-url%"}
           :footer "\n\nKérjük, ne válaszoljon erre az automatikusan generált üzenetre."
           :handler-reminder {;; Format parameters for handler-reminder/application:
                              ;; %1 - %:applicant% - name of applicant
@@ -561,37 +566,43 @@
                              ;; %1 - %:recipient% - name of handler user
                              ;; %2 - %:applications% - list of applications which require action
                              ;; %3 - %:actions-url% - link to actions page
-                             :message "Tisztelt %:recipient%!\n\nA következő jelentkezések folyamatban vannak és műveletet igényelhetnek:\n\n%:applications%\n\nA jelentkezéseket itt tekintheti meg: %:actions-url%"
-                             :subject "Folyamatban lévő jelentkezések"}
+                             :message "Tisztelt %:recipient%!\n\nA következő kérelmek folyamatban vannak és műveletet igényelhetnek:\n\n%:applications%\n\nA kérelmeket itt tekintheti meg: %:actions-url%"
+                             :subject "Folyamatban lévő kérelmek"}
           :marked-ready {:subject "(%:application-id%) A kérelem beadható"
-                         :message "Tisztelt %:recipient%!\n\n%:event-actor% jelezte, hogy a(z) %:application-id% azonosítójú kérelem benyújtható.\n\nA kérelmet itt tekintheti meg és nyújthatja be: %:application-url%"}
+                         :message "Tisztelt %:recipient%!\n\n%:event-actor% jelezte, hogy a(z) %:application-id% azonosítójú kérelem benyújtható.\n\nA kérelmet itt tekintheti meg és nyújthatja be: %:application-url%"
+                         :subject-to-supervisor "(%:application-id%) A kérelem a jóváhagyására vár"
+                         :message-to-supervisor "Tisztelt %:recipient%!\n\n%:event-actor% beadhatónak jelölte a(z) %:application-id% azonosítójú kérelmet. Kérjük, felügyelőként nézze át és hagyja jóvá; a kérelem csak az Ön jóváhagyása után nyújtható be.\n\nA kérelmet itt tekintheti meg és hagyhatja jóvá: %:application-url%"}
           :supervision-approved {:subject "(%:application-id%) A felügyelő jóváhagyta a kérelmet"
-                                 :message "Tisztelt %:recipient%!\n\n%:event-actor% felügyelőként jóváhagyta a(z) %:application-id% azonosítójú kérelmet.\n\nA kérelmet itt tekintheti meg: %:application-url%"}
+                                 :message "Tisztelt %:recipient%!\n\n%:event-actor% felügyelőként jóváhagyta a(z) %:application-id% azonosítójú kérelmet.\n\nA kérelmet itt tekintheti meg: %:application-url%"
+                                 :subject-ready "(%:application-id%) A kérelem benyújtható"
+                                 :message-ready "Tisztelt %:recipient%!\n\n%:event-actor% felügyelőként jóváhagyta a(z) %:application-id% azonosítójú kérelmet, és a kérelmet beadhatónak jelölték.\n\nA kérelmet itt tekintheti meg és nyújthatja be: %:application-url%"}
           :supervisor-designated {:subject "(%:application-id%) Felügyelőnek jelölték"
                                   :message "Tisztelt %:recipient%!\n\n%:event-actor% Önt jelölte a(z) %:application-id% azonosítójú kérelem felügyelőjének. A kérelem csak az Ön jóváhagyása után nyújtható be.\n\nA kérelmet itt tekintheti meg és hagyhatja jóvá: %:application-url%"}
-          :member-added {:subject "Hozzáadták tagként a(z) %:application-id% jelentkezéshez"
-                         :message "Tisztelt %:recipient%!\n\nÖnt hozzáadták tagként %:applicant% %:application-id% azonosítójú jelentkezéséhez.\n\nA jelentkezést megtekintheti és a feltételeket elfogadhatja itt: %:application-url%"}
+          :member-added {:subject "Hozzáadták kutatóként a(z) %:application-id% kérelemhez"
+                         :message "Tisztelt %:recipient%!\n\nÖnt hozzáadták kutatóként %:applicant% %:application-id% azonosítójú kérelméhez.\n\nA kérelmet megtekintheti és a feltételeket elfogadhatja itt: %:application-url%"}
           ;; Format parameters for member-invited:
           ;; %1 - %:recipient% - name of recipient
           ;; %2 - %:applicant% - name of applicant
           ;; %3 - %:application-id% - id of application (+ description of application if available)
           ;; %4 - %:invitation-url% - invitation link
-          :member-invited {:subject "Meghívás a(z) %:application-id% jelentkezésben való részvételre"
-                           :message "Tisztelt %:recipient%!\n\nMeghívást kapott a(z) %:application-id% jelentkezésben való részvételre %:applicant% által.\n\nA jelentkezést megtekintheti és a feltételeket elfogadhatja itt: %:invitation-url%"}
+          :supervisor-invited {:subject "Felkérés a(z) %:application-id% kérelem felügyeletére"
+                               :message "Tisztelt %:recipient%!\n\n%:applicant% felkérte Önt a(z) %:application-id% azonosítójú kérelem felügyelőjének. Felügyelőként Ön hagyja jóvá a kérelmet a benyújtás előtt.\n\nA kérelmet megtekintheti és a felkérést elfogadhatja itt: %:invitation-url%"}
+          :member-invited {:subject "Meghívás a(z) %:application-id% kérelemben való részvételre"
+                           :message "Tisztelt %:recipient%!\n\nMeghívást kapott a(z) %:application-id% kérelemben való részvételre %:applicant% által.\n\nA kérelmet megtekintheti és a feltételeket elfogadhatja itt: %:invitation-url%"}
           :regards "\n\nÜdvözlettel:\n\nREMS\n"
-          :remarked {:subject "(%:application-id%) Megjegyzés érkezett a jelentkezéshez"
-                     :message "Tisztelt %:recipient%!\n\n%:event-actor% megjegyzést fűzött %:applicant% %:application-id% azonosítójú jelentkezéséhez.\n\nA jelentkezést és a megjegyzést itt tekintheti meg: %:application-url%"}
-          :review-requested {:subject "(%:application-id%) Véleményezési kérelem"
-                             :message "Tisztelt %:recipient%!\n\n%:event-actor% a véleményét kéri %:applicant% %:application-id% azonosítójú jelentkezésével kapcsolatban.\n\nA jelentkezést itt tekintheti meg: %:application-url%"}
-          :reviewed {:subject "(%:application-id%) A jelentkezést véleményezték"
-                     :message "Tisztelt %:recipient%!\n\n%:event-actor% véleményezte %:applicant% %:application-id% azonosítójú jelentkezését.\n\nA jelentkezést itt tekintheti meg: %:application-url%"}
+          :remarked {:subject "(%:application-id%) Megjegyzés érkezett a kérelemhez"
+                     :message "Tisztelt %:recipient%!\n\n%:event-actor% megjegyzést fűzött %:applicant% %:application-id% azonosítójú kérelméhez.\n\nA kérelmet és a megjegyzést itt tekintheti meg: %:application-url%"}
+          :review-requested {:subject "(%:application-id%) Bírálatkérés"
+                             :message "Tisztelt %:recipient%!\n\n%:event-actor% a bírálatát kéri %:applicant% %:application-id% azonosítójú kérelmével kapcsolatban.\n\nA kérelmet itt tekintheti meg: %:application-url%"}
+          :reviewed {:subject "(%:application-id%) A kérelmet bírálták"
+                     :message "Tisztelt %:recipient%!\n\n%:event-actor% bírálta %:applicant% %:application-id% azonosítójú kérelmét.\n\nA kérelmet itt tekintheti meg: %:application-url%"}
           ;; Format parameters for reviewer-invited:
           ;; %1 - %:recipient% - name of recipient
           ;; %2 - %:applicant% - name of applicant
           ;; %3 - %:application-id% - id of application (+ description of application if available)
           ;; %4 - %:invitation-url% - invitation link
-          :reviewer-invited {:subject "Meghívás a(z) %:application-id% jelentkezés kezelésében való részvételre"
-                             :message "Tisztelt %:recipient%!\n\nMeghívást kapott a(z) %:application-id% jelentkezés kezelésében való részvételre %:applicant% által.\n\nA jelentkezést itt tekintheti meg: %:invitation-url%"}
+          :reviewer-invited {:subject "Meghívás a(z) %:application-id% kérelem bírálatában való részvételre"
+                             :message "Tisztelt %:recipient%!\n\nMeghívást kapott a(z) %:application-id% kérelem bírálatában való részvételre %:applicant% által.\n\nA kérelmet itt tekintheti meg: %:invitation-url%"}
           :reviewer-reminder {;; Format parameters for reviewer-reminder/application:
                               ;; %1 - %:applicant% - name of applicant
                               ;; %2 - %:application-id% - id of application (+ description of application if available)
@@ -600,37 +611,37 @@
                               ;; %1 - %:recipient% - name of handler user
                               ;; %2 - %:applications% - list of applications which require action
                               ;; %3 - %:actions-url% - link to actions page
-                              :message "Tisztelt %:recipient%!\n\nA következő jelentkezések az Ön véleményezésére várnak:\n\n%:applications%\n\nA jelentkezéseket itt tekintheti meg: %:actions-url%"
-                              :subject "Véleményezésre váró jelentkezések"}
+                              :message "Tisztelt %:recipient%!\n\nA következő kérelmek az Ön bírálatára várnak:\n\n%:applications%\n\nA kérelmeket itt tekintheti meg: %:actions-url%"
+                              :subject "Bírálatra váró kérelmek"}
           ;; Format parameters for workflow-handler-invitation:
           ;; %1 - %:recipient% - name of invited person, as entered in application
           ;; %2 - %:invited-by% - name of person who sent the invitation
           ;; %3 - %:workflow% - workflow title
           ;; %4 - %:invitation-url% - invitation link
-          :workflow-handler-invitation {:message "Tisztelt %:recipient%!\n\n%:invited-by% meghívta Önt a(z) %:workflow% munkafolyamat jelentkezéseinek kezelésére.\n\nA munkafolyamatot itt tekintheti meg: %:invitation-url%"
-                                        :subject "Meghívás jelentkezések kezelésére"}}
+          :workflow-handler-invitation {:message "Tisztelt %:recipient%!\n\n%:invited-by% meghívta Önt a(z) %:workflow% munkafolyamat elnökei közé.\n\nA munkafolyamatot itt tekintheti meg: %:invitation-url%"
+                                        :subject "Meghívás munkafolyamat elnökei közé"}}
   :footer "Analyst Platform – EPKEB"
   :form {:accepted-licenses "Elfogadott felhasználási feltételek"
          :actions "Műveletek"
          :add-comment "Megjegyzés hozzáadása"
-         :add-comments-not-shown-to-applicant "Megjegyzés hozzáadása (nem látható a jelentkező számára)"
-         :add-comments-shown-to-applicant "Megjegyzés hozzáadása (látható a jelentkező számára)"
+         :add-comments-not-shown-to-applicant "Megjegyzés hozzáadása (nem látható a kérelmezők számára)"
+         :add-comments-shown-to-applicant "Megjegyzés hozzáadása (látható a kérelmezők számára)"
          :add-applicant-remark "Válasz vagy megjegyzés a bizottságnak (a bírálók és az elnökök látják)"
          :add-remark "Megjegyzés hozzáadása"
          :add-row "Sor hozzáadása"
-         :alert-blacklisted-users "A jelentkezés ezen tagjai feketelistán szerepelnek néhány igényelt kérelemhoz:"
-         :alert-disabled-resources "A jelentkezés letiltott katalógus tételeket tartalmaz:"
-         :application "Jelentkezés"
+         :alert-blacklisted-users "A kérelem ezen résztvevői feketelistán szerepelnek néhány igényelt eljáráshoz:"
+         :alert-disabled-resources "A kérelem letiltott eljárásokat tartalmaz:"
+         :application "Kérelem"
          :attachment-remove "Eltávolítás"
          :attachments "Mellékletek"
          :attachments-as-zip "Mellékletek (zip)"
          :autosave "Automatikus mentés"
-         :autosave-confirmed "Jelentkezés mentve."
+         :autosave-confirmed "Kérelem mentve."
          :autosave-in-progress "Mentés"
          :checkbox-checked "Igen"
          :checkbox-unchecked "Nem"
          :comment "Megjegyzés"
-         :copy-as-new "Másolás új jelentkezésként"
+         :copy-as-new "Másolás új kérelemként"
          :current-value "Jelenlegi"
          :diff-hide "Változások elrejtése"
          :diff-show "Változások megjelenítése"
@@ -644,16 +655,16 @@
          :licenses "Felhasználási feltételek"
          ;; %1 - number
          :maxlength "(max %1 karakter)"
-         :must-accept-licenses "Minden tagnak el kell fogadnia a felhasználási feltételeket az kérelmek eléréséhez."
+         :must-accept-licenses "Minden kérelmezőnek el kell fogadnia a felhasználási feltételeket az eljárások eléréséhez."
          :no-rows "Nincsenek sorok"
          :optional "(opcionális)"
          :please-wait "Kérjük, várjon"
-         :previous-applications "A jelentkező korábbi jelentkezései"
+         :previous-applications "A kapcsolattartó korábbi kérelmei"
          :previous-value "Előző"
          :required ""
-         :resources "Kérelmek"
+         :resources "Eljárások"
          :save "Mentés piszkozatként"
-         :submit "Jelentkezés beküldése"
+         :submit "Kérelem benyújtása"
          :success "Siker"
          :upload "Melléklet feltöltése"
          :upload-extensions "Engedélyezett fájltípusok: %1."
@@ -664,7 +675,7 @@
                       :invalid-email "Érvénytelen e-mail cím."
                       :invalid-phone-number "Érvénytelen telefonszám."
                       :invalid-ip-address "Érvénytelen IP cím."
-                      :invalid-ip-address-private "Ez egy privát IP cím, és nem használható a jelentkezésben."
+                      :invalid-ip-address-private "Ez egy privát IP cím, és nem használható a kérelemben."
                       :invalid-user "Érvénytelen felhasználó."
                       :invalid-value "Érvénytelen érték."
                       :options-required "Legalább egy opció kiválasztása kötelező."
@@ -690,7 +701,7 @@
                    :unknown "Probléma történt a bejelentkezés során. Kérjük, ellenőrizze az azonosító szolgáltatóját."}
           :fake-text ""
           :fake-title ""
-          :intro [:div [:h1 "Üdvözöljük a REMS-ben"] [:p "Ez egy kérelem-hozzáférés kezelő rendszer. Itt igényelhet hozzáférést a platform különböző adataihoz és szolgáltatásaihoz."]]
+          :intro [:div [:h1 "Üdvözöljük az EPKEB kérelemkezelő rendszerében"] [:p "Itt nyújthatja be kutatásetikai kérelmeit az Egyesített Pszichológiai Kutatásetikai Bizottsághoz (EPKEB), és itt követheti nyomon az elbírálásukat."]]
           :intro2 ""
           :login "Bejelentkezés"
           :oidc-text ""
@@ -700,7 +711,7 @@
   :missing "Hiányzó fordítás: %1"
   :navigation {:actions "Műveletek"
                :administration "Adminisztráció"
-               :applications "Jelentkezések"
+               :applications "Kérelmek"
                :catalogue "Katalógus"
                ;; %1 - name of language
                :change-language "Nyelv váltása: %1"
@@ -713,7 +724,7 @@
   :not-found-page {:not-found "Nem található"
                    :page-was-not-found "Az oldal nem található."}
   :pdf {:generated "Ez a PDF ekkor készült:"}
-  :phases {:apply "Jelentkezés"
+  :phases {:apply "Kérelem"
            :approve "Jóváhagyás"
            :approved "Jóváhagyva"
            :phase-active "Aktív fázis:"
@@ -729,16 +740,16 @@
             :notification-email "Másik e-mail cím használata értesítésekhez"
             :save "Mentés"
             :settings "Beállítások"
-            :warning-about-missing-email [:<> "Szüksége lesz egy " [:a {:href "/profile"} "e-mail cím hozzáadására a beállításoknál"] ", hogy értesítéseket kaphasson a jelentkezéseiről."]
+            :warning-about-missing-email [:<> "Szüksége lesz egy " [:a {:href "/profile"} "e-mail cím hozzáadására a beállításoknál"] ", hogy értesítéseket kaphasson a kérelmeiről."]
             :your-details "Az Ön adatai"}
-  :roles {:anonymous-handler :hu.t.roles/handler ; use handler as default translation for workflow anonymized handlers
-          :applicant "Jelentkező"
+  :roles {:anonymous-handler "Bizottság"
+          :applicant "Kapcsolattartó"
           :decider "Döntéshozó"
-          :handler "Kezelő"
-          :member "Tag"
+          :handler "Elnök"
+          :member "Kutató"
           :past-decider "Korábbi döntéshozó"
-          :past-reviewer "Korábbi véleményező"
-          :reviewer "Véleményező"
+          :past-reviewer "Korábbi bíráló"
+          :reviewer "Bíráló"
           :supervisor "Felügyelő"
           :technical-role "Technikai szerepkör"}
   :search {:clear-search "Keresés törlése"
@@ -759,5 +770,5 @@
   :forbidden-page {:forbidden "Tiltott"
                    :you-are-forbidden "Az oldal elérése tiltott."}
   :error-page {:title "Probléma"}
-  :meta {:description "A Resource Entitlement Management System egy eszköz az kérelmekhez, például kutatási adatkészletekhez való hozzáférési jogok kezelésére."
+  :meta {:description "A Resource Entitlement Management System egy eszköz az erőforrásokhoz, például kutatási adatkészletekhez való hozzáférési jogok kezelésére."
          :keywords "REMS, jogosultság, hozzáférés-kezelés, eszköz, hozzáférési jogok, kérelmek, adatkészletek"}}}
