@@ -1103,7 +1103,7 @@
       hide-extra-user-attributes))
 
 (defn- may-see-private-answers? [roles]
-  (some #{:applicant :member :decider :past-decider :handler :reporter}
+  (some #{:applicant :member :supervisor :decider :past-decider :handler :reporter}
         roles))
 
 (defn- apply-field-privacy [field roles]

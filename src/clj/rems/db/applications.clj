@@ -385,7 +385,7 @@
                      (keep personalize-app)))))
 
 (defn- my-application? [app]
-  (some #{:applicant :member} (:application/roles app)))
+  (some #{:applicant :member :supervisor} (:application/roles app)))
 
 (defn get-my-applications-full
   "Returns all full, personalized applications where `userid` is an applying user.

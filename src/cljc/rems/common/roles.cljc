@@ -8,11 +8,11 @@
 
 (def +admin-write-roles+ #{:organization-owner :owner})
 (def +admin-read-roles+ #{:owner :organization-owner :handler :reporter})
-(def +applying-roles+ #{:applicant :member})
+(def +applying-roles+ #{:applicant :member :supervisor})
 (def +handling-roles+ #{:handler :reviewer :decider :past-reviewer :past-decider})
 
 (defn show-applications? [roles]
-  (some #{:applicant :member :reporter} roles))
+  (some #{:applicant :member :supervisor :reporter} roles))
 
 (defn show-all-applications? [roles]
   (some #{:reporter} roles))

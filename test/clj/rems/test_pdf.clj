@@ -161,7 +161,7 @@
                [:paragraph "State: Applied"]]
               [[:heading pdf/heading-style "Applicants"]
                [[:paragraph pdf/field-style
-                 [:phrase {:style :bold} "Applicant"]
+                 [:phrase {:style :bold} "Contact person"]
                  ": "
                  "Alice Applicant (alice) <alice@example.com>"]
                 [:paragraph "Accepted terms of use: Yes"]]
@@ -448,12 +448,12 @@
                [:paragraph "State: Approved"]]
               [[:heading pdf/heading-style "Applicants"]
                [[:paragraph pdf/field-style
-                 [:phrase {:style :bold} "Applicant"]
+                 [:phrase {:style :bold} "Contact person"]
                  ": "
                  "Alice Applicant (alice) <alice@example.com>"]
                 [:paragraph "Accepted terms of use: Yes"]]
                [[[:paragraph pdf/field-style
-                  [:phrase {:style :bold} "Member"]
+                  [:phrase {:style :bold} "Researcher"]
                   ": "
                   "Beth Applicant (beth) <beth@example.com>"]
                  [:paragraph "Accepted terms of use: No"]]]]
