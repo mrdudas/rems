@@ -25,6 +25,7 @@ A cél: a kérelmek beküldése, a bírálók kijelölése, a bírálat, a módo
 | [jelenlegi-folyamat.md](jelenlegi-folyamat.md) | A mai, kézi folyamat a „Feladatok, lépések” leírás és a levélsablonok alapján: szerepek, határidők, levéltípusok |
 | [sablonok.md](sablonok.md) | A használt sablonok szerkezete: kérelem űrlap, bírálati lap, engedély (normál/rövidített, magyar/angol), tagintézmények |
 | [rems-lekepezes.md](rems-lekepezes.md) | Mi oldható meg a gyári REMS-szel konfigurációból, és mihez kell fejlesztés |
+| [arculat.md](arculat.md) | Az EPKEB-téma (színek, logó) és a felhasználói élmény javításának terve |
 | [szojegyzek.md](szojegyzek.md) | A felület kötelező szóhasználata magyarul és angolul (kérelem, kapcsolattartó, kutató, elnök, bíráló, eljárás) |
 | [virtualis-engedely.md](virtualis-engedely.md) | A virtuális (linkkel ellenőrizhető) engedély terve |
 | [telepites.md](telepites.md) | A rems.analyst.hu próbarendszer állapota, a talált hibák és a teendők |

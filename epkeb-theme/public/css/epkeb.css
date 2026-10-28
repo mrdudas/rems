@@ -1,0 +1,134 @@
+/* EPKEB theme: styles beyond the variables of theme.edn.
+   See docs/epkeb/arculat.md */
+
+:root {
+  --epkeb-navy: #16233A;
+  --epkeb-blue: #1F6FD1;
+  --epkeb-blue-dark: #14509A;
+  --epkeb-sky: #EAF2FC;
+  --epkeb-crimson: #CD214F;
+  --epkeb-ink: #3A4A60;
+  --epkeb-line: #E3E8EF;
+  --epkeb-page: #F4F6FA;
+  --epkeb-radius: 10px;
+}
+
+body {
+  background-color: var(--epkeb-page);
+  color: var(--epkeb-navy);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* the navigation bar: white with a thin line, the active page underlined */
+.navbar-flex {
+  background-color: #fff;
+}
+.navbar-flex .nav-link {
+  border-bottom: 3px solid transparent;
+  padding-bottom: 0.35rem;
+}
+.navbar-flex .nav-link.active {
+  border-bottom-color: var(--epkeb-blue);
+}
+
+/* the big logo above the page title */
+.logo {
+  height: 110px;
+  margin: 0.5rem 0 0.5rem 0;
+}
+.logo .img {
+  background-size: contain;
+  background-position: left center;
+  background-repeat: no-repeat;
+}
+
+h1 {
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--epkeb-navy);
+}
+
+/* cards instead of black boxes */
+.collapsible.card,
+.card {
+  border: 1px solid var(--epkeb-line);
+  border-radius: var(--epkeb-radius);
+  overflow: hidden;
+}
+.collapsible > .card-header,
+.card-header {
+  font-size: 1.15rem;
+  font-weight: 700;
+  border-bottom: 1px solid var(--epkeb-line) !important;
+  border-left: 4px solid var(--epkeb-blue);
+}
+
+/* buttons: rounded, the primary action stands out */
+.btn {
+  border-radius: 8px;
+  font-weight: 600;
+  box-shadow: none !important;
+}
+.btn-secondary {
+  border: 1px solid #D3DEEC !important;
+}
+.btn-primary {
+  box-shadow: 0 1px 2px rgba(20, 80, 154, 0.25) !important;
+}
+#actions .commands .btn,
+.commands .btn {
+  margin: 0.15rem 0.1rem;
+}
+
+/* form fields */
+.form-control {
+  border-radius: 8px;
+  border-color: #D3DBE6;
+}
+.form-control:focus {
+  border-color: var(--epkeb-blue);
+  box-shadow: 0 0 0 3px rgba(31, 111, 209, 0.15);
+}
+.form-control[readonly],
+.form-control:disabled {
+  background-color: #F7F9FC;
+}
+
+/* the phases of the application */
+.phases .phase {
+  border-radius: 6px;
+  font-weight: 600;
+}
+
+/* tables */
+.rems-table {
+  border-radius: var(--epkeb-radius);
+  overflow: hidden;
+}
+.rems-table th {
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  letter-spacing: 0.04em;
+}
+
+/* alerts */
+.alert {
+  border-radius: var(--epkeb-radius);
+}
+
+/* footer */
+.footer {
+  background-color: var(--epkeb-navy) !important;
+  color: #C9D2DE !important;
+}
+
+/* the small logo in the navigation bar */
+.logo-menu {
+  width: 120px;
+  height: 40px;
+}
+.logo-menu .img {
+  background-size: contain;
+  background-position: left center;
+  background-repeat: no-repeat;
+}

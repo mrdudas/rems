@@ -1,0 +1,73 @@
+;; EPKEB theme, see docs/epkeb/arculat.md
+;; The colors come from the EPKEB sign (navy, blue) and the epkeb.ttk.hu site
+;; (crimson for warnings). Further styles are in public/css/epkeb.css.
+{:font-family "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif"
+ :color1 "#E3E8EF" ; light borders and table stripes
+ :color2 "#FFFFFF"
+ :color3 "#16233A" ; navy: headings
+ :color4 "#1F6FD1" ; blue: active links
+ :link-color "#1F6FD1"
+ :link-hover-color "#14509A"
+ :nav-color "#3A4A60"
+ :nav-active-color "#16233A"
+ :nav-hover-color "#1F6FD1"
+ :navbar-color "#16233A"
+ :button-navbar-font-weight 600
+
+ :primary-button-color "#FFFFFF"
+ :primary-button-bgcolor "#1F6FD1"
+ :primary-button-hover-color "#FFFFFF"
+ :primary-button-hover-bgcolor "#14509A"
+ :secondary-button-color "#16233A"
+ :secondary-button-bgcolor "#EEF3FA"
+ :secondary-button-hover-color "#16233A"
+ :secondary-button-hover-bgcolor "#DCE7F6"
+
+ :alert-success-color "#1E5E3A"
+ :alert-success-bgcolor "#E5F4EA"
+ :alert-success-bordercolor "#B8DFC6"
+ :alert-danger-color "#8E1236"
+ :alert-danger-bgcolor "#FBE9EE"
+ :alert-danger-bordercolor "#F0B9C8"
+ :alert-warning-color "#7A5200"
+ :alert-warning-bgcolor "#FFF6E0"
+ :alert-warning-bordercolor "#F2D99A"
+ :alert-info-color "#14509A"
+ :alert-info-bgcolor "#EAF2FC"
+ :alert-info-bordercolor "#C3D9F4"
+ :text-danger "#CD214F!important"
+ :bg-danger "#CD214F!important"
+
+ :img-path "/img/"
+ :logo-name "epkeb-logo.svg"
+ :logo-name-en "epkeb-logo-en.svg"
+ :logo-name-sm "epkeb-logo.svg"
+ :logo-name-en-sm "epkeb-logo-en.svg"
+ :navbar-logo-name "epkeb-mark.svg"
+ :logo-bgcolor nil
+ :logo-content-origin "content-box"
+
+ :phase-color "#3A4A60"
+ :phase-bgcolor "#EEF1F5"
+ :phase-color-active "#FFFFFF"
+ :phase-bgcolor-active "#1F6FD1"
+ :phase-color-completed "#14509A"
+ :phase-bgcolor-completed "#DCE7F6"
+
+ :collapse-bgcolor "#FFFFFF"
+ :collapse-color "#16233A"
+ :collapse-shadow "0 1px 2px rgba(22, 35, 58, 0.06), 0 4px 16px rgba(22, 35, 58, 0.06)"
+
+ :table-bgcolor "#FFFFFF"
+ :table-heading-color "#3A4A60"
+ :table-heading-bgcolor "#F3F6FA"
+ :table-hover-bgcolor "#EEF3FA"
+ :table-text-color "#16233A"
+ :table-stripe-color "#FAFBFD"
+ :table-border "1px solid #E3E8EF"
+ :table-shadow "none"
+
+ :header-border "1px solid #E3E8EF"
+ :header-shadow "0 1px 8px rgba(22, 35, 58, 0.06)"
+ :footer-color "#C9D2DE"
+ :footer-bgcolor "#16233A"}

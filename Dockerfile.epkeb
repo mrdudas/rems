@@ -26,6 +26,8 @@ ENTRYPOINT ["bash","./docker-entrypoint.sh"]
 
 COPY empty-config.edn /rems/config/config.edn
 COPY example-theme/extra-styles.css /rems/example-theme/extra-styles.css
+# the EPKEB theme, enabled with :theme-path, see docs/epkeb/arculat.md
+COPY epkeb-theme /rems/epkeb-theme
 COPY --from=build /build/target/uberjar/rems.jar /rems/rems.jar
 COPY docker-entrypoint.sh /rems/docker-entrypoint.sh
 
