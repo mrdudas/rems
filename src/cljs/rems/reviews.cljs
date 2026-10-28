@@ -182,9 +182,12 @@
                                                (:application/members application))))]
     (not (contains? applying-users (:event/actor event)))))
 
-(defn- question-or-answer? [application event]
+(defn- question-or-answer?
+  "The applicants get only the public remarks, without the `:event/public`
+  flag, so only the remarks known to be private are left out."
+  [application event]
   (and (= :application.event/remarked (:event/type event))
-       (or (:event/public event)
+       (or (not (false? (:event/public event)))
            (not (committee-actor? application event)))))
 
 (defn questions-card
