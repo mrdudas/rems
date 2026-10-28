@@ -12,7 +12,8 @@ Az állapot 2026-10-27-i felmérése. A beállításokat (űrlapok, workflow-k, 
 - Adatbázis: a közös `supabase-db` PostgreSQL, `rems` adatbázis.
 - Becsatolt fájlok: `config.edn` (csak olvasható), keresőindex-volume. A `translations/` becsatolását megszüntettük; a fordítás a jar-ból jön.
 - Azonosítás: OIDC a Keycloakon keresztül (`auth.analyst.hu`, `analyst` realm, `rems-client` kliens).
-- Levelezés: `smtp-relay:25`.
+- Levelezés (2026-10-28 óta): **a próbarendszer nem küld valódi e-mailt.** Minden levél a `rems-mailpit` levélelfogóba megy (`:smtp-host "rems-mailpit"`, `:smtp-port 1025`; a szolgáltatás a `rems-docker-compose.yml`-ben van). A Mailpit csak a belső hálózaton érhető el; a levelek (például a meghívó linkek) a webes felületén (8025-ös port) vagy az API-n (`/api/v1/messages`) olvashatók, legfeljebb 2000 levél marad meg. Korábban a közös `smtp-relay:25`-ön keresztül valódi címekre ment a levél. Éles rendszerben a valódi SMTP-t kell beállítani.
+- Helyi tesztek: nem küldenek levelet, mert a `test-config.edn`-ben nincs SMTP-szerver (a REMS ilyenkor csak naplózza a levelet), és a tesztkonténer csak a teszt-adatbázist éri el.
 - Nyelvek: `[:en :hu]`.
 
 ## Forráskód
@@ -38,6 +39,8 @@ Az állapot 2026-10-27-i felmérése. A beállításokat (űrlapok, workflow-k, 
 
 ```clojure
 :mail-from "rems@analyst.hu"
+:smtp-host "rems-mailpit"
+:smtp-port 1025
 :languages [:en :hu]
 :enable-cart false
 :enable-organization-contacts true
