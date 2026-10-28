@@ -1,5 +1,5 @@
 (ns rems.db.organizations
-  (:require [com.rpl.specter :refer [ALL transform]]
+  (:require [com.rpl.specter :refer [ALL must transform]]
             [medley.core :refer [assoc-some update-existing]]
             [rems.cache :as cache]
             [rems.common.util :refer [getx index-by]]
@@ -65,8 +65,8 @@
 (defn get-organizations []
   (->> (get-organizations-raw)
        (transform [ALL :organization/owners ALL] #(rems.db.users/get-user (:userid %)))
-       (transform [ALL :organization/contacts ALL] #(rems.db.users/get-user (:userid %)))
-       (transform [ALL :organization/chairs ALL] #(rems.db.users/get-user (:userid %)))
+       (transform [ALL (must :organization/contacts) ALL] #(rems.db.users/get-user (:userid %)))
+       (transform [ALL (must :organization/chairs) ALL] #(rems.db.users/get-user (:userid %)))
        (mapv coerce-organization-full)))
 
 (defn- getx-organization-id [x]
@@ -86,8 +86,8 @@
                                         :organization/id id}]}))
       (->> org
            (transform [:organization/owners ALL] rems.db.users/join-user)
-           (transform [:organization/contacts ALL] rems.db.users/join-user)
-           (transform [:organization/chairs ALL] rems.db.users/join-user)
+           (transform [(must :organization/contacts) ALL] rems.db.users/join-user)
+           (transform [(must :organization/chairs) ALL] rems.db.users/join-user)
            coerce-organization-full))))
 
 (defn join-organization [x]

@@ -29,7 +29,7 @@ Az állapot 2026-10-27-i felmérése. A beállításokat (űrlapok, workflow-k, 
 1. Változtatás és commit az `epkeb` ágon (`~/rems`).
 2. Unit tesztek (helyben nincs Java, ezért konténerben):
    `docker run --rm -m 3g -v $PWD:/w -w /w clojure:temurin-21-lein-2.11.2 lein kaocha unit`
-   A teljes integrációs tesztkészlet a szerveren nem fér el a memóriában; ezt a GitHub Actions futtatja minden `epkeb`-ágra történő feltöltéskor (`.github/workflows/test.yml`: unit és integrációs tesztek, PostgreSQL 13-mal). Az eredmény a GitHubon az *Actions* fülön látszik; kézzel is indítható (*Run workflow*).
+   Integrációs tesztek: egyszerre a teljes készlet nem fér el a szerver memóriájában, ezért névterenként, 4-es csoportokban futnak egy eldobható PostgreSQL 13 konténer mellett (`--network container:rems-test-pg`, `lein kaocha integration --focus <névtér> ...`, `JVM_OPTS=-Xmx900m`, konténer `-m 1400m`). Ehhez kb. 2 GB szabad memória kell. A GitHub Actions is futtatja őket (`.github/workflows/test.yml`), ha a forkon engedélyezve van.
 3. `cd /opt/analyst.hu && docker compose build rems` (kb. 15–25 perc, 2–3 GB memória).
 4. `docker compose up -d rems`; a migrációk automatikusan lefutnak.
 5. Ellenőrzés a böngészőben. Újraindításkor a REMS-munkamenetek elvesznek, újra be kell lépni.
