@@ -210,7 +210,9 @@
        :item-selected? #(contains? selected-owners (% :userid))
        :multi? true
        :disabled? (and @(rf/subscribe [::editing?])
-                       (not org-owner?))
+                       (or (not org-owner?)
+                           (and (:restrict-organization-owners @rems.globals/config)
+                                (not (contains? (set @rems.globals/roles) :owner)))))
        :on-change #(rf/dispatch [::set-owners %])}]]))
 
 (defn- organization-users-field

@@ -77,6 +77,28 @@ Ezekhez a master workflow-t vagy új parancsot kell fejleszteni:
 | Határidők, emlékeztetők, felfüggesztés 30 nap után | Csak az `:application-deadline-days` jelzés van | Ütemezett feladat |
 | A szavazatok automatikus összesítése | A handler kézzel dönt | Opcionális |
 
+## Ki oszthat ki szerepeket
+
+Két adminisztrátori szerep van: a **rendszergazda** (`owner`) és a **szervezettulajdonos** (a szervezet „Tulajdonosok” listáján szereplők).
+
+| Szerep | Ki osztja ki | Hol |
+|---|---|---|
+| Rendszergazda (`owner`) | csak a szerveren, parancssorból (`grant-role owner <felhasználó>`), utána a REMS újraindítása kell | szerver |
+| Szervezettulajdonos | csak a rendszergazda (`:restrict-organization-owners true` mellett) | Adminisztráció → Szervezetek → „Tulajdonosok” |
+| Kapcsolattartó, illetékes elnök | a rendszergazda vagy a szervezet tulajdonosa | a szervezet „Kapcsolattartók” és „Illetékes elnökök” mezője |
+| Bírálói kör tagja és státusza | a rendszergazda vagy az **EPKEB** szervezet tulajdonosa | az EPKEB szervezet „Bírálói kör” listája (más szervezetnél nem jelenik meg) |
+| Elnök / titkár (handler) | a rendszergazda vagy a munkafolyamat szervezetének tulajdonosa | Adminisztráció → Munkafolyamatok → „Elnökök” |
+| Kutató | a kapcsolattartó (meghívó) | a kérelem oldalán |
+| Felügyelő | a kapcsolattartó vagy a kutató (meghívó vagy kijelölés) | a kérelem oldalán |
+| Bíráló egy kérelemhez | az elnök vagy a titkár, a bírálói körből | a kérelem oldalán vagy a bírálói naptárban |
+
+Döntés (2026-10-28):
+
+- Az **EPKEB szervezet tulajdonosai az elnökök és a titkár**. Így az elnökség maga kezeli a kapcsolattartókat, az illetékes elnököket, a bírálói kört és a munkafolyamatok elnöki listáját.
+- A **rendszergazda** csak a technikai üzemeltető.
+- A **tulajdonosi listát csak a rendszergazda módosíthatja** (`:restrict-organization-owners true`). A gyári REMS-ben egy szervezettulajdonos más tulajdonost is felvehet vagy törölhet; a kapcsolóval ezt a szerver tiltja (403), és a felületen a mező nem szerkeszthető.
+- A **tagintézményi szervezeteknek nincs tulajdonosa**: a kapcsolattartóikat és az illetékes elnöküket az EPKEB adminjai állítják be. Ha egy tagintézmény tulajdonost kapna, a saját kapcsolattartóit és illetékes elnökét átírhatná.
+
 ## Elkészült fejlesztések
 
 Mind kapcsolóval bekapcsolható; alapból ki vannak kapcsolva, így a gyári működés nem változik.

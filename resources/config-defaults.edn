@@ -486,6 +486,10 @@
  ;; default) disables the pool.
  :reviewer-pool-organization nil
 
+ ;; When true, only owners (not organization owners) can change the owners of
+ ;; an organization.
+ :restrict-organization-owners false
+
  ;; The deadline of a review in days from the request, shown in the reviewer
  ;; calendar, and of a re-review requested after the application was returned
  ;; for changes. Only used with `:reviewer-pool-organization`.

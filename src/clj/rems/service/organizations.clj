@@ -1,7 +1,9 @@
 (ns rems.service.organizations
   (:require [clojure.set :as set]
             [medley.core :refer [assoc-some find-first]]
-            [rems.auth.util]
+            [rems.auth.util :refer [throw-forbidden]]
+            [rems.config :refer [env]]
+            [rems.context :as context]
             [rems.common.util :refer [apply-filters]]
             [rems.db.applications]
             [rems.db.organizations]
@@ -49,9 +51,18 @@
      :errors [{:type :t.actions.errors/duplicate-id
                :organization/id (:organization/id cmd)}]}))
 
+(defn- owners-changed? [cmd]
+  (and (contains? cmd :organization/owners)
+       (not= (set (map :userid (:organization/owners cmd)))
+             (set (map :userid (:organization/owners (rems.db.organizations/get-organization-by-id-raw (:organization/id cmd))))))))
+
 (defn edit-organization! [cmd]
   (let [id (:organization/id cmd)]
     (rems.service.util/check-allowed-organization! cmd)
+    (when (and (:restrict-organization-owners env)
+               (not (contains? context/*roles* :owner))
+               (owners-changed? cmd))
+      (throw-forbidden "only owners can change the owners of an organization"))
     (rems.db.organizations/update-organization! id (fn [organization] (->> (dissoc cmd :organization/id)
                                                                            (merge organization))))
     {:success true

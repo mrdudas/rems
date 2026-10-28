@@ -52,6 +52,7 @@
    (s/optional-key :enable-processing-states) s/Bool
    (s/optional-key :enable-organization-contacts) s/Bool
    (s/optional-key :reviewer-pool-organization) (s/maybe s/Str)
+   (s/optional-key :restrict-organization-owners) s/Bool
    (s/optional-key :tables) {s/Keyword {s/Keyword s/Any}}})
 
 (def translations-api

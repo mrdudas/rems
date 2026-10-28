@@ -45,6 +45,7 @@
                     :enable-processing-states
                     :enable-organization-contacts
                     :reviewer-pool-organization
+                    :restrict-organization-owners
                     :tables])
       (update :extra-pages filter-extra-pages)))
 

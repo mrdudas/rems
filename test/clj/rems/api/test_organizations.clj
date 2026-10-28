@@ -2,6 +2,7 @@
   (:require [clojure.test :refer :all]
             [medley.core :refer [find-first]]
             [rems.api.testing :refer :all]
+            [rems.config]
             [rems.db.api-key]
             [rems.db.test-data-helpers :as test-helpers]
             [ring.mock.request :refer :all]))
@@ -368,3 +369,28 @@
                 :errors [{:type "t.actions.errors/duplicate-id"
                           :organization/id "duplicate-organizations-api-test-org"}]}
                response2))))))
+
+;; EPKEB: only owners can change the owners of an organization
+(deftest organization-owners-restriction-test
+  (let [api-key "42"
+        org {:organization/id organization-id
+             :organization/name {:fi "Org" :en "Org"}
+             :organization/short-name {:fi "Org" :en "Org"}
+             :organization/owners [{:userid "organization-owner1"}]
+             :organization/review-emails []}
+        edit! (fn [userid org]
+                (:status (api-response :put "/api/organizations/edit" org api-key userid)))]
+    (rems.db.api-key/add-api-key! api-key)
+    (test-helpers/create-user! {:userid "owner"} :owner)
+    (test-helpers/create-user! {:userid "organization-owner1"})
+    (test-helpers/create-user! {:userid "organization-owner2"})
+    (api-call :post "/api/organizations/create" org api-key "owner")
+    (with-redefs [rems.config/env (assoc rems.config/env :restrict-organization-owners true)]
+      (testing "an organization owner can edit the organization"
+        (is (= 200 (edit! "organization-owner1" (assoc org :organization/name {:fi "Org 2" :en "Org 2"})))))
+      (testing "an organization owner cannot change the owners"
+        (is (= 403 (edit! "organization-owner1" (update org :organization/owners conj {:userid "organization-owner2"}))))
+        (is (= ["organization-owner1"]
+               (map :userid (:organization/owners (api-call :get (str "/api/organizations/" organization-id) nil api-key "owner"))))))
+      (testing "an owner can change the owners"
+        (is (= 200 (edit! "owner" (update org :organization/owners conj {:userid "organization-owner2"}))))))))
