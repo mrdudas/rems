@@ -327,6 +327,15 @@
    ;; :user-owner
    })
 
+(defn localize-reviewer-status
+  "Status of a member of the reviewer pool, see `:reviewer-pool-organization`."
+  [status]
+  (text (case (keyword status)
+          :active :t.administration.reviewer-status/active
+          :limited :t.administration.reviewer-status/limited
+          :paused :t.administration.reviewer-status/paused
+          :inactive :t.administration.reviewer-status/inactive)))
+
 (defn localize-role [role]
   (text (get localized-roles role) :t/unknown))
 

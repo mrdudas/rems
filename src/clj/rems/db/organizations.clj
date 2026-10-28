@@ -18,6 +18,8 @@
           (s/optional-key :organization/contacts) [schema-base/User]
           ;; chairs (handlers) responsible for the organization's applications
           (s/optional-key :organization/chairs) [schema-base/User]
+          ;; the reviewer pool, used for the `:reviewer-pool-organization`
+          (s/optional-key :organization/reviewers) [schema-base/ReviewerPoolEntry]
           (s/optional-key :organization/review-emails) [{:name schema-base/LocalizedString
                                                          :email s/Str}]
           (s/optional-key :enabled) s/Bool
@@ -40,6 +42,7 @@
                 (assoc-some :organization/owners (:organization/owners data)
                             :organization/contacts (:organization/contacts data)
                             :organization/chairs (:organization/chairs data)
+                            :organization/reviewers (:organization/reviewers data)
                             :organization/review-emails (:organization/review-emails data)
                             :enabled (:enabled data)
                             :archived (:archived data)))]
@@ -62,11 +65,16 @@
 (defn get-organization-by-id-raw [id]
   (cache/lookup-or-miss! organization-cache id))
 
+(defn- join-reviewer [reviewer]
+  (merge (rems.db.users/get-user (:userid reviewer))
+         (select-keys reviewer [:reviewer/organization :reviewer/status])))
+
 (defn get-organizations []
   (->> (get-organizations-raw)
        (transform [ALL :organization/owners ALL] #(rems.db.users/get-user (:userid %)))
        (transform [ALL (must :organization/contacts) ALL] #(rems.db.users/get-user (:userid %)))
        (transform [ALL (must :organization/chairs) ALL] #(rems.db.users/get-user (:userid %)))
+       (transform [ALL (must :organization/reviewers) ALL] join-reviewer)
        (mapv coerce-organization-full)))
 
 (defn- getx-organization-id [x]
@@ -88,6 +96,7 @@
            (transform [:organization/owners ALL] rems.db.users/join-user)
            (transform [(must :organization/contacts) ALL] rems.db.users/join-user)
            (transform [(must :organization/chairs) ALL] rems.db.users/join-user)
+           (transform [(must :organization/reviewers) ALL] join-reviewer)
            coerce-organization-full))))
 
 (defn join-organization [x]
@@ -113,6 +122,7 @@
                                   (update :organization/owners (partial mapv #(select-keys % [:userid])))
                                   (update-existing :organization/contacts (partial mapv #(select-keys % [:userid])))
                                   (update-existing :organization/chairs (partial mapv #(select-keys % [:userid])))
+                                  (update-existing :organization/reviewers (partial mapv #(select-keys % [:userid :reviewer/organization :reviewer/status])))
                                   validate-organization)]
     (db/set-organization! {:id id
                            :data (json/generate-string stripped-organization)})
@@ -141,3 +151,10 @@
      (cond-> #{}
        (some #(has-user? % :organization/owners userid) organizations) (conj :organization-owner)
        (some #(has-user? % :organization/contacts userid) organizations) (conj :organization-contact)))))
+
+(defn get-reviewer-pool
+  "Returns the reviewer pool of the `organization-id`, i.e. the
+  `:reviewer-pool-organization`, or nil when there is none."
+  [organization-id]
+  (when organization-id
+    (:organization/reviewers (get-organization-by-id-raw organization-id) [])))

@@ -20,6 +20,7 @@
             :designate-supervisor "Udpeg som vejleder"
             :invite-supervisor "Inviter vejleder"
             :invite-supervisor-intro "Vejlederen inviteres via e-mail. Ved tilslutning bliver vedkommende ansøgningens vejleder: vejlederen kan godkende ansøgningen, men ikke redigere den."
+            :reviewer-stats "i år %1 bedømmelser, igangværende %2, seneste anmodning %3; organisation: i år %4 ansøgninger, %5 bedømmelser"
             :assign-external-id "Tildel ekstern id"
             :assign-external-id-info "Ekstern id"
             :bundling-intro [:div.intro [:p "NB: Kun ressourcer med samme ansøgningsarbejdsgang kan lægges sammen."]]
@@ -39,6 +40,8 @@
                      :invalid-token [:div [:p "Tilslutning til ansøgning mislykkedes."] [:p "Tjek invitationstoken " [:code "%1"]]]
                      :licenses-not-accepted "Brugsvilkår ikke accepteret."
                      :cannot-designate-self "Du kan ikke udpege dig selv som vejleder."
+                     :reviewer-from-applicant-organization "%1 er udpeget af ansøgningens organisation og kan derfor ikke bedømme den."
+                     :reviewer-not-in-pool "%1 er ikke et aktivt medlem af bedømmerpuljen."
                      :supervision-not-approved "Vejlederen har ikke godkendt den aktuelle version af ansøgningen."
                      ;; %1 - organization name
                      :not-organization-contact "Kun organisationens kontaktpersoner kan oprette ansøgninger."
@@ -84,6 +87,16 @@
             :todo-applications-count "Der er %:count% aktive ansøgninger."
             :vote "Stem"}
   :administration {:active "Aktiv"
+                   :reviewer "Bedømmer"
+                   :reviewer-n "Bedømmer %1"
+                   :reviewer-organization "Udpegende organisation"
+                   :reviewer-pool "Bedømmerpulje"
+                   :reviewer-pool-explanation "Bedømmelse kan kun anmodes fra puljens aktive medlemmer, ikke fra bedømmere udpeget af ansøgningens organisation."
+                   :reviewer-status {:active "Bedømmer"
+                                     :inactive "Nej"
+                                     :limited "Bedømmer (begrænset)"
+                                     :paused "Midlertidigt ikke"}
+                   :reviewer-status-label "Status"
                    :add "Tilføj"
                    :added-at "Tilføjet"
                    :added-by "Tilføjet af"

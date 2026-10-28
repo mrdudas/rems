@@ -20,6 +20,7 @@
             :designate-supervisor "Utse till handledare"
             :invite-supervisor "Bjud in handledare"
             :invite-supervisor-intro "Handledaren bjuds in via e-post. Vid anslutning blir hen ansökans handledare: hen kan godkänna ansökan men inte redigera den."
+            :reviewer-stats "i år %1 granskningar, pågående %2, senaste begäran %3; organisation: i år %4 ansökningar, %5 granskningar"
             :assign-external-id "Ange externt id" ; ELLER Ange id för den resurs ansökan (vai arbetsflödet gäller?
             :assign-external-id-info "Externt id"
             :bundling-intro [:div.intro [:p "Notera att endast resurser med gemensam ansökningsblankett och gemensamt arbetsflöde kan kopplas samman."]]
@@ -38,6 +39,8 @@
                      :invalid-token [:div [:p "Det gick inte att ansluta till ansökningen."] [:p "Vänligen kontrollera koden för inbjudan." [:code "%1"]]]
                      :licenses-not-accepted "Du har inte godkänt användarvillkoren."
                      :cannot-designate-self "Du kan inte utse dig själv till handledare."
+                     :reviewer-from-applicant-organization "%1 har utsetts av ansökans organisation och kan därför inte granska den."
+                     :reviewer-not-in-pool "%1 är inte en aktiv medlem i granskarpoolen."
                      :supervision-not-approved "Handledaren har inte godkänt den aktuella versionen av ansökan."
                      :not-organization-contact "Endast organisationens kontaktpersoner kan skapa ansökningar."
                      :organization-does-not-exist "Organisationen \"%1\" hittades inte."
@@ -82,6 +85,16 @@
             :todo-applications-count "Det finns %:count% aktiva ansökningar."
             :vote "Rösta"}
   :administration {:active "Aktiv"
+                   :reviewer "Granskare"
+                   :reviewer-n "Granskare %1"
+                   :reviewer-organization "Utseende organisation"
+                   :reviewer-pool "Granskarpool"
+                   :reviewer-pool-explanation "Granskning kan endast begäras av poolens aktiva medlemmar, inte av granskare som utsetts av ansökans organisation."
+                   :reviewer-status {:active "Granskar"
+                                     :inactive "Nej"
+                                     :limited "Granskar (begränsat)"
+                                     :paused "Tillfälligt inte"}
+                   :reviewer-status-label "Status"
                    :add "Lägg till"
                    :added-at "Tillagd"
                    :added-by "Tillagd av"

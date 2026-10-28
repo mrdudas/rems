@@ -10,7 +10,7 @@
             [rems.flash-message :as flash-message]
             [rems.globals]
             [rems.spinner :as spinner]
-            [rems.text :refer [localized text]]
+            [rems.text :refer [localize-reviewer-status localized text]]
             [rems.util :refer [fetch]]))
 
 (rf/reg-event-fx
@@ -112,6 +112,15 @@
                        (map enrich-user)
                        (map :display))
                   {:multiline? true}]])
+              (when (= (:organization/id organization)
+                       (:reviewer-pool-organization @rems.globals/config))
+                [inline-info-field
+                 (text :t.administration/reviewer-pool)
+                 (for [reviewer (:organization/reviewers organization)]
+                   (str (:display (enrich-user reviewer))
+                        " – " (:reviewer/organization reviewer)
+                        " – " (localize-reviewer-status (:reviewer/status reviewer))))
+                 {:multiline? true}])
               [review-emails-field (:organization/review-emails organization)]
               [inline-info-field (text :t.administration/active) [readonly-checkbox {:value (status-flags/active? organization)}]]]}]
    (let [id (:organization/id organization)

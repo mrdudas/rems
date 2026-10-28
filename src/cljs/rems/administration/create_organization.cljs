@@ -14,7 +14,7 @@
             [rems.flash-message :as flash-message]
             [rems.globals]
             [rems.spinner :as spinner]
-            [rems.text :refer [text text-format]]
+            [rems.text :refer [localize-reviewer-status localized text text-format]]
             [rems.util :refer [navigate! post! put! trim-when-string]]))
 
 (rf/reg-event-fx
@@ -76,6 +76,17 @@
 (defn- build-users [users]
   (mapv #(select-keys % [:userid]) users))
 
+(defn- build-reviewers [reviewers]
+  (->> reviewers
+       (filter :userid)
+       (mapv #(-> %
+                  (select-keys [:userid :reviewer/organization :reviewer/status])
+                  (update :reviewer/status (fnil keyword :active))))))
+
+(defn- valid-reviewers? [reviewers]
+  (every? #(and (:userid %) (not (str/blank? (:reviewer/organization %))))
+          reviewers))
+
 (defn build-create-request [form languages]
   (let [request {:organization/id (trim-when-string (:organization/id form))
                  :organization/short-name (map-vals trim-when-string (:organization/short-name form))
@@ -83,8 +94,10 @@
                  :organization/owners (build-users (:organization/owners form))
                  :organization/contacts (build-users (:organization/contacts form))
                  :organization/chairs (build-users (:organization/chairs form))
+                 :organization/reviewers (build-reviewers (:organization/reviewers form))
                  :organization/review-emails (mapv build-review-email (:organization/review-emails form))}]
-    (when (valid-create-request? request languages)
+    (when (and (valid-create-request? request languages)
+               (valid-reviewers? (:organization/reviewers form)))
       request)))
 
 (defn- valid-edit-request? [request languages]
@@ -100,8 +113,10 @@
                  :organization/owners (build-users (:organization/owners form))
                  :organization/contacts (build-users (:organization/contacts form))
                  :organization/chairs (build-users (:organization/chairs form))
+                 :organization/reviewers (build-reviewers (:organization/reviewers form))
                  :organization/review-emails (mapv build-review-email (:organization/review-emails form))}]
-    (when (valid-edit-request? request languages)
+    (when (and (valid-edit-request? request languages)
+               (valid-reviewers? (:organization/reviewers form)))
       request)))
 
 (rf/reg-event-fx
@@ -273,6 +288,86 @@
                                         (rf/dispatch [::add-review-email]))}
        (text :t.administration/add)]]]))
 
+;; the reviewer pool of the `:reviewer-pool-organization`
+
+(def ^:private reviewer-statuses [:active :limited :paused :inactive])
+
+(rf/reg-event-db
+ ::add-reviewer
+ (fn [db [_]]
+   (update-in db [::form :organization/reviewers] conj-vec {:reviewer/status :active})))
+
+(rf/reg-event-db
+ ::remove-reviewer
+ (fn [db [_ index]]
+   (update-in db [::form :organization/reviewers] #(vec (remove-nth index %)))))
+
+(rf/reg-event-db
+ ::set-reviewer
+ (fn [db [_ index k value]]
+   (assoc-in db [::form :organization/reviewers index k] value)))
+
+(defn- reviewer-row [index reviewer]
+  (let [users @(rf/subscribe [::available-owners])
+        organizations @(rf/subscribe [:organizations])
+        id (str "reviewer-" index)]
+    [:div.form-field
+     [:div.form-field-header
+      [:h4 (text-format :t.administration/reviewer-n (inc index))]
+      [:div.form-field-controls
+       [items/remove-button {:on-click #(rf/dispatch [::remove-reviewer index])
+                             :data-index index}]]]
+     [:div.row
+      [:div.col-md
+       [:label.administration-field-label {:for (str id "-user")} (text :t.administration/reviewer)]
+       [dropdown/dropdown
+        {:id (str id "-user")
+         :items users
+         :item-key :userid
+         :item-label :display
+         :item-selected? #(= (:userid %) (:userid reviewer))
+         :on-change #(rf/dispatch [::set-reviewer index :userid (:userid %)])}]]
+      [:div.col-md
+       [:label.administration-field-label {:for (str id "-organization")} (text :t.administration/reviewer-organization)]
+       [:select.form-control
+        {:id (str id "-organization")
+         :value (or (:reviewer/organization reviewer) "")
+         :on-change #(rf/dispatch [::set-reviewer index :reviewer/organization (.. % -target -value)])}
+        [:option {:value ""} ""]
+        (for [organization organizations
+              :let [organization-id (:organization/id organization)]]
+          ^{:key organization-id}
+          [:option {:value organization-id} (localized (:organization/short-name organization))])]]
+      [:div.col-md
+       [:label.administration-field-label {:for (str id "-status")} (text :t.administration/reviewer-status-label)]
+       [:select.form-control
+        {:id (str id "-status")
+         :value (name (or (:reviewer/status reviewer) :active))
+         :on-change #(rf/dispatch [::set-reviewer index :reviewer/status (keyword (.. % -target -value))])}
+        (for [status reviewer-statuses]
+          ^{:key status}
+          [:option {:value (name status)} (localize-reviewer-status status)])]]]]))
+
+(defn- organization-reviewers-field []
+  (let [form @(rf/subscribe [::form])]
+    [:div.form-group
+     [:label.administration-field-label {:for :reviewers}
+      (text :t.administration/reviewer-pool)]
+     [:p (text :t.administration/reviewer-pool-explanation)]
+     (for [[index reviewer] (indexed (:organization/reviewers form))]
+       ^{:key index} [reviewer-row index reviewer])
+     [:div.dashed-group.text-center
+      [:a#add-reviewer {:href "#"
+                        :on-click (fn [event]
+                                    (.preventDefault event)
+                                    (rf/dispatch [::add-reviewer]))}
+       (text :t.administration/add)]]]))
+
+(defn- reviewer-pool-organization? [form]
+  (let [pool-organization (:reviewer-pool-organization @rems.globals/config)]
+    (and pool-organization
+         (= pool-organization (:organization/id form)))))
+
 (defn create-organization-page []
   (let [loading? (or @(rf/subscribe [::available-owners :fetching?])
                      @(rf/subscribe [::organization :fetching?]))
@@ -298,6 +393,8 @@
                     [:<>
                      [organization-contacts-field]
                      [organization-chairs-field]])
+                  (when (reviewer-pool-organization? @(rf/subscribe [::form]))
+                    [organization-reviewers-field])
                   [organization-review-emails-field]
                   [:div.col.commands
                    [cancel-button]

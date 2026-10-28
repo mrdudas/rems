@@ -44,7 +44,9 @@
           :find-userid rems.db.user-mappings/find-userid
           :get-contact-organizations (fn [userid]
                                        (when (:enable-organization-contacts env)
-                                         (rems.db.organizations/get-contact-organizations userid)))}))
+                                         (rems.db.organizations/get-contact-organizations userid)))
+          :get-reviewer-pool (fn []
+                               (rems.db.organizations/get-reviewer-pool (:reviewer-pool-organization env)))}))
 
 (def ^:dynamic *fail-on-process-manager-errors* false)
 

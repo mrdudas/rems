@@ -20,6 +20,7 @@
             :designate-supervisor "Kijelölés felügyelőnek"
             :invite-supervisor "Felügyelő meghívása"
             :invite-supervisor-intro "A felügyelő e-mailben kap meghívót. Csatlakozáskor a kérelem felügyelője lesz: jóváhagyhatja a kérelmet, de nem szerkesztheti."
+            :reviewer-stats "idén %1 bírálat, folyamatban %2, utolsó felkérés %3; intézmény: idén %4 kérelem, %5 bírálat"
             :assign-external-id "Külső azonosító hozzárendelése"
             :assign-external-id-info "Külső azonosító"
             :bundling-intro [:div.intro [:p "Megjegyzés: Csak az azonos munkafolyamattal rendelkező eljárások vonhatók össze."]]
@@ -39,6 +40,8 @@
                      :invalid-token [:div [:p "A csatlakozás a kérelemhez sikertelen."] [:p "Ellenőrizze a meghívó tokent: " [:code "%1"]]]
                      :licenses-not-accepted "A felhasználási feltételek nincsenek elfogadva."
                      :cannot-designate-self "Saját magát nem jelölheti ki felügyelőnek."
+                     :reviewer-from-applicant-organization "%1 a kérelmező tagintézményének delegáltja, ezért nem bírálhatja a kérelmet."
+                     :reviewer-not-in-pool "%1 nem aktív tagja a bírálói körnek."
                      :supervision-not-approved "A felügyelő még nem hagyta jóvá a kérelem jelenlegi változatát."
                      ;; %1 - organization name
                      :not-organization-contact "Kérelmet csak az intézmény kapcsolattartója hozhat létre."
@@ -84,6 +87,16 @@
             :todo-applications-count "%:count% nyitott kérelem van."
             :vote "Szavazás"}
   :administration {:active "Aktív"
+                   :reviewer "Bíráló"
+                   :reviewer-n "%1. bíráló"
+                   :reviewer-organization "Delegáló tagintézmény"
+                   :reviewer-pool "Bírálói kör"
+                   :reviewer-pool-explanation "Bírálatot csak a kör aktív tagjaitól lehet kérni, a kérelmező tagintézményének delegáltjaitól nem."
+                   :reviewer-status {:active "Bírál"
+                                     :inactive "Nem"
+                                     :limited "Bírál*"
+                                     :paused "Átmenetileg nem"}
+                   :reviewer-status-label "Státusz"
                    :add "Hozzáadás"
                    :added-at "Hozzáadva"
                    :added-by "Hozzáadta"

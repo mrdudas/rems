@@ -1,11 +1,12 @@
-# Unit and integration tests on GitHub Actions for the epkeb branch.
+# Unit and integration tests on GitHub Actions for the epkeb branch and the
+# epkeb-* feature branches.
 # Upstream REMS runs its tests on CircleCI (.circleci/config.yml); this mirrors
 # its unit-test and integration-test jobs.
 name: test
 
 on:
   push:
-    branches: [epkeb]
+    branches: [epkeb, 'epkeb-*']
   pull_request:
     branches: [epkeb]
   workflow_dispatch:

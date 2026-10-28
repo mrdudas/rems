@@ -642,10 +642,33 @@
                                       :application/request-id last-request-for-actor
                                       :application/decision (:decision cmd)}))))
 
+;; see `:reviewer-pool-organization`
+(def ^:private requestable-reviewer-statuses #{:active :limited})
+
+(defn- reviewer-pool-errors
+  "Reviews can be requested only from active members of the reviewer pool who
+  were not delegated by the organization of the application."
+  [reviewers application {:keys [get-reviewer-pool]}]
+  (when-some [pool (when get-reviewer-pool (get-reviewer-pool))]
+    (let [pool-by-user (into {} (for [entry pool] [(:userid entry) entry]))
+          organization (get-in application [:application/organization :organization/id])
+          errors (for [userid reviewers
+                       :let [entry (pool-by-user userid)]
+                       error (cond
+                               (not (contains? requestable-reviewer-statuses (:reviewer/status entry)))
+                               [{:type :t.actions.errors/reviewer-not-in-pool :args [userid] :userid userid}]
+
+                               (and organization (= organization (:reviewer/organization entry)))
+                               [{:type :t.actions.errors/reviewer-from-applicant-organization :args [userid] :userid userid}])]
+                   error)]
+      (when (seq errors)
+        {:errors (vec errors)}))))
+
 (defmethod command-handler :application.command/request-review
   [cmd application injections]
   (or (must-not-be-empty cmd :reviewers)
       (invalid-users-errors (:reviewers cmd) injections)
+      (reviewer-pool-errors (:reviewers cmd) application injections)
       (add-comment-and-attachments cmd application injections
                                    {:event/type :application.event/review-requested
                                     :application/request-id (UUID/randomUUID)

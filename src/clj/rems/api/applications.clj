@@ -8,6 +8,7 @@
             [rems.service.attachment]
             [rems.service.command :as command]
             [rems.service.licenses]
+            [rems.service.reviewer-pool]
             [rems.service.users]
             [rems.api.util :as api-util :refer [extended-logging]] ; required for route :roles
             [rems.application.commands :as commands]
@@ -109,7 +110,9 @@
      :errors [{:type :t.actions.errors/invalid-token :token invitation-token}]}))
 
 (defn get-applicants [] (rems.service.users/get-users))
-(defn get-reviewers [] (rems.service.users/get-users))
+(defn get-reviewers [application-id]
+  (or (rems.service.reviewer-pool/get-available-reviewers application-id)
+      (rems.service.users/get-users)))
 (defn get-deciders [] (rems.service.users/get-users))
 
 (def my-applications-api
@@ -177,10 +180,11 @@
       (ok (api-command :application.command/copy-as-new request)))
 
     (GET "/reviewers" []
-      :summary "Available reviewers"
+      :summary "Available reviewers. With `:reviewer-pool-organization`, only the active members of the reviewer pool who were not delegated by the organization of the application, with statistics on their workload."
       :roles #{:handler}
+      :query-params [{application-id :- (describe s/Int "the application to review") nil}]
       :return Reviewers
-      (ok (get-reviewers)))
+      (ok (get-reviewers application-id)))
 
     (GET "/export" []
       :summary "Export all submitted applications of a given form as CSV"

@@ -14,7 +14,8 @@
               :organization/last-modifier)
       (assoc (s/optional-key :organization/owners) [schema-base/User]
              (s/optional-key :organization/contacts) [schema-base/User]
-             (s/optional-key :organization/chairs) [schema-base/User])))
+             (s/optional-key :organization/chairs) [schema-base/User]
+             (s/optional-key :organization/reviewers) [schema-base/ReviewerPoolEntry])))
 
 (s/defschema CreateOrganizationResponse
   {:success s/Bool

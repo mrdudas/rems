@@ -3499,3 +3499,66 @@
                                         :comment ""})))
         (is (= {:success false :errors [{:type "forbidden"}]}
                (remark! contact "late" true)))))))
+
+;; EPKEB: reviews can be requested only from the reviewer pool
+(deftest test-reviewer-pool
+  (test-helpers/create-user! {:userid "owner" :name "Owner" :email "owner@example.com"} :owner)
+  (doseq [userid ["pool-reviewer1" "pool-reviewer2" "pool-reviewer3"]]
+    (test-helpers/create-user! {:userid userid :name userid :email (str userid "@example.com")}))
+  (test-helpers/create-organization! {:organization/id "member-org"})
+  (is (= {:success true :organization/id "pool-org"}
+         (api-call :post "/api/organizations/create"
+                   {:organization/id "pool-org"
+                    :organization/name {:fi "Pool" :en "Pool" :sv "Pool"}
+                    :organization/short-name {:fi "Pool" :en "Pool" :sv "Pool"}
+                    :organization/owners []
+                    :organization/review-emails []
+                    :organization/reviewers [{:userid "pool-reviewer1" :reviewer/organization "pool-org" :reviewer/status :active}
+                                             {:userid "pool-reviewer2" :reviewer/organization "member-org" :reviewer/status :limited}
+                                             {:userid "pool-reviewer3" :reviewer/organization "pool-org" :reviewer/status :paused}]}
+                   +test-api-key+ "owner")))
+  (testing "the pool is stored with the organization"
+    (is (= [["pool-reviewer1" "pool-org" "active"]
+            ["pool-reviewer2" "member-org" "limited"]
+            ["pool-reviewer3" "pool-org" "paused"]]
+           (->> (api-call :get "/api/organizations/pool-org" nil +test-api-key+ "owner")
+                :organization/reviewers
+                (mapv (juxt :userid :reviewer/organization :reviewer/status))))))
+  (with-redefs [rems.config/env (assoc rems.config/env :reviewer-pool-organization "pool-org")]
+    (let [workflow-id (test-helpers/create-workflow! {:type :workflow/default
+                                                      :handlers ["handler"]})
+          cat-item-id (test-helpers/create-catalogue-item! {:workflow-id workflow-id})
+          app-id (test-helpers/create-application! {:catalogue-item-ids [cat-item-id]
+                                                    :actor "alice"})
+          available (fn [] (->> (api-call :get (str "/api/applications/reviewers?application-id=" app-id) nil
+                                          +test-api-key+ "handler")
+                                (map :userid)))]
+      (test-helpers/command! {:type :application.command/submit
+                              :application-id app-id
+                              :actor "alice"})
+      (testing "only the active members of the pool are available"
+        (is (= ["pool-reviewer1" "pool-reviewer2"] (sort (available)))))
+      (testing "the statistics of the reviewers"
+        (is (= {:reviews-this-year 0 :in-progress 0 :last-requested nil}
+               (-> (api-call :get "/api/applications/reviewers" nil +test-api-key+ "handler")
+                   first
+                   :reviewer/stats))))
+      (testing "reviews can be requested only from the pool"
+        (is (= {:success false
+                :errors [{:type "t.actions.errors/reviewer-not-in-pool" :args ["pool-reviewer3"] :userid "pool-reviewer3"}]}
+               (send-command "handler" {:type :application.command/request-review
+                                        :application-id app-id
+                                        :reviewers ["pool-reviewer3"]
+                                        :comment ""})))
+        (is (= {:success true}
+               (send-command "handler" {:type :application.command/request-review
+                                        :application-id app-id
+                                        :reviewers ["pool-reviewer1"]
+                                        :comment ""}))))
+      (testing "the request is counted"
+        (is (= {:reviews-this-year 1 :in-progress 1}
+               (-> (->> (api-call :get "/api/applications/reviewers" nil +test-api-key+ "handler")
+                        (filter #(= "pool-reviewer1" (:userid %)))
+                        first
+                        :reviewer/stats)
+                   (select-keys [:reviews-this-year :in-progress]))))))))

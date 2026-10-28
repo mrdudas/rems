@@ -7,7 +7,7 @@
             [rems.fetcher :as fetcher]
             [rems.fields :as fields]
             [rems.flash-message :as flash-message]
-            [rems.text :refer [text text-format]]
+            [rems.text :refer [localize-reviewer-status text text-format]]
             [rems.util :refer [class-names event-value post!]]))
 
 (defn- action-collapse-id [action-id]
@@ -162,7 +162,25 @@
                                  :on-attach #(rf/dispatch [::save-attachment application-id field-key %])
                                  :on-remove-attachment #(rf/dispatch [::remove-attachment field-key %])}])
 
-(fetcher/reg-fetcher ::reviewers "/api/applications/reviewers" {:result (partial map enrich-user)})
+(defn- reviewer-display
+  "Shows the delegating organization and the workload of the members of the
+  reviewer pool, see `:reviewer-pool-organization`."
+  [reviewer]
+  (if-some [stats (:reviewer/stats reviewer)]
+    (let [organization-stats (:reviewer/organization-stats reviewer)]
+      (update reviewer :display str
+              " – " (:reviewer/organization reviewer)
+              (when (= :limited (keyword (:reviewer/status reviewer)))
+                (str " (" (localize-reviewer-status :limited) ")"))
+              " – " (text-format :t.actions/reviewer-stats
+                                 (:reviews-this-year stats)
+                                 (:in-progress stats)
+                                 (or (some-> (:last-requested stats) str (subs 0 10)) "–")
+                                 (:applications organization-stats)
+                                 (:reviews organization-stats))))
+    reviewer))
+
+(fetcher/reg-fetcher ::reviewers "/api/applications/reviewers" {:result (partial map (comp reviewer-display enrich-user))})
 (fetcher/reg-fetcher ::deciders "/api/applications/deciders" {:result (partial map enrich-user)})
 
 (rf/reg-sub ::users (fn [db [_ field-key]] (get-in db [::users field-key])))

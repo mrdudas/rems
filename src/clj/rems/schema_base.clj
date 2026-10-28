@@ -71,6 +71,17 @@
          {:organization/short-name LocalizedString
           :organization/name LocalizedString}))
 
+(def ReviewerStatus
+  "Status of a member of the reviewer pool, see `:reviewer-pool-organization`.
+  `:active` and `:limited` reviewers can be requested to review."
+  (s/enum :active :limited :paused :inactive))
+
+(s/defschema ReviewerPoolEntry
+  {:userid UserId
+   ;; the organization that delegated the reviewer
+   :reviewer/organization s/Str
+   :reviewer/status ReviewerStatus})
+
 (s/defschema OrganizationFull
   (merge OrganizationOverview
          {(s/optional-key :organization/modifier) UserWithAttributes
@@ -78,6 +89,7 @@
           (s/optional-key :organization/owners) [UserWithAttributes]
           (s/optional-key :organization/contacts) [UserWithAttributes]
           (s/optional-key :organization/chairs) [UserWithAttributes]
+          (s/optional-key :organization/reviewers) [(merge UserWithAttributes ReviewerPoolEntry)]
           (s/optional-key :organization/review-emails) [{:name LocalizedString
                                                          :email s/Str}]
           (s/optional-key :enabled) s/Bool

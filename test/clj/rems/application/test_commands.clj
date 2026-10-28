@@ -2027,6 +2027,41 @@
                                                           :application/reviewers ["reviewer2"]})
                                                   dummy-reviewed-event])))))))
 
+(deftest test-reviewer-pool
+  (let [pool [{:userid "reviewer" :reviewer/organization "org2" :reviewer/status :active}
+              {:userid "reviewer2" :reviewer/organization "org1" :reviewer/status :active}
+              {:userid "reviewer3" :reviewer/organization "org2" :reviewer/status :paused}]
+        injections (assoc command-injections :get-reviewer-pool (constantly pool))
+        application (build-application-view [(assoc dummy-created-event :application/organization {:organization/id "org1"})
+                                             dummy-submitted-event]
+                                            (assoc application-injections :get-config (constantly {:reviewer-pool-organization "pool"})))
+        request (fn [reviewers]
+                  {:type :application.command/request-review
+                   :actor handler-user-id
+                   :reviewers reviewers
+                   :comment ""})]
+    (testing "active members of the pool can be requested"
+      (is (= ["reviewer"]
+             (:application/reviewers (ok-command (request ["reviewer"]) application injections)))))
+    (testing "only active members of the pool can be requested"
+      (is (= {:errors [{:type :t.actions.errors/reviewer-not-in-pool :args ["reviewer3"] :userid "reviewer3"}
+                       {:type :t.actions.errors/reviewer-not-in-pool :args [decider-user-id] :userid decider-user-id}]}
+             (fail-command (request ["reviewer" "reviewer3" decider-user-id]) application injections))))
+    (testing "reviewers delegated by the organization of the application cannot be requested"
+      (is (= {:errors [{:type :t.actions.errors/reviewer-from-applicant-organization :args ["reviewer2"] :userid "reviewer2"}]}
+             (fail-command (request ["reviewer2"]) application injections))))
+    (testing "without the pool anybody can be requested"
+      (is (= ["reviewer3"]
+             (:application/reviewers (ok-command (request ["reviewer3"]) application (assoc command-injections :get-reviewer-pool (constantly nil)))))))
+    (testing "reviewers cannot be invited by email"
+      (is (= {:errors [{:type :forbidden}]}
+             (fail-command {:type :application.command/invite-reviewer
+                            :actor handler-user-id
+                            :reviewer {:name "Somebody" :email "somebody@example.com"}
+                            :comment ""}
+                           application
+                           injections))))))
+
 (deftest test-remark
   (testing "invalid attachments"
     (is (= {:errors [{:type :invalid-attachments

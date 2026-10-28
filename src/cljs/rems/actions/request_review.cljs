@@ -8,8 +8,9 @@
 (rf/reg-event-fx
  ::open-form
  (fn
-   [_ _]
-   {:dispatch-n [[:rems.actions.components/reviewers]
+   [_ [_ application-id]]
+   ;; the application decides the available reviewers of the reviewer pool
+   {:dispatch-n [[:rems.actions.components/reviewers {:application-id application-id}]
                  [:rems.actions.components/set-users action-form-id nil]
                  [:rems.actions.components/set-comment action-form-id ""]
                  [:rems.actions.components/set-attachments action-form-id []]]}))
@@ -27,10 +28,10 @@
               :on-finished on-finished})
    {}))
 
-(defn request-review-action-link []
+(defn request-review-action-link [application-id]
   [action-link {:id action-form-id
                 :text (text :t.actions/request-review-dropdown-from-user)
-                :on-click #(rf/dispatch [::open-form])}])
+                :on-click #(rf/dispatch [::open-form application-id])}])
 
 (defn request-review-view
   [{:keys [application-id disabled on-send]}]

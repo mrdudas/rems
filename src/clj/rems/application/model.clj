@@ -849,6 +849,9 @@
                                [{:permission :application.command/invite-supervisor}
                                 {:permission :application.command/designate-supervisor}
                                 {:permission :application.command/approve-supervision}])
+                             ;; reviewers come only from the reviewer pool
+                             (when (:reviewer-pool-organization config)
+                               [{:permission :application.command/invite-reviewer}])
                              (when-not (:enable-applicant-remarks config)
                                [{:permission :application.command/remark
                                  :role :applicant}

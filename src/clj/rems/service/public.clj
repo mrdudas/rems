@@ -44,6 +44,7 @@
                     :enable-voting
                     :enable-processing-states
                     :enable-organization-contacts
+                    :reviewer-pool-organization
                     :tables])
       (update :extra-pages filter-extra-pages)))
 

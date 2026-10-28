@@ -20,6 +20,7 @@
             :designate-supervisor "Nimeä ohjaajaksi"
             :invite-supervisor "Kutsu ohjaaja"
             :invite-supervisor-intro "Ohjaaja kutsutaan sähköpostilla. Liittyessään hän tulee hakemuksen ohjaajaksi: hän voi hyväksyä hakemuksen mutta ei muokata sitä."
+            :reviewer-stats "tänä vuonna %1 arviota, kesken %2, viimeisin pyyntö %3; organisaatio: tänä vuonna %4 hakemusta, %5 arviota"
             :assign-external-id "Aseta tunniste"
             :assign-external-id-info "Tunniste"
             :bundling-intro [:div.intro [:p "Huomaa, että vain resursseja, joilla on sama työvuo, voidaan liittää yhteen."]]
@@ -38,6 +39,8 @@
                      :invalid-token [:div [:p "Hakemukseen liittyminen epäonnistui."] [:p "Tarkista kutsukoodi " [:code "%1"]]]
                      :licenses-not-accepted "Käyttöehtoja ei ole hyväksytty."
                      :cannot-designate-self "Et voi nimetä itseäsi ohjaajaksi."
+                     :reviewer-from-applicant-organization "%1 on hakemuksen organisaation nimeämä, joten hän ei voi arvioida sitä."
+                     :reviewer-not-in-pool "%1 ei ole arvioijapoolin aktiivinen jäsen."
                      :supervision-not-approved "Ohjaaja ei ole hyväksynyt hakemuksen nykyistä versiota."
                      :not-organization-contact "Vain organisaation yhteyshenkilöt voivat luoda hakemuksia."
                      :organization-does-not-exist "Organisaatiota \"%1\" ei ole olemassa"
@@ -82,6 +85,16 @@
             :todo-applications-count "Avoimia hakemuksia on %:count% kpl."
             :vote "Äänestä"}
   :administration {:active "Aktiivinen"
+                   :reviewer "Arvioija"
+                   :reviewer-n "Arvioija %1"
+                   :reviewer-organization "Nimeävä organisaatio"
+                   :reviewer-pool "Arvioijapooli"
+                   :reviewer-pool-explanation "Arviota voi pyytää vain poolin aktiivisilta jäseniltä, ei hakemuksen organisaation nimeämiltä arvioijilta."
+                   :reviewer-status {:active "Arvioi"
+                                     :inactive "Ei"
+                                     :limited "Arvioi (rajoitetusti)"
+                                     :paused "Tilapäisesti ei"}
+                   :reviewer-status-label "Tila"
                    :add "Lisää"
                    :added-at "Lisätty"
                    :added-by "Lisääjä"

@@ -1051,14 +1051,18 @@
                   :collapse-hidden [applicants-short application]
                   :collapse [applicants-details application]))]))
 
-(defn- request-review-dropdown []
-  [:div.btn-group
-   [:button#request-review-dropdown.btn.btn-secondary.dropdown-toggle
-    {:data-toggle :dropdown}
-    (text :t.actions/request-review-dropdown)]
-   [:div.dropdown-menu
-    [request-review-action-link]
-    [invite-reviewer-action-link]]])
+(defn- request-review-dropdown [application]
+  (let [permissions (:application/permissions application)]
+    [:div.btn-group
+     [:button#request-review-dropdown.btn.btn-secondary.dropdown-toggle
+      {:data-toggle :dropdown}
+      (text :t.actions/request-review-dropdown)]
+     [:div.dropdown-menu
+      (when (contains? permissions :application.command/request-review)
+        [request-review-action-link (:application/id application)])
+      ;; not available with the reviewer pool
+      (when (contains? permissions :application.command/invite-reviewer)
+        [invite-reviewer-action-link])]]))
 
 (defn- request-decision-dropdown []
   [:div.btn-group
@@ -1079,9 +1083,8 @@
                                :application.command/approve-supervision [approve-supervision-action-button]
                                :application.command/submit [submit-button]
                                :application.command/return [return-action-button]
-                               ;; this assumes that request-review and invite-reviewer are both possible or neither is
-                               :application.command/request-review [request-review-dropdown]
-                               :application.command/invite-reviewer [request-review-dropdown]
+                               :application.command/request-review [request-review-dropdown application]
+                               :application.command/invite-reviewer [request-review-dropdown application]
                                :application.command/review [review-action-button]
                                ;; ditto for decision
                                :application.command/request-decision [request-decision-dropdown]

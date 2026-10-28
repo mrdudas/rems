@@ -478,6 +478,14 @@
  ;; organization of the contact who created it.
  :enable-organization-contacts false
 
+ ;; The id of the organization whose reviewer pool (`:organization/reviewers`)
+ ;; is used. When set, reviews can be requested only from active members of
+ ;; the pool, not from reviewers delegated by the organization of the
+ ;; application, and reviewers cannot be invited by email. The list of
+ ;; available reviewers shows statistics on their workload. nil (the
+ ;; default) disables the pool.
+ :reviewer-pool-organization nil
+
  ;; When true, members of an application (e.g. the researcher invited by an
  ;; organization contact) may also fill in and save the draft, and mark it
  ;; ready for submission, which notifies the applicant. Submitting is still

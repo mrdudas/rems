@@ -20,6 +20,7 @@
             :designate-supervisor "Designate as supervisor"
             :invite-supervisor "Invite supervisor"
             :invite-supervisor-intro "The supervisor is invited by email. When joining the application, they become its supervisor: they can approve the application but not edit it."
+            :reviewer-stats "this year %1 reviews, in progress %2, last request %3; organization: %4 applications, %5 reviews this year"
             :assign-external-id "Assign external id"
             :assign-external-id-info "External id"
             :bundling-intro [:div.intro [:p "Note that only resources that have the same application workflow can be bundled together."]]
@@ -39,6 +40,8 @@
                      :invalid-token [:div [:p "Joining the application failed."] [:p "Check the invitation token " [:code "%1"]]]
                      :licenses-not-accepted "Terms of use not accepted."
                      :cannot-designate-self "You cannot designate yourself as the supervisor."
+                     :reviewer-from-applicant-organization "%1 was delegated by the organization of the application, so they cannot review it."
+                     :reviewer-not-in-pool "%1 is not an active member of the reviewer pool."
                      :supervision-not-approved "The supervisor has not approved the current version of the application."
                      ;; %1 - organization name
                      :not-organization-contact "Only the contacts of an organization can create applications."
@@ -84,6 +87,16 @@
             :todo-applications-count "There are %:count% open applications."
             :vote "Vote"}
   :administration {:active "Active"
+                   :reviewer "Reviewer"
+                   :reviewer-n "Reviewer %1"
+                   :reviewer-organization "Delegating organization"
+                   :reviewer-pool "Reviewer pool"
+                   :reviewer-pool-explanation "Reviews can be requested only from the active members of the pool, and not from the reviewers delegated by the organization of the application."
+                   :reviewer-status {:active "Reviews"
+                                     :inactive "No"
+                                     :limited "Reviews (limited)"
+                                     :paused "Temporarily not"}
+                   :reviewer-status-label "Status"
                    :add "Add"
                    :added-at "Added at"
                    :added-by "Added by"
