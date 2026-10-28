@@ -164,7 +164,7 @@
                  [:phrase {:style :bold} "Contact person"]
                  ": "
                  "Alice Applicant (alice) <alice@example.com>"]
-                [:paragraph "Accepted terms of use: Yes"]]
+                [:paragraph "Accepted declarations: Yes"]]
                []] ; no members
               [[:heading pdf/heading-style "Resources"]
                [[[:paragraph pdf/field-heading-style "Resource (pdf-resource-ext)"]
@@ -172,7 +172,7 @@
                 [[:paragraph pdf/field-heading-style "Resource 2 (pdf-resource-2-ext)"]
                  nil]]] ; no resource duos
               nil ; no application duos
-              [[:heading pdf/heading-style "Terms of use"]
+              [[:heading pdf/heading-style "Declarations"]
                []]
               [[[:heading pdf/heading-style "Form"]
                 [[[:paragraph pdf/field-heading-style "Public text field"]
@@ -451,12 +451,12 @@
                  [:phrase {:style :bold} "Contact person"]
                  ": "
                  "Alice Applicant (alice) <alice@example.com>"]
-                [:paragraph "Accepted terms of use: Yes"]]
+                [:paragraph "Accepted declarations: Yes"]]
                [[[:paragraph pdf/field-style
                   [:phrase {:style :bold} "Researcher"]
                   ": "
                   "Beth Applicant (beth) <beth@example.com>"]
-                 [:paragraph "Accepted terms of use: No"]]]]
+                 [:paragraph "Accepted declarations: No"]]]]
               [[:heading pdf/heading-style "Resources"]
                [[[:paragraph pdf/field-heading-style "Catalogue item (pdf-resource-ext)"]
                  [[:paragraph pdf/field-style "Data Use Ontology"]
@@ -482,7 +482,7 @@
                [:paragraph {:spacing-before 8}
                 [:paragraph {:style :bold} "PS – Project specific restriction"]
                 [:list [[:phrase "my project"]]]]]
-              [[:heading pdf/heading-style "Terms of use"]
+              [[:heading pdf/heading-style "Declarations"]
                [[[:paragraph pdf/field-heading-style "Google license"]
                  [:paragraph "http://google.com"]]
                 [[:paragraph pdf/field-heading-style "Text license"]
@@ -530,7 +530,7 @@
                [:paragraph pdf/field-style
                 [:list
                  [[:phrase "2000-01-01 00:00" " " "Alice Applicant created application 2000/1." nil nil nil]
-                  [:phrase "2000-01-01 00:00" " " "Alice Applicant accepted the terms of use." nil nil nil]
+                  [:phrase "2000-01-01 00:00" " " "Alice Applicant accepted the declarations." nil nil nil]
                   [:phrase "2001-01-01 00:00" " " "Alice Applicant submitted the application for review." nil nil nil]
                   [:phrase "2002-01-01 00:00" " " "Developer added Beth Applicant to the application." nil nil nil]
                   [:phrase "2003-01-01 00:00" " " "Developer requested a decision from David Decider." nil "\nComment: please decide" nil]

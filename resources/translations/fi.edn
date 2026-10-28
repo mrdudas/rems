@@ -275,6 +275,7 @@
                  :handlers "Käsittelijät"
                  :id "Tunniste"
                  :intro [:div.intro [:p "Täytä hakemus ja lähetä se käsiteltäväksi. Hakemukseen voi kutsua jäseniksi useampia hakijoita, joista jokaisen on hyväksyttävä käyttöehdot viimeistään kun hakemus on hyväksytty."]]
+                 :intro-handling [:div.intro [:p "Hakemusta käsittelee toimikunta. Tehtäväsi ovat Toiminnot-laatikossa."]]
                  :last-activity "Muokattu"
                  :latest-activity "Viimeisin toimenpide"
                  :organization "Organisaatio"

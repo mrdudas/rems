@@ -18,6 +18,8 @@ A felület szóhasználata. A fordításokban (`resources/translations/*.edn`) e
 | remark | megjegyzés | remark | |
 | catalogue item, resource | **eljárás** (normál, rövidített) | procedure | nem „kérelem” |
 | form | űrlap | form | |
+| license (terms of use) | **nyilatkozat** | declaration | nem „felhasználási feltétel” |
+| revoke | az engedély visszavonása | revoke the approval | nem „hozzáférés” |
 | workflow | munkafolyamat | workflow | |
 | organization | tagintézmény (a felületen: szervezet) | organization | |
 | submit | benyújtás | submit | |

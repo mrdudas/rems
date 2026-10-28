@@ -291,6 +291,7 @@
                  :handlers "Sagsbehandler"
                  :id "id"
                  :intro [:div.intro [:p "Udfyld og indsend ansøgningen. Du kan invitere andre til at deltage i ansøgningen. Alle deltagere skal acceptere brugsvilkår senest når ansøgningen godkendes."]]
+                 :intro-handling [:div.intro [:p "Ansøgningen behandles af udvalget. Dine opgaver findes i boksen Handlinger."]]
                  :last-activity "Ændret"
                  :latest-activity "Seneste aktivitet"
                  :organization "Organisation"

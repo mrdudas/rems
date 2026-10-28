@@ -80,14 +80,22 @@
 (defn footer-extra-pages []
   [extra-pages-container {:context "footer-extra-pages" :include? #(:show-footer % false)}])
 
+(defn- show-catalogue?
+  "With `:enable-organization-contacts`, only organization contacts can apply,
+  so the catalogue is not shown to others, except owners."
+  [user-roles]
+  (or (not (:enable-organization-contacts @rems.globals/config))
+      (some #{:organization-contact :owner} user-roles)))
+
 (defn navbar-items []
   (let [user-roles @rems.globals/roles]
     [:div.navbar-nav.mr-auto
      (when-not @rems.globals/user
        [nav-link "/" (text :t.navigation/home) :exact])
 
-     (when (or @roles/logged-in?
-               (:catalogue-is-public @rems.globals/config))
+     (when (and (or @roles/logged-in?
+                    (:catalogue-is-public @rems.globals/config))
+                (show-catalogue? user-roles))
        [nav-link "/catalogue" (text :t.navigation/catalogue)])
 
      (when (roles/show-applications? user-roles)

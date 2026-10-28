@@ -250,7 +250,7 @@
                                         :body (str "Dear alice,"
                                                    "\n\nYour unsubmitted application has been inactive since 2022-10-09 and it will be deleted after 2023-01-08, if it is not edited."
                                                    "\n\nYou can view and edit the application at localhost/application/" draft-expires-in-6d
-                                                   "\n\nKind regards,\n\nREMS\n\n\nPlease do not reply to this automatically generated message.")
+                                                   "\n\nKind regards,\n\nEPKEB – United Ethical Review Committee for Research in Psychology\n\n\nPlease do not reply to this automatically generated message.")
                                         :to-user "alice"}
                          :outbox/type :email}
                         {:outbox/deadline test-time
@@ -258,7 +258,7 @@
                                         :body (str "Dear member,"
                                                    "\n\nYour unsubmitted application has been inactive since 2022-10-09 and it will be deleted after 2023-01-08, if it is not edited."
                                                    "\n\nYou can view and edit the application at localhost/application/" draft-expires-in-6d
-                                                   "\n\nKind regards,\n\nREMS\n\n\nPlease do not reply to this automatically generated message.")
+                                                   "\n\nKind regards,\n\nEPKEB – United Ethical Review Committee for Research in Psychology\n\n\nPlease do not reply to this automatically generated message.")
                                         :to-user "member"}
                          :outbox/type :email}]
                        @outbox-emails))))))
@@ -328,7 +328,7 @@
                                       :body (str "Dear alice,"
                                                  "\n\nYour unsubmitted application has been inactive since 2022-10-11 and it will be deleted after 2023-01-18, if it is not edited."
                                                  "\n\nYou can view and edit the application at localhost/application/" draft-expires-in-8d
-                                                 "\n\nKind regards,\n\nREMS\n\n\nPlease do not reply to this automatically generated message.")
+                                                 "\n\nKind regards,\n\nEPKEB – United Ethical Review Committee for Research in Psychology\n\n\nPlease do not reply to this automatically generated message.")
                                       :to-user "alice"}
                        :outbox/type :email}]
                      @outbox-emails)))))))))

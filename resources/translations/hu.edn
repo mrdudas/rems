@@ -7,8 +7,8 @@
                                :invalid-workflow "A meghívás elfogadása sikertelen."}}
   :actions {:accept-invitation "Meghívás elfogadása"
             :accept-invitation-success "Sikeresen csatlakozott a kérelemhez."
-            :accept-licenses "Felhasználási feltételek elfogadása"
-            :add-licenses "Felhasználási feltételek hozzáadása"
+            :accept-licenses "Nyilatkozatok elfogadása"
+            :add-licenses "Nyilatkozatok hozzáadása"
             :add-member "Kutató hozzáadása"
             :approve "Jóváhagyás"
             :approve-end-date "Hozzáférési jogok lejárati dátuma (opcionális)"
@@ -38,7 +38,7 @@
             :errors {:duplicate-id "Az azonosító már használatban van."
                      ;; %1 - invitation token
                      :invalid-token [:div [:p "A csatlakozás a kérelemhez sikertelen."] [:p "Ellenőrizze a meghívó tokent: " [:code "%1"]]]
-                     :licenses-not-accepted "A felhasználási feltételek nincsenek elfogadva."
+                     :licenses-not-accepted "A nyilatkozatok nincsenek elfogadva."
                      :cannot-designate-self "Saját magát nem jelölheti ki felügyelőnek."
                      :reviewer-from-applicant-organization "%1 a kérelmező tagintézményének delegáltja, ezért nem bírálhatja a kérelmet."
                      :reviewer-not-in-pool "%1 nem aktív tagja a bírálói körnek."
@@ -52,7 +52,7 @@
             :handled-applications "Feldolgozott kérelmek"
             :handled-applications-count "%:count% feldolgozott kérelem van."
             :invite-member "Kutató meghívása"
-            :licenses-selection "Felhasználási feltételek hozzáadása"
+            :licenses-selection "Nyilatkozatok hozzáadása"
             :member "Kutató"
             :member-email "E-mail"
             :member-name "Név"
@@ -266,8 +266,8 @@
                           ;; %2 - %:application-external-id% - External id of the application
                           :external-id-assigned "%:event-actor% hozzárendelte a(z) %:application-external-id% külső azonosítót."
                           :expiration-notifications-sent "%:event-actor% elküldte a lejárati értesítő e-mailt."
-                          :licenses-accepted "%:event-actor% elfogadta a felhasználási feltételeket."
-                          :licenses-added "%:event-actor% felhasználási feltételeket adott hozzá."
+                          :licenses-accepted "%:event-actor% elfogadta a nyilatkozatokat."
+                          :licenses-added "%:event-actor% nyilatkozatokat adott hozzá."
                           :marked-ready "%:event-actor% beadhatónak jelölte a kérelmet."
                           :supervision-approved "%:event-actor% felügyelőként jóváhagyta a kérelmet."
                           :supervisor-designated "%:event-actor% felügyelőnek jelölte: %:supervisor%."
@@ -301,7 +301,7 @@
                           ;; %2 - %:invited-user% - Name & email of the invited reviewer
                           :reviewer-invited "%:event-actor% meghívta %:invited-user% felhasználót a kérelem bírálatára."
                           :reviewer-joined "%:event-actor% elfogadta a bírálói felkérést."
-                          :revoked "%:event-actor% visszavonta a hozzáférést."
+                          :revoked "%:event-actor% visszavonta az engedélyt."
                           :submitted "%:event-actor% benyújtotta a kérelmet bírálatra."
                           :unknown "Ismeretlen"
                           ;; Extra parameters for voted:
@@ -315,7 +315,8 @@
                           :state "Állapot"}
                  :handlers "Elnökök"
                  :id "Azonosító"
-                 :intro [:div.intro [:p "Töltse ki és nyújtsa be a kérelmet. A kérelemhez további kutatók is meghívhatók, és minden kutatónak el kell fogadnia a felhasználási feltételeket a hozzáférés megszerzéséhez."]]
+                 :intro [:div.intro [:p "Töltse ki a kérelmet, és csatolja a szükséges mellékleteket. A kérelmet az intézményi kapcsolattartó nyújtja be. A bizottság kérdéseire a „Megjegyzés” gombbal válaszolhat."]]
+                 :intro-handling [:div.intro [:p "A kérelem a bizottság eljárásában van. A teendők a Műveletek dobozban vannak. A kérelmezők a bírálók és az elnökök nevét nem látják."]]
                  :last-activity "Utolsó aktivitás"
                  :latest-activity "Legutóbbi aktivitás"
                  :organization "Intézmény"
@@ -383,8 +384,8 @@
                           :form-selection "Űrlap"
                           :workflow-selection "Munkafolyamat"}
   :commands {:accept-invitation "Meghívás elfogadása"
-             :accept-licenses "Felhasználási feltételek elfogadása"
-             :add-licenses "Felhasználási feltételek hozzáadása"
+             :accept-licenses "Nyilatkozatok elfogadása"
+             :add-licenses "Nyilatkozatok hozzáadása"
              :add-member "Kutató hozzáadása"
              :approve "Jóváhagyás"
              :approve-supervision "Jóváhagyás felügyelőként"
@@ -547,12 +548,12 @@
                                  :message-to-applicant "Tisztelt %:recipient%!\n\nA(z) %:application-id% kérelmét visszaküldték módosításra. Kérjük, végezze el a kért javításokat és nyújtsa be újra.\n\nA kérelmet itt tekintheti meg és szerkesztheti: %:application-url%"
                                  :subject-to-handler "(%:application-id%) A kérelmet visszaküldték a kapcsolattartónak"
                                  :message-to-handler "Tisztelt %:recipient%!\n\n%:event-actor% visszaküldte a(z) %:application-id% kérelmet %:applicant% kapcsolattartónak módosításra.\n\nA kérelmet itt tekintheti meg: %:application-url%"}
-          :application-revoked {:subject-to-applicant "A(z) %:application-id% kérelemhez kapcsolódó hozzáféréseket visszavonták"
-                                :message-to-applicant "Tisztelt %:recipient%!\n\nA(z) %:application-id% kérelemhez kapcsolódó hozzáféréseket visszavonták.\n\nA kérelmet itt tekintheti meg: %:application-url%"
-                                :subject-to-handler "(%:application-id%) A hozzáféréseket visszavonták"
-                                :message-to-handler "Tisztelt %:recipient%!\n\n%:event-actor% visszavonta a(z) %:application-id% kérelemhez kapcsolódó hozzáféréseket %:applicant% felhasználótól.\n\nA kérelmet itt tekintheti meg: %:application-url%"}
-          :application-licenses-added {:subject "A(z) %:application-id% kérelem felhasználási feltételei megváltoztak"
-                                       :message "Tisztelt %:recipient%!\n\n%:event-actor% a jóváhagyását kéri a(z) %:application-id% kérelem megváltozott felhasználási feltételeihez.\n\nA kérelmet megtekintheti és a feltételeket elfogadhatja itt: %:application-url%"}
+          :application-revoked {:subject-to-applicant "A(z) %:application-id% kérelem engedélyét visszavonták"
+                                :message-to-applicant "Tisztelt %:recipient%!\n\nA(z) %:application-id% kérelem engedélyét visszavonták.\n\nA kérelmet itt tekintheti meg: %:application-url%"
+                                :subject-to-handler "(%:application-id%) Az engedélyt visszavonták"
+                                :message-to-handler "Tisztelt %:recipient%!\n\n%:event-actor% visszavonta a(z) %:application-id% kérelem engedélyét %:applicant% felhasználótól.\n\nA kérelmet itt tekintheti meg: %:application-url%"}
+          :application-licenses-added {:subject "A(z) %:application-id% kérelem nyilatkozatai megváltoztak"
+                                       :message "Tisztelt %:recipient%!\n\n%:event-actor% a jóváhagyását kéri a(z) %:application-id% kérelem megváltozott nyilatkozataihoz.\n\nA kérelmet megtekintheti és a feltételeket elfogadhatja itt: %:application-url%"}
           :application-resubmitted {:subject-to-handler "(%:application-id%) A kérelmet újra benyújtották"
                                     :message-to-handler "Tisztelt %:recipient%!\n\nA(z) %:application-id% kérelmet %:applicant% újra benyújtotta.\n\nA kérelmet itt bírálhatja el: %:application-url%"}
           :application-submitted {:subject-to-applicant "A(z) %:application-id% kérelmét benyújtották"
@@ -602,7 +603,7 @@
                                :message "Tisztelt %:recipient%!\n\n%:applicant% felkérte Önt a(z) %:application-id% azonosítójú kérelem felügyelőjének. Felügyelőként Ön hagyja jóvá a kérelmet a benyújtás előtt.\n\nA kérelmet megtekintheti és a felkérést elfogadhatja itt: %:invitation-url%"}
           :member-invited {:subject "Meghívás a(z) %:application-id% kérelemben való részvételre"
                            :message "Tisztelt %:recipient%!\n\nMeghívást kapott a(z) %:application-id% kérelemben való részvételre %:applicant% által.\n\nA kérelmet megtekintheti és a feltételeket elfogadhatja itt: %:invitation-url%"}
-          :regards "\n\nÜdvözlettel:\n\nREMS\n"
+          :regards "\n\nÜdvözlettel:\n\nEPKEB – Egyesített Pszichológiai Kutatásetikai Bizottság\n"
           :remarked {:subject "(%:application-id%) Megjegyzés érkezett a kérelemhez"
                      :message "Tisztelt %:recipient%!\n\n%:event-actor% megjegyzést fűzött %:applicant% %:application-id% azonosítójú kérelméhez.\n\nA kérelmet és a megjegyzést itt tekintheti meg: %:application-url%"}
           :review-requested {:subject "(%:application-id%) Bírálatkérés"
@@ -633,8 +634,8 @@
           ;; %4 - %:invitation-url% - invitation link
           :workflow-handler-invitation {:message "Tisztelt %:recipient%!\n\n%:invited-by% meghívta Önt a(z) %:workflow% munkafolyamat elnökei közé.\n\nA munkafolyamatot itt tekintheti meg: %:invitation-url%"
                                         :subject "Meghívás munkafolyamat elnökei közé"}}
-  :footer "Analyst Platform – EPKEB"
-  :form {:accepted-licenses "Elfogadott felhasználási feltételek"
+  :footer "EPKEB – Egyesített Pszichológiai Kutatásetikai Bizottság"
+  :form {:accepted-licenses "Elfogadott nyilatkozatok"
          :actions "Műveletek"
          :add-comment "Megjegyzés hozzáadása"
          :add-comments-not-shown-to-applicant "Megjegyzés hozzáadása (nem látható a kérelmezők számára)"
@@ -660,15 +661,15 @@
          :diff-show "Változások megjelenítése"
          :events "Események"
          :failed "Sikertelen"
-         :has-accepted-licenses "Felhasználási feltételek elfogadva."
+         :has-accepted-licenses "Nyilatkozatok elfogadva."
          :invalid-attachment "A melléklet fájltípusa nem engedélyezett."
          :too-large-attachment "A melléklet túl nagy."
          :attachment-max-size "A melléklet megengedett maximális mérete: %1."
          :last-save "Utolsó mentés: %1."
-         :licenses "Felhasználási feltételek"
+         :licenses "Nyilatkozatok"
          ;; %1 - number
          :maxlength "(max %1 karakter)"
-         :must-accept-licenses "Minden kérelmezőnek el kell fogadnia a felhasználási feltételeket az eljárások eléréséhez."
+         :must-accept-licenses "A benyújtáshoz minden kérelmezőnek el kell fogadnia az alábbi nyilatkozatokat."
          :no-rows "Nincsenek sorok"
          :optional "(opcionális)"
          :please-wait "Kérjük, várjon"
@@ -738,9 +739,9 @@
   :not-found-page {:not-found "Nem található"
                    :page-was-not-found "Az oldal nem található."}
   :pdf {:generated "Ez a PDF ekkor készült:"}
-  :phases {:apply "Kérelem"
-           :approve "Jóváhagyás"
-           :approved "Jóváhagyva"
+  :phases {:apply "Kitöltés"
+           :approve "Bírálat és döntés"
+           :approved "Engedély"
            :phase-active "Aktív fázis:"
            :phase-closed "Lezárt fázis:"
            :phase-completed "Befejezett fázis:"
@@ -798,5 +799,5 @@
   :forbidden-page {:forbidden "Tiltott"
                    :you-are-forbidden "Az oldal elérése tiltott."}
   :error-page {:title "Probléma"}
-  :meta {:description "A Resource Entitlement Management System egy eszköz az erőforrásokhoz, például kutatási adatkészletekhez való hozzáférési jogok kezelésére."
-         :keywords "REMS, jogosultság, hozzáférés-kezelés, eszköz, hozzáférési jogok, kérelmek, adatkészletek"}}}
+  :meta {:description "Az Egyesített Pszichológiai Kutatásetikai Bizottság (EPKEB) kérelemkezelő rendszere."
+         :keywords "EPKEB, kutatásetika, etikai engedély, kérelem, bírálat"}}}

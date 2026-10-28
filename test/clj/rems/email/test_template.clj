@@ -170,7 +170,7 @@
 (deftest test-member-invited
   (is (= [{:to "somebody@example.com"
            :subject "Invitation to participate in application 2001/3, \"Application title\""
-           :body "Dear Some Body,\n\nYou have been invited to participate in application 2001/3, \"Application title\", by Alice Applicant.\n\nYou can view the application and accept the terms of use at http://example.com/accept-invitation?token=abc"}]
+           :body "Dear Some Body,\n\nYou have been invited to participate in application 2001/3, \"Application title\", by Alice Applicant.\n\nYou can view the application and accept the declarations at http://example.com/accept-invitation?token=abc"}]
          (emails base-events
                  {:application/id 7
                   :event/type :application.event/member-invited
@@ -264,7 +264,7 @@
     (testing "member-added"
       (is (= [{:to-user "member",
                :subject "Added as a member of an application 2001/3, \"Application title\"",
-               :body "Dear member,\n\nYou've been added as a member of application 2001/3, \"Application title\", submitted by Alice Applicant.\n\nYou can view application and accept the terms of use at http://example.com/application/7"}]
+               :body "Dear member,\n\nYou've been added as a member of application 2001/3, \"Application title\", submitted by Alice Applicant.\n\nYou can view application and accept the declarations at http://example.com/application/7"}]
              (emails base-events add-member))))
     (testing "licenses-added"
       (let [mails (emails member-events {:application/id 7
@@ -273,8 +273,8 @@
                                          :application/licenses [{:license/id 1234}]})]
         (is (= #{"applicant" "member" "somebody"} (email-recipients mails)))
         (is (= {:to-user "applicant"
-                :subject "Your application's 2001/3, \"Application title\" terms of use have changed"
-                :body "Dear Alice Applicant,\n\nHannah Handler has requested your approval for changed terms of use to application 2001/3, \"Application title\".\n\nYou can view the application and approve the changed terms of use at http://example.com/application/7"}
+                :subject "Your application's 2001/3, \"Application title\" declarations have changed"
+                :body "Dear Alice Applicant,\n\nHannah Handler has requested your approval for changed declarations to application 2001/3, \"Application title\".\n\nYou can view the application and approve the changed declarations at http://example.com/application/7"}
                (email-to "applicant" mails)))))
     (testing "licenses-added anonymize handling workflow"
       (let [mails (emails (conj anonymous-wf-events add-member join)
@@ -284,8 +284,8 @@
                            :application/licenses [{:license/id 1234}]})]
         (is (= #{"applicant" "member" "somebody"} (email-recipients mails)))
         (is (= {:to-user "applicant"
-                :subject "Your application's 2001/3, \"Application title\" terms of use have changed"
-                :body "Dear Alice Applicant,\n\nCommittee has requested your approval for changed terms of use to application 2001/3, \"Application title\".\n\nYou can view the application and approve the changed terms of use at http://example.com/application/7"}
+                :subject "Your application's 2001/3, \"Application title\" declarations have changed"
+                :body "Dear Alice Applicant,\n\nCommittee has requested your approval for changed declarations to application 2001/3, \"Application title\".\n\nYou can view the application and approve the changed declarations at http://example.com/application/7"}
                (email-to "applicant" mails)))))
     (testing "approved"
       (let [mails (emails member-events {:application/id 7

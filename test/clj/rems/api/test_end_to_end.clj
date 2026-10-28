@@ -211,7 +211,7 @@
                                                                                :value "e2e test contents 2"}]}
                          api-key applicant-id)))
 
-            (testing "accept terms of use"
+            (testing "accept declarations"
               (assert-success
                (api-call :post "/api/applications/accept-licenses" {:application-id application-id
                                                                     :accepted-licenses [license-id]}

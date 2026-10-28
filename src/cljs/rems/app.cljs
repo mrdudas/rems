@@ -159,6 +159,10 @@
        (cond
          (some roles/+handling-roles+ roles) (navigate! "/actions")
          (roles/show-admin-pages? roles) (navigate! "/administration")
+         ;; only organization contacts can apply, see :enable-organization-contacts
+         (and (:enable-organization-contacts @rems.globals/config)
+              (not (some #{:organization-contact} roles)))
+         (navigate! "/applications")
          :else (navigate! "/catalogue"))
        {})
      ;; else dispatch the same event again while waiting for set-identity (happens especially with Firefox)

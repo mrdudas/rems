@@ -7,8 +7,8 @@
                                :invalid-workflow "Accepting invitation failed."}}
   :actions {:accept-invitation "Accept invitation"
             :accept-invitation-success "Successfully joined the application."
-            :accept-licenses "Accept the terms of use"
-            :add-licenses "Add terms of use"
+            :accept-licenses "Accept the declarations"
+            :add-licenses "Add declarations"
             :add-member "Add member"
             :approve "Approve"
             :approve-end-date "Date for access rights to expire (optional)"
@@ -38,7 +38,7 @@
             :errors {:duplicate-id "Id is already in use."
                      ;; %1 - invitation token
                      :invalid-token [:div [:p "Joining the application failed."] [:p "Check the invitation token " [:code "%1"]]]
-                     :licenses-not-accepted "Terms of use not accepted."
+                     :licenses-not-accepted "Declarations not accepted."
                      :cannot-designate-self "You cannot designate yourself as the supervisor."
                      :reviewer-from-applicant-organization "%1 was delegated by the organization of the application, so they cannot review it."
                      :reviewer-not-in-pool "%1 is not an active member of the reviewer pool."
@@ -52,7 +52,7 @@
             :handled-applications "Processed applications"
             :handled-applications-count "There are %:count% processed applications."
             :invite-member "Invite member"
-            :licenses-selection "Add terms of use"
+            :licenses-selection "Add declarations"
             :member "Member"
             :member-email "Email"
             :member-name "Name"
@@ -266,8 +266,8 @@
                           ;; %2 - %:application-external-id% - External id of the application
                           :external-id-assigned "%:event-actor% assigned an external id %:application-external-id%."
                           :expiration-notifications-sent "%:event-actor% sent expiration notification email."
-                          :licenses-accepted "%:event-actor% accepted the terms of use."
-                          :licenses-added "%:event-actor% added terms of use."
+                          :licenses-accepted "%:event-actor% accepted the declarations."
+                          :licenses-added "%:event-actor% added declarations."
                           :marked-ready "%:event-actor% marked the application ready for submission."
                           :supervision-approved "%:event-actor% approved the application as the supervisor."
                           :supervisor-designated "%:event-actor% designated %:supervisor% as the supervisor."
@@ -301,7 +301,7 @@
                           ;; %2 - %:invited-user% - Name & email of the invited reviewer
                           :reviewer-invited "%:event-actor% invited %:invited-user% to review the application."
                           :reviewer-joined "%:event-actor% accepted the invitation to review."
-                          :revoked "%:event-actor% revoked the entitlement."
+                          :revoked "%:event-actor% revoked the approval."
                           :submitted "%:event-actor% submitted the application for review."
                           :unknown "Unknown"
                           ;; Extra parameters for voted:
@@ -315,7 +315,8 @@
                           :state "State"}
                  :handlers "Handlers"
                  :id "Id"
-                 :intro [:div.intro [:p "Fill out and submit the application. Several applicants can be invited as members of the application, and each applicant has to accept the terms of use to gain access."]]
+                 :intro [:div.intro [:p "Fill in the application and attach the required documents. The contact person of your institution submits the application. You can answer the questions of the committee with the \"Remark\" button."]]
+                 :intro-handling [:div.intro [:p "The application is being handled by the committee. Your tasks are in the Actions box. The applicants do not see the names of the chairs and the reviewers."]]
                  :last-activity "Last activity"
                  :latest-activity "Latest activity"
                  :organization "Organization"
@@ -383,8 +384,8 @@
                           :form-selection "Form"
                           :workflow-selection "Workflow"}
   :commands {:accept-invitation "Accept invitation"
-             :accept-licenses "Accept the terms of use"
-             :add-licenses "Add terms of use"
+             :accept-licenses "Accept the declarations"
+             :add-licenses "Add declarations"
              :add-member "Add member"
              :approve "Approve"
              :approve-supervision "Approve as supervisor"
@@ -551,8 +552,8 @@
                                 :message-to-applicant "Dear %:recipient%,\n\nEntitlements related to your application %:application-id% have been revoked.\n\nYou can view the application at %:application-url%"
                                 :subject-to-handler "(%:application-id%) Entitlements have been revoked"
                                 :message-to-handler "Dear %:recipient%,\n\n%:event-actor% has revoked the entitlements related to application %:application-id% from %:applicant%.\n\nYou can view the application at %:application-url%"}
-          :application-licenses-added {:subject "Your application's %:application-id% terms of use have changed"
-                                       :message "Dear %:recipient%,\n\n%:event-actor% has requested your approval for changed terms of use to application %:application-id%.\n\nYou can view the application and approve the changed terms of use at %:application-url%"}
+          :application-licenses-added {:subject "Your application's %:application-id% declarations have changed"
+                                       :message "Dear %:recipient%,\n\n%:event-actor% has requested your approval for changed declarations to application %:application-id%.\n\nYou can view the application and approve the changed declarations at %:application-url%"}
           :application-resubmitted {:subject-to-handler "(%:application-id%) Application has been resubmitted"
                                     :message-to-handler "Dear %:recipient%,\n\nApplication %:application-id% has been resubmitted by %:applicant%.\n\nYou can review the application at %:application-url%"}
           :application-submitted {:subject-to-applicant "Your application %:application-id% has been submitted"
@@ -592,7 +593,7 @@
           :supervisor-designated {:subject "(%:application-id%) You have been designated as a supervisor"
                                   :message "Dear %:recipient%,\n\n%:event-actor% has designated you as the supervisor of the application %:application-id%. The application can be submitted only after your approval.\n\nYou can view and approve the application at %:application-url%"}
           :member-added {:subject "Added as a member of an application %:application-id%"
-                         :message "Dear %:recipient%,\n\nYou've been added as a member of application %:application-id%, submitted by %:applicant%.\n\nYou can view application and accept the terms of use at %:application-url%"}
+                         :message "Dear %:recipient%,\n\nYou've been added as a member of application %:application-id%, submitted by %:applicant%.\n\nYou can view application and accept the declarations at %:application-url%"}
           ;; Format parameters for member-invited:
           ;; %1 - %:recipient% - name of recipient
           ;; %2 - %:applicant% - name of applicant
@@ -601,8 +602,8 @@
           :supervisor-invited {:subject "Invitation to be the supervisor of application %:application-id%"
                                :message "Dear %:recipient%,\n\nYou have been invited to be the supervisor of application %:application-id%, by %:applicant%. As the supervisor, you approve the application before it is submitted.\n\nYou can view the application and accept the invitation at %:invitation-url%"}
           :member-invited {:subject "Invitation to participate in application %:application-id%"
-                           :message "Dear %:recipient%,\n\nYou have been invited to participate in application %:application-id%, by %:applicant%.\n\nYou can view the application and accept the terms of use at %:invitation-url%"}
-          :regards "\n\nKind regards,\n\nREMS\n"
+                           :message "Dear %:recipient%,\n\nYou have been invited to participate in application %:application-id%, by %:applicant%.\n\nYou can view the application and accept the declarations at %:invitation-url%"}
+          :regards "\n\nKind regards,\n\nEPKEB – United Ethical Review Committee for Research in Psychology\n"
           :remarked {:subject "(%:application-id%) Application has been commented"
                      :message "Dear %:recipient%,\n\n%:event-actor% has commented your application %:application-id%, submitted by %:applicant%.\n\nYou can view the application and the comment at %:application-url%"}
           :review-requested {:subject "(%:application-id%) Review request"
@@ -633,8 +634,8 @@
           ;; %4 - %:invitation-url% - invitation link
           :workflow-handler-invitation {:message "Dear %:recipient%,\n\n%:invited-by% has invited you to be a handler of applications of workflow %:workflow%.\n\nYou can view the workflow at %:invitation-url%"
                                         :subject "Invitation to handle applications"}}
-  :footer "CSC – IT Center for Science"
-  :form {:accepted-licenses "Accepted terms of use"
+  :footer "EPKEB – United Ethical Review Committee for Research in Psychology"
+  :form {:accepted-licenses "Accepted declarations"
          :actions "Actions"
          :add-comment "Add comment"
          :add-comments-not-shown-to-applicant "Add comment (not shown to applicant)"
@@ -660,15 +661,15 @@
          :diff-show "Show changes"
          :events "Events"
          :failed "Failed"
-         :has-accepted-licenses "Terms of use accepted."
+         :has-accepted-licenses "Declarations accepted."
          :invalid-attachment "Attachment file type not allowed."
          :too-large-attachment "The attachment is too large."
          :attachment-max-size "Allowed maximum size of an attachment: %1."
          :last-save "Last save %1."
-         :licenses "Terms of use"
+         :licenses "Declarations"
          ;; %1 - number
          :maxlength "(max %1 characters)"
-         :must-accept-licenses "Each member is required to accept the terms of use to access the resources."
+         :must-accept-licenses "Each applicant has to accept the declarations below before the application can be submitted."
          :no-rows "No rows"
          :optional "(optional)"
          :please-wait "Please wait"
@@ -738,9 +739,9 @@
   :not-found-page {:not-found "Not found"
                    :page-was-not-found "This page was not found."}
   :pdf {:generated "This PDF generated at"}
-  :phases {:apply "Apply"
-           :approve "Approval"
-           :approved "Approved"
+  :phases {:apply "Application"
+           :approve "Review and decision"
+           :approved "Approval"
            :phase-active "Phase active:"
            :phase-closed "Phase closed:"
            :phase-completed "Phase completed:"

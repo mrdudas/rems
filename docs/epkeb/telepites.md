@@ -63,6 +63,7 @@ Az állapot 2026-10-27-i felmérése. A beállításokat (űrlapok, workflow-k, 
 :enable-supervisor-approval true
 :enable-applicant-remarks true
 :enable-processing-states true
+:enable-autosave true
 :reviewer-pool-organization "EPKEB"
 :restrict-organization-owners true
 :theme-path "/rems/epkeb-theme/theme.edn"
@@ -79,8 +80,9 @@ Az állapot 2026-10-27-i felmérése. A beállításokat (űrlapok, workflow-k, 
 | Szervezet `EPKEB` | kapcsolattartó és illetékes elnök beállítva |
 | Workflow #3 „próba munkafolyamat” (normál eljárás) | *anonymize handling* be; tiltások: `approve` a bírálónak, `copy-as-new` a tagnak, `change-applicant`, `redact-attachments` a bírálónak; állapotcímkék: Bírálók kijelölve, Bírálók felkérve, Módosítás alatt, Bizottsági szavazás |
 | Workflow #4 „Rövidített eljárás” | *anonymize handling* be; tiltások: `copy-as-new` a tagnak, `change-applicant`, `request-review`, `invite-reviewer`, `request-decision`, `invite-decider`, `vote` |
-| Katalóguselem #2 „Normál eljárás” | workflow #3, űrlap #3 |
-| Katalóguselem #3 „Rövidített eljárás” | workflow #4, űrlap #3 (az új űrlap elkészültéig) |
+| Katalóguselem #4 „Normál eljárás” (2026-10-28 óta, a #2 helyett) | workflow #3, űrlap #5 |
+| Katalóguselem #5 „Rövidített eljárás” (2026-10-28 óta, a #3 helyett) | workflow #4, űrlap #5 (az új űrlap elkészültéig) |
+| Űrlap #5 | az #3 másolata, „A kutatás címe” címmezőként (description), így a listákban a kérelem címe látszik. A használatban lévő űrlap nem szerkeszthető, ezért kellett másolat. |
 | Kérelem 2026/8 | a kapcsolattartós létrehozás próbája |
 
 ## Upstream verzió

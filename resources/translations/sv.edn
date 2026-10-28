@@ -275,6 +275,7 @@
                  :handlers "Handläggare"
                  :id "id"
                  :intro [:div.intro [:p "Fyll i ansökan och skicka den för behandling. Du kan bjuda in andra att delta i din ansökan. Alla deltagare måste godkänna användarvillkoren senast när ansökan godkänts."]]
+                 :intro-handling [:div.intro [:p "Ansökan behandlas av kommittén. Dina uppgifter finns i rutan Åtgärder."]]
                  :last-activity "Ändrat"
                  :latest-activity "Senaste aktivitet"
                  :organization "Organisation"

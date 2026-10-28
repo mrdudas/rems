@@ -1338,7 +1338,9 @@
      [disabled-items-warning application])
    (when (can-see-everything? application) ; XXX: should these be shown only to handling users?
      [blacklist-warning application])
-   (text :t.applications/intro)
+   (if (is-handling-user? application)
+     (text :t.applications/intro-handling)
+     (text :t.applications/intro))
    [:div.row
     [:div.col-lg-8.application-content.spaced-vertically-5
      [application-state {:application application

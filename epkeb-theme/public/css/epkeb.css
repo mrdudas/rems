@@ -132,3 +132,24 @@ h1 {
   background-position: left center;
   background-repeat: no-repeat;
 }
+
+/* the main action of each role stands out from the other actions:
+   researcher (mark ready), supervisor (approve), reviewer (review),
+   chair (request reviews, decide) */
+#mark-ready-action-button,
+#approve-supervision-action-button,
+#review-action-button,
+#request-review-dropdown,
+#approve-reject-action-button {
+  background-color: var(--epkeb-blue) !important;
+  border-color: var(--epkeb-blue) !important;
+  color: #fff !important;
+}
+#mark-ready-action-button:hover,
+#approve-supervision-action-button:hover,
+#review-action-button:hover,
+#request-review-dropdown:hover,
+#approve-reject-action-button:hover {
+  background-color: var(--epkeb-blue-dark) !important;
+  border-color: var(--epkeb-blue-dark) !important;
+}
