@@ -36,6 +36,31 @@ Az állapot 2026-10-27-i felmérése. A beállításokat (űrlapok, workflow-k, 
    Helyi építés (ha a GitHub nem elérhető): a `rems-docker-compose.yml`-ben az `image:` helyett a `build:` blokk, majd `docker compose build rems` (kb. 15–25 perc, 2–3 GB memória).
 5. Ellenőrzés a böngészőben. Újraindításkor a REMS-munkamenetek elvesznek, újra be kell lépni.
 
+## Azonosítás: külön `epkeb` realm
+
+**Probléma (2026-10-28):** a REMS az `analyst` realmet használta, amelyen a többi analyst.hu-szolgáltatás is fut. A REMS kilépése csak a REMS-munkamenetet zárta le, a Keycloakét nem, ezért a következő bejelentkezés jelszó nélkül ugyanazzal a fiókkal történt; más fiókra váltani nem lehetett. Ha a REMS a Keycloak munkamenetét is lezárná, az a többi szolgáltatásból is kiléptetne.
+
+**Megoldás:**
+
+- Külön Keycloak realm a REMS-nek: `epkeb`. A bizottság felhasználói ide kerülnek, a kilépés csak ezt a munkamenetet zárja le. Az éles átálláskor (engedely.epkeb.hu) is ez marad.
+- A REMS kilépéskor a realm kijelentkező címére irányít az azonosító tokennel (`:oidc-end-session-on-logout true`, OIDC RP-initiated logout), így a Keycloak megerősítés nélkül kiléptet, majd visszairányít a REMS kezdőlapjára.
+
+**Keycloak-beállítás** (admin konzol, Keycloak 26):
+
+1. Realm-választó → *Create realm* → név: `epkeb` → *Create*.
+2. *Clients* → *Create client*: típus OpenID Connect, *Client ID* `rems-client` → *Next* → *Client authentication* be, *Standard flow* be (a többi ki) → *Next* →
+   - *Root URL*: `https://rems.analyst.hu`
+   - *Valid redirect URIs*: `https://rems.analyst.hu/oidc-callback`
+   - *Valid post logout redirect URIs*: `https://rems.analyst.hu/*`
+   - *Web origins*: `https://rems.analyst.hu`
+   → *Save*.
+3. A kliens *Credentials* fülén a *Client secret* értéke kerül a REMS `:oidc-client-secret` beállításába.
+4. *Users* → *Add user*: felhasználónév, e-mail, kereszt- és vezetéknév (a REMS a nevet kötelezőnek veszi), *Email verified* be → *Create*; a *Credentials* fülön jelszó, *Temporary* ki. Az admin (owner) felhasználót is itt kell létrehozni.
+
+**REMS-beállítás:** `:oidc-metadata-url "https://auth.analyst.hu/auth/realms/epkeb/.well-known/openid-configuration"`, az új klienstitok és `:oidc-end-session-on-logout true`.
+
+**Felhasználói azonosítók:** a REMS a Keycloak `sub` azonosítóját használja, ami realmenként más. Az új realmben mindenki új REMS-felhasználó lesz; a régi bemutatóadat a régi azonosítókhoz tartozik. Az admin felhasználónak újra meg kell adni az `owner` szerepet (`docker exec rems java -jar rems.jar grant-role owner <userid>`), és fel kell venni a workflow-k handlerei közé.
+
 ## A próbarendszer beállításai (`config.edn`)
 
 ```clojure
