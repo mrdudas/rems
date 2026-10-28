@@ -83,7 +83,7 @@
                            (= 1 (count recommendations)))
                   (first recommendations))}))
 
-(defn- recommendation-text [recommendation]
+(defn recommendation-text [recommendation]
   (case recommendation
     :approve (text :t.recommendations/approve)
     :revise (text :t.recommendations/revise)

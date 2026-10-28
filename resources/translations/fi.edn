@@ -728,7 +728,10 @@
             :unanimous "Arviot ovat yksimielisiä: %1"}
   :reviewer-calendar {:already-requested "Pyydetty"
                       :deadline "määräaika %1"
-                      :intro "Arvioijapoolin keskeneräiset arviot. Palkki kestää pyynnöstä määräaikaan; punainen osa näyttää, montako päivää arvio on myöhässä. Avaa hakemus napsauttamalla palkkia."
+                      :done "valmis: %1"
+                      :earlier "Aiemmin"
+                      :intro "Arvioijapoolin arviot. Palkki kestää pyynnöstä määräaikaan, valmiin arvion palkki sen valmistumiseen suosituksen värillä; punainen osa näyttää, montako päivää arvio on myöhässä. Palkissa näkyvät hakemuksen otsikko ja tila. Aikajanaa voi vierittää vaakasuunnassa menneisyyteen ja tulevaisuuteen. Avaa hakemus napsauttamalla palkkia."
+                      :later "Myöhemmin"
                       :no-waiting-applications "Arvioijia odottavia hakemuksia ei ole."
                       :not-requestable "Ei voi arvioida tätä hakemusta: ei poolin aktiivinen jäsen tai hakemuksen organisaation nimeämä."
                       :not-requestable-short "Ei käytettävissä"

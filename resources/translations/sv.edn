@@ -728,7 +728,10 @@
             :unanimous "Granskningarna är enhälliga: %1"}
   :reviewer-calendar {:already-requested "Begärd"
                       :deadline "tidsfrist %1"
-                      :intro "Granskarpoolens pågående granskningar. Stapeln varar från begäran till tidsfristen; den röda delen visar hur många dagar granskningen är försenad. Klicka på en stapel för att öppna ansökan."
+                      :done "klar: %1"
+                      :earlier "Tidigare"
+                      :intro "Granskarpoolens granskningar. Stapeln varar från begäran till tidsfristen, för en klar granskning tills den blev klar, i rekommendationens färg; den röda delen visar hur många dagar granskningen är försenad. Stapeln visar ansökans titel och status. Tidslinjen kan rullas vågrätt bakåt och framåt i tiden. Klicka på en stapel för att öppna ansökan."
+                      :later "Senare"
                       :no-waiting-applications "Inga ansökningar väntar på granskare."
                       :not-requestable "Kan inte granska denna ansökan: inte aktiv medlem i poolen eller utsedd av ansökans organisation."
                       :not-requestable-short "Inte tillgänglig"

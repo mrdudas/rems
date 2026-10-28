@@ -3599,7 +3599,19 @@
                     (filter #(= "pool-reviewer2" (:userid %)))
                     first
                     :reviews
-                    (mapv (juxt :application/id :review/overdue-days)))))))))
+                    (mapv (juxt :application/id :review/overdue-days))))))
+      (testing "a done review stays on the calendar with the recommendation"
+        (test-helpers/command! {:type :application.command/review
+                                :application-id app-id
+                                :actor "pool-reviewer2"
+                                :comment "ok"})
+        (is (= [[app-id :application.state/submitted true]]
+               (->> (api-call :get "/api/applications/reviewer-calendar" nil +test-api-key+ "handler")
+                    :reviewers
+                    (filter #(= "pool-reviewer2" (:userid %)))
+                    first
+                    :reviews
+                    (mapv (juxt :application/id (comp keyword :application/state) (comp some? :review/done))))))))))
 
 ;; EPKEB: the tasks of the user by role
 (deftest test-my-tasks

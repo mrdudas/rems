@@ -832,7 +832,10 @@
             :unanimous "A bírálói vélemény egységes: %1"}
   :reviewer-calendar {:already-requested "Felkérve"
                       :deadline "határidő: %1"
-                      :intro "A bírálói kör folyamatban lévő bírálatai. A sáv a felkéréstől a határidőig tart; a piros rész mutatja, hány napja késik a bírálat. A sávra kattintva megnyílik a kérelem."
+                      :done "kész: %1"
+                      :earlier "Korábban"
+                      :intro "A bírálói kör bírálatai. A sáv a felkéréstől a határidőig tart, a kész bírálaté a beérkezéséig, a javaslat színével; a piros rész mutatja, hány napja késik a bírálat. A sávon a kérelem címe és állapota látható. Az idővonal vízszintesen görgethető a múltba és a jövőbe. A sávra kattintva megnyílik a kérelem."
+                      :later "Később"
                       :no-waiting-applications "Nincs bírálóra váró kérelem."
                       :not-requestable "Ezt a kérelmet nem bírálhatja: nem aktív tagja a bírálói körnek, vagy a kérelmező tagintézményének delegáltja."
                       :not-requestable-short "Nem kérhető"

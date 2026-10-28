@@ -777,7 +777,10 @@
             :unanimous "Bedømmelserne er enstemmige: %1"}
   :reviewer-calendar {:already-requested "Anmodet"
                       :deadline "frist %1"
-                      :intro "Bedømmerpuljens igangværende bedømmelser. Bjælken varer fra anmodningen til fristen; den røde del viser, hvor mange dage bedømmelsen er forsinket. Klik på en bjælke for at åbne ansøgningen."
+                      :done "færdig: %1"
+                      :earlier "Tidligere"
+                      :intro "Bedømmerpuljens bedømmelser. Bjælken varer fra anmodningen til fristen, for en færdig bedømmelse til den blev færdig, i anbefalingens farve; den røde del viser, hvor mange dage bedømmelsen er forsinket. Bjælken viser ansøgningens titel og status. Tidslinjen kan rulles vandret tilbage og frem i tiden. Klik på en bjælke for at åbne ansøgningen."
+                      :later "Senere"
                       :no-waiting-applications "Ingen ansøgninger venter på bedømmere."
                       :not-requestable "Kan ikke bedømme denne ansøgning: ikke aktivt medlem af puljen eller udpeget af ansøgningens organisation."
                       :not-requestable-short "Ikke tilgængelig"

@@ -832,7 +832,10 @@
             :unanimous "The reviews are unanimous: %1"}
   :reviewer-calendar {:already-requested "Requested"
                       :deadline "deadline %1"
-                      :intro "The open reviews of the reviewer pool. A bar lasts from the request to the deadline; a red part shows how many days the review is overdue. Click a bar to open the application."
+                      :done "done: %1"
+                      :earlier "Earlier"
+                      :intro "The reviews of the reviewer pool. A bar lasts from the request to the deadline, or for a done review until it was done, in the colour of the recommendation; a red part shows how many days the review is overdue. The bar shows the title and the state of the application. The timeline can be scrolled horizontally to the past and the future. Click a bar to open the application."
+                      :later "Later"
                       :no-waiting-applications "No applications are waiting for reviewers."
                       :not-requestable "Cannot review this application: not an active member of the pool, or delegated by the organization of the application."
                       :not-requestable-short "Not available"

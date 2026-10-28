@@ -30,7 +30,7 @@
 ### 5. Kényelmi funkciók
 
 - Bírálóválasztó statisztikával (**kész**, a bírálói körrel).
-- Bírálói naptár (**kész**): a bírálók aktív ügyei határidővel, késés pirossal, felkérés a naptárból; az elnököknek és a titkárnak.
+- Bírálói naptár (**kész**): a bírálók aktív és kész ügyei határidővel, késés pirossal, a sávon a kérelem címével és állapotával; görgethető idővonal a múltba és a jövőbe; felkérés a naptárból; az elnököknek és a titkárnak.
 - Külső szakértő bevonása egy kérdéshez (az elnök vagy a titkár dönt róla; nem bíráló).
 - Kérelemsablonok letöltése, aláírási útmutató.
 

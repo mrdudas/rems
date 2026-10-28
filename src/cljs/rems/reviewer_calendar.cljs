@@ -1,14 +1,16 @@
 (ns rems.reviewer-calendar
-  "The /reviewer-calendar page: the open reviews of the reviewer pool on a
-  timeline with their deadlines, and requesting new reviews. See
+  "The /reviewer-calendar page: the open and done reviews of the reviewer
+  pool on a scrollable timeline with their deadlines, and requesting new
+  reviews. See
   `:reviewer-pool-organization`."
   (:require [re-frame.core :as rf]
             [rems.atoms :refer [document-title]]
             [rems.collapsible :as collapsible]
             [rems.fetcher :as fetcher]
             [rems.flash-message :as flash-message]
+            [rems.reviews :refer [recommendation-text]]
             [rems.spinner :as spinner]
-            [rems.text :refer [localize-reviewer-status text text-format]]
+            [rems.text :refer [localize-reviewer-status localize-state text text-format]]
             [rems.util :refer [post!]]))
 
 (rf/reg-event-fx
@@ -48,121 +50,218 @@
 ;;;; timeline
 
 (def ^:private day-ms (* 24 60 60 1000))
-(def ^:private days-before 14)
-(def ^:private days-after 42)
+(def ^:private day-width
+  "The width of a day on the timeline in pixels."
+  24)
+(def ^:private name-width 224)
+(def ^:private action-width 144)
+(def ^:private lane-height 46)
+(def ^:private scroll-days
+  "How far the earlier and later buttons scroll."
+  28)
 
-(defn- start-of-today []
-  (let [now (js/Date.)]
-    (.getTime (js/Date. (.getFullYear now) (.getMonth now) (.getDate now)))))
-
-(defn- timeline []
-  (let [today (start-of-today)]
-    {:today today
-     :start (- today (* days-before day-ms))
-     :end (+ today (* days-after day-ms))}))
-
-(defn- position
-  "The position of the time `t` (ms) on the timeline in percent, clamped."
-  [{:keys [start end]} t]
-  (-> (/ (- t start) (- end start))
-      (* 100)
-      (max 0)
-      (min 100)))
+(defn- start-of-day [t]
+  (let [d (js/Date. t)]
+    (.getTime (js/Date. (.getFullYear d) (.getMonth d) (.getDate d)))))
 
 (defn- ms [s]
   (when s (.getTime (js/Date. s))))
 
-(defn- date-text [t]
-  (.toISOString (js/Date. t)))
-
 (defn- format-date [t]
-  (subs (date-text t) 0 10))
+  (subs (.toISOString (js/Date. t)) 0 10))
 
-(def ^:private lane-height 30)
+(defn- review-end
+  "The end of the bar of the review: when it was done, today if it is
+  overdue, or else the deadline."
+  [review now]
+  (or (ms (:review/done review))
+      (if (pos? (:review/overdue-days review))
+        now
+        (or (ms (:review/deadline review)) (ms (:review/requested review))))))
 
-(defn- review-bar [line lane review]
+(defn- timeline
+  "The timeline from a few weeks before the first review until a few weeks
+  after the last deadline, starting on a Monday."
+  [reviewers]
+  (let [now (.getTime (js/Date.))
+        today (start-of-day now)
+        reviews (mapcat :reviews reviewers)
+        first-day (start-of-day (apply min (- today (* 8 7 day-ms))
+                                       (map (comp ms :review/requested) reviews)))
+        ;; Monday on or before the first day
+        start (- first-day (* day-ms (mod (+ 6 (.getDay (js/Date. first-day))) 7)))
+        end (apply max (+ today (* 8 7 day-ms))
+                   (map #(+ (review-end % now) (* 14 day-ms)) reviews))]
+    {:now now
+     :today today
+     :start start
+     :days (js/Math.ceil (/ (- end start) day-ms))}))
+
+(defn- x
+  "The position of the time `t` (ms) on the timeline in pixels."
+  [{:keys [start]} t]
+  (* day-width (/ (- t start) day-ms)))
+
+(defn- lanes
+  "Puts the reviews in lanes so that the bars do not overlap, and returns
+  the reviews with their `::lane`."
+  [line reviews]
+  (loop [reviews (sort-by (comp ms :review/requested) reviews)
+         lane-ends []
+         result []]
+    (if-some [review (first reviews)]
+      (let [left (x line (ms (:review/requested review)))
+            right (max (+ left (* 6 day-width)) (x line (review-end review (:now line))))
+            lane (or (first (keep-indexed #(when (<= %2 left) %1) lane-ends))
+                     (count lane-ends))]
+        (recur (rest reviews)
+               (assoc lane-ends lane (+ right 2))
+               (conj result (assoc review ::lane lane))))
+      result)))
+
+(def ^:private recommendation-colors
+  {:approve "#2E7D4F"
+   :revise "#A86A00"
+   :reject "#8E1236"
+   :not-competent "#5B6B80"})
+
+(defn- review-status
+  "The state of the review as text: done with the recommendation, overdue,
+  or the deadline."
+  [review]
+  (cond
+    (:review/done review)
+    (str (text-format :t.reviewer-calendar/done (format-date (ms (:review/done review))))
+         (when-some [recommendation (some-> (:review/recommendation review) keyword)]
+           (str " – " (recommendation-text recommendation))))
+
+    (pos? (:review/overdue-days review))
+    (text-format :t.reviewer-calendar/overdue (:review/overdue-days review))
+
+    :else
+    (text-format :t.reviewer-calendar/deadline (some-> (ms (:review/deadline review)) format-date))))
+
+(defn- review-bar [line review]
   (let [requested (ms (:review/requested review))
-        deadline (ms (:review/deadline review))
+        deadline (or (ms (:review/deadline review)) requested)
+        done? (some? (:review/done review))
         overdue? (pos? (:review/overdue-days review))
-        end (if overdue? (.getTime (js/Date.)) (or deadline requested))
-        left (position line requested)
-        deadline-position (position line (or deadline requested))
-        right (position line end)]
+        left (x line requested)
+        right (max (+ left (* 6 day-width)) (x line (review-end review (:now line))))
+        width (- right left)
+        title (str (:application/external-id review)
+                   (when-some [description (:application/description review)]
+                     (str " – " description)))
+        state (localize-state (keyword (:application/state review)))
+        status (review-status review)]
     [:a.reviewer-calendar-bar
      {:href (str "/application/" (:application/id review))
-      :title (str (:application/external-id review)
-                  (when-some [description (:application/description review)]
-                    (str " – " description))
-                  " – " (text-format :t.reviewer-calendar/deadline (some-> deadline format-date))
-                  (when overdue?
-                    (str " – " (text-format :t.reviewer-calendar/overdue (:review/overdue-days review)))))
+      :title (str title "\n" state " · " status)
       :style {:position :absolute
-              :top (+ 2 (* lane lane-height))
-              :height (- lane-height 4)
-              :left (str left "%")
-              :width (str (max 1 (- right left)) "%")
-              :display :flex
+              :top (+ 3 (* (::lane review) lane-height))
+              :height (- lane-height 6)
+              :left left
+              :width width
               :overflow :hidden
-              :border-radius 4
+              :border-radius 6
               :color :white
-              :font-size "0.8rem"
-              :line-height (str (- lane-height 4) "px")
-              :white-space :nowrap
-              :text-decoration :none}}
-     ;; the time until the deadline
-     [:span {:style {:flex (str "0 0 " (if (= right left) 100 (* 100 (/ (- deadline-position left) (- right left)))) "%")
-                     :background-color "#2c6e9e"
-                     :padding-left 4
-                     :overflow :hidden}}
-      (:application/external-id review)]
-     ;; the time after the deadline
-     (when overdue?
-       [:span {:style {:flex "1 1 auto"
-                       :background-color "#c62828"
-                       :padding-left 4
-                       :overflow :hidden}}
-        (text-format :t.reviewer-calendar/overdue (:review/overdue-days review))])]))
+              :text-decoration :none
+              :background (cond
+                            done? (get recommendation-colors (some-> (:review/recommendation review) keyword) "#5B6B80")
+                            ;; the part after the deadline is red
+                            overdue? (let [split (* 100 (/ (- (x line deadline) left) width))]
+                                       (str "linear-gradient(to right, #2c6e9e " split "%, #c62828 " split "%)"))
+                            :else "#2c6e9e")
+              :opacity (when done? 0.85)}}
+     [:div {:style {:padding "3px 6px"
+                    :font-size "0.78rem"
+                    :line-height 1.25
+                    :white-space :nowrap
+                    :overflow :hidden
+                    :text-overflow :ellipsis}}
+      [:div {:style {:font-weight 600 :overflow :hidden :text-overflow :ellipsis}} title]
+      [:div {:style {:overflow :hidden :text-overflow :ellipsis}} state " · " status]]]))
 
-(defn- week-header [line]
-  [:div {:style {:position :relative :height 22 :font-size "0.75rem" :color "#666"}}
-   ;; the end of the timeline has no label, since it would not fit
-   (for [week (range (- (quot days-before 7)) (quot days-after 7))
-         :let [t (+ (:today line) (* week 7 day-ms))]]
-     ^{:key week}
-     [:span {:style {:position :absolute
-                     :left (str (position line t) "%")
-                     :transform "translateX(-50%)"
-                     :white-space :nowrap}}
-      (if (zero? week)
-        (text :t.reviewer-calendar/today)
-        (subs (format-date t) 5))])])
+(defn- weeks
+  "The Mondays of the timeline."
+  [line]
+  (for [week (range (quot (:days line) 7))]
+    (+ (:start line) (* week 7 day-ms))))
+
+(defn- grid
+  "The week lines and the line of today."
+  [line]
+  [:<>
+   (for [t (weeks line)]
+     ^{:key t}
+     [:div {:style {:position :absolute :top 0 :bottom 0 :width 1
+                    :left (x line t)
+                    :background-color "#e1e5eb"}}])
+   [:div {:style {:position :absolute :top 0 :bottom 0 :width 2
+                  :left (x line (:now line))
+                  :background-color "#16233A"}}]])
+
+(def ^:private sticky-left
+  {:position :sticky :left 0 :z-index 2 :background-color "#fff"})
+
+(def ^:private sticky-right
+  {:position :sticky :right 0 :z-index 2 :background-color "#fff"})
+
+(defn- week-header [line application]
+  [:div {:style {:display :flex :border-bottom "1px solid #ddd"}}
+   [:div {:style (merge sticky-left {:flex (str "0 0 " name-width "px")})}]
+   [:div {:style {:flex (str "0 0 " (* day-width (:days line)) "px")
+                  :position :relative
+                  :height 40
+                  :font-size "0.75rem"
+                  :color "#5B6B80"}}
+    (for [t (weeks line)
+          :let [date (js/Date. t)]]
+      ^{:key t}
+      [:div {:style {:position :absolute :left (+ 3 (x line t)) :top 2 :white-space :nowrap}}
+       ;; the month on the first week of the month
+       [:div {:style {:font-weight 600 :height "1.1em"}}
+        (when (<= (.getDate date) 7)
+          (.toLocaleDateString date js/undefined #js {:year "numeric" :month "long"}))]
+       [:div (subs (format-date (+ t (* 12 60 60 1000))) 5)]])
+    [:div {:style {:position :absolute :left (- (x line (:now line)) 20) :bottom 0
+                   :width 40 :text-align :center :font-weight 700 :color "#16233A"
+                   :background-color "#fff"}}
+     (text :t.reviewer-calendar/today)]]
+   (when application
+     [:div {:style (merge sticky-right {:flex (str "0 0 " action-width "px")})}])])
 
 (defn- reviewer-row [line reviewer {:keys [application available requested]}]
-  (let [reviews (:reviews reviewer)
-        lanes (max 1 (count reviews))
-        overdue? (some (comp pos? :review/overdue-days) reviews)]
+  (let [reviews (lanes line (:reviews reviewer))
+        open (remove :review/done reviews)
+        lane-count (max 1 (inc (apply max -1 (map ::lane reviews))))
+        overdue? (some (comp pos? :review/overdue-days) open)]
     [:div.reviewer-calendar-row {:style {:display :flex
-                                         :align-items :center
-                                         :border-top "1px solid #ddd"
-                                         :padding "4px 0"}}
-     [:div {:style {:flex "0 0 14rem" :padding-right "0.5rem"}}
+                                         :border-bottom "1px solid #ddd"}}
+     [:div {:style (merge sticky-left
+                          {:flex (str "0 0 " name-width "px")
+                           :padding "6px 8px 6px 0"
+                           :border-right "1px solid #ddd"})}
       [:div {:style {:font-weight :bold :color (when overdue? "#c62828")}} (:name reviewer)]
       [:div {:style {:font-size "0.8rem" :color "#666"}}
        (:reviewer/organization reviewer)
        " · " (localize-reviewer-status (:reviewer/status reviewer))
-       " · " (text-format :t.reviewer-calendar/open-reviews (count reviews))]]
-     [:div {:style {:flex "1 1 auto"
+       " · " (text-format :t.reviewer-calendar/open-reviews (count open))]]
+     [:div {:style {:flex (str "0 0 " (* day-width (:days line)) "px")
                     :position :relative
-                    :height (* lanes lane-height)
-                    :background-color "#f6f6f6"}}
-      [:div {:style {:position :absolute :top 0 :bottom 0 :width 2
-                     :left (str (position line (:today line)) "%")
-                     :background-color "#333"}}]
-      (for [[lane review] (map-indexed vector reviews)]
-        ^{:key (:application/id review)}
-        [review-bar line lane review])]
+                    :height (* lane-count lane-height)
+                    :background-color "#f6f8fb"}}
+      [grid line]
+      (for [review reviews]
+        ^{:key (str (:application/id review) "/" (:review/requested review))}
+        [review-bar line review])]
      (when application
-       [:div {:style {:flex "0 0 9rem" :padding-left "0.5rem"}}
+       [:div {:style (merge sticky-right
+                            {:flex (str "0 0 " action-width "px")
+                             :padding "6px 0 6px 8px"
+                             :border-left "1px solid #ddd"
+                             :display :flex
+                             :align-items :center})}
         (cond
           (contains? requested (:userid reviewer))
           [:span.text-muted (text :t.reviewer-calendar/already-requested)]
@@ -176,6 +275,51 @@
           :else
           [:span.text-muted {:title (text :t.reviewer-calendar/not-requestable)}
            (text :t.reviewer-calendar/not-requestable-short)])])]))
+
+(defn- scroll-to-today!
+  "Scrolls the timeline so that today is at a third of the visible part."
+  [^js element line]
+  (set! (.-scrollLeft element)
+        (- (+ name-width (x line (:now line)))
+           (/ (.-clientWidth element) 3))))
+
+(defn- calendar-timeline
+  "The timeline in a horizontally scrolling box. It opens at today, and can
+  be scrolled to the past and the future."
+  []
+  (r/with-let [element (atom nil)
+               scrolled? (atom false)]
+    (let [calendar @(rf/subscribe [::calendar])
+          selected @(rf/subscribe [::selected-application])
+          application (some #(when (= selected (:application/id %)) %) (:waiting-applications calendar))
+          available (set (map :userid @(rf/subscribe [::available-reviewers])))
+          line (timeline (:reviewers calendar))
+          scroll! (fn [days]
+                    (some-> ^js @element (.scrollBy #js {:left (* days day-width) :behavior "smooth"})))]
+      [:div
+       [:div.d-flex.flex-wrap.align-items-center.mb-2 {:style {:gap "0.5rem"}}
+        [:button.btn.btn-secondary.btn-sm {:type :button :on-click #(scroll! (- scroll-days))}
+         "‹ " (text :t.reviewer-calendar/earlier)]
+        [:button.btn.btn-secondary.btn-sm {:type :button :on-click #(some-> @element (scroll-to-today! line))}
+         (text :t.reviewer-calendar/today)]
+        [:button.btn.btn-secondary.btn-sm {:type :button :on-click #(scroll! scroll-days)}
+         (text :t.reviewer-calendar/later) " ›"]]
+       [:div {:ref (fn [el]
+                     (when el
+                       (reset! element el)
+                       (when-not @scrolled?
+                         (reset! scrolled? true)
+                         (scroll-to-today! el line))))
+              :style {:overflow-x :auto
+                      :border "1px solid #ddd"
+                      :border-radius 8}}
+        [:div {:style {:width :max-content :min-width "100%"}}
+         [week-header line application]
+         (for [reviewer (:reviewers calendar)]
+           ^{:key (:userid reviewer)}
+           [reviewer-row line reviewer {:application application
+                                        :available available
+                                        :requested (set (:application/reviewers application))}])]]])))
 
 (defn- application-selection [applications selected]
   [:div.form-group
@@ -197,10 +341,7 @@
 (defn reviewer-calendar-page []
   (let [calendar @(rf/subscribe [::calendar])
         loading? @(rf/subscribe [::calendar :fetching?])
-        selected @(rf/subscribe [::selected-application])
-        application (some #(when (= selected (:application/id %)) %) (:waiting-applications calendar))
-        available (set (map :userid @(rf/subscribe [::available-reviewers])))
-        line (timeline)]
+        selected @(rf/subscribe [::selected-application])]
     [:div
      [document-title (text :t.navigation/reviewer-calendar)]
      [flash-message/component :top]
@@ -222,12 +363,4 @@
           :title (text :t.navigation/reviewer-calendar)
           :always [:div
                    [:p (text :t.reviewer-calendar/intro)]
-                   [:div {:style {:display :flex}}
-                    [:div {:style {:flex "0 0 14rem"}}]
-                    [:div {:style {:flex "1 1 auto"}} [week-header line]]
-                    (when application [:div {:style {:flex "0 0 9rem"}}])]
-                   (for [reviewer (:reviewers calendar)]
-                     ^{:key (:userid reviewer)}
-                     [reviewer-row line reviewer {:application application
-                                                  :available available
-                                                  :requested (set (:application/reviewers application))}])]}]])]))
+                   [calendar-timeline]]}]])]))

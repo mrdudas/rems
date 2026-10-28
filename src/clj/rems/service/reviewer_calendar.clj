@@ -54,6 +54,30 @@
                                 (time/in-days (time/interval deadline now))
                                 0)}))))
 
+(defn done-reviews
+  "The reviews done on the application, each with the time of the request
+  that it answers and the recommendation."
+  [application]
+  (let [events (:application/events application)]
+    (for [[i event] (map-indexed vector events)
+          :when (= :application.event/reviewed (:event/type event))
+          :let [userid (:event/actor event)
+                request (->> (take i events)
+                             (filter #(and (= :application.event/review-requested (:event/type %))
+                                           (some #{userid} (event-userids (:application/reviewers %)))))
+                             last)]
+          :when request]
+      (let [days (review-deadline-days application (:event/time request))]
+        {:userid userid
+         :application/id (:application/id application)
+         :application/external-id (:application/external-id application)
+         :application/description (:application/description application)
+         :review/requested (:event/time request)
+         :review/deadline (when days (time/plus (:event/time request) (time/days days)))
+         :review/done (:event/time event)
+         :review/recommendation (:review/recommendation event)
+         :review/overdue-days 0}))))
+
 (defn reviewers-since-submission
   "The users requested to review since the latest submission."
   [application]
@@ -71,21 +95,28 @@
   pool is not in use. Only the applications that the user handles are shown.
 
   `:reviewers` - the active members of the pool, each with `:reviews`, the
-                 open reviews with the request time, the deadline and the
-                 days overdue
+                 open and the done reviews with the request time, the
+                 deadline, the days overdue and the state of the
+                 application; the done reviews also with the time they were
+                 done and the recommendation
   `:waiting-applications` - the submitted applications that can still be
                             sent to reviewers, with the reviewers requested
                             since the latest submission"
   [userid]
   (when-some [pool (rems.db.organizations/get-reviewer-pool (:reviewer-pool-organization env))]
-    (let [applications (->> (rems.db.applications/get-all-unrestricted-applications)
-                            (filter #(handler? % userid))
-                            (filter submitted?))
-          reviews (group-by :userid (mapcat open-reviews applications))]
+    (let [handled (->> (rems.db.applications/get-all-unrestricted-applications)
+                       (filter #(handler? % userid)))
+          applications (filter submitted? handled)
+          state (into {} (for [application handled]
+                           [(:application/id application) (:application/state application)]))
+          reviews (->> (concat (mapcat open-reviews applications)
+                               (mapcat done-reviews handled))
+                       (map #(assoc % :application/state (state (:application/id %))))
+                       (group-by :userid))]
       {:reviewers (vec
                    (for [entry pool
                          :when (or (contains? requestable-statuses (:reviewer/status entry))
-                                   (seq (reviews (:userid entry))))
+                                   (some (complement :review/done) (reviews (:userid entry))))
                          :let [user (rems.db.users/get-user (:userid entry))]
                          :when user]
                      (assoc user

@@ -50,7 +50,10 @@
    :application/description (s/maybe s/Str)
    :review/requested DateTime
    :review/deadline (s/maybe DateTime)
-   :review/overdue-days s/Int})
+   :review/overdue-days s/Int
+   :application/state s/Keyword
+   (s/optional-key :review/done) DateTime
+   (s/optional-key :review/recommendation) (s/maybe s/Keyword)})
 
 (s/defschema MyTask
   {:application/id s/Int
@@ -243,7 +246,7 @@
       (ok (rems.service.my-tasks/get-my-tasks (getx-user-id))))
 
     (GET "/reviewer-calendar" []
-      :summary "The open reviews of the reviewer pool with their deadlines, and the applications waiting for reviewers, for the applications that the user handles. Only with `:reviewer-pool-organization`."
+      :summary "The open and done reviews of the reviewer pool with their deadlines, and the applications waiting for reviewers, for the applications that the user handles. Only with `:reviewer-pool-organization`."
       :roles #{:handler}
       :return (s/maybe ReviewerCalendar)
       (ok (rems.service.reviewer-calendar/get-calendar (getx-user-id))))
