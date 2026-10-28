@@ -44,6 +44,8 @@
              :permit/title (or (not-empty (:application/description application))
                                (field-value application "title"))
              :permit/approver (application-util/get-member-name approver)}
+      ;; the permit names the co-chairs of the time of issuing, see :permit-co-chairs
+      (:permit-co-chairs env) (assoc :permit/co-chairs (:permit-co-chairs env))
       (field-value application "department") (assoc :permit/department (field-value application "department"))
       (:application/supervisor application) (assoc :permit/supervisor (application-util/get-member-name (rems.db.users/get-user (get-in application [:application/supervisor :userid]))))
       original-approvals (assoc :permit/original-approvals original-approvals))))

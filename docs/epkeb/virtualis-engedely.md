@@ -98,10 +98,13 @@ Döntés (2026-10-27): fejlesztés és tesztelés alatt a rendszer a **rems.anal
 
 Következmény: a link nem tartalmazhat beégetett domaint. Az ellenőrző URL a `:public-url` beállításból áll össze, és a PDF-be, QR-kódba, e-mailbe is ebből kerül. A domainváltás előtt kiadott engedélyek linkjei a régi domainen maradnak, ezért élesítéskor a rems.analyst.hu `/permit/...` útvonalait át kell irányítani (HTTP 301) az engedely.epkeb.hu-ra. A legegyszerűbb, ha valódi engedély csak a domainváltás után készül; a rems.analyst.hu-n csak bemutató engedélyek készülnek.
 
+## Döntések (2026-10-28)
+
+- **Nyilvános ellenőrzés:** az engedély kiállításával a bizottság jóváhagyta, hogy az engedély a kérelmező által megosztott linken ellenőrizhető; külön elnökségi döntés nem kell.
+- **Kezdő engedélyszám:** 2026-ban **1000** (`:permit-first-number {:year 2026 :sequence 1000}`), a referenciaszám így `2026-1000`-től indul. A kézi számozás 2026-228 körül tart, így a két számtartomány nem keveredik.
+- **Aláírók:** az engedélyen **mindkét társelnök neve** szerepel („Az EPKEB társelnökei: … és …”), **aláírás nélkül** (`:permit-co-chairs`, nyelvenként; a nevek a kiállításkor rögzülnek az engedélyben).
+- **Domain:** a próbarendszeren a `/permit/` útvonal a Traefikben bejelentkezés nélkül elérhető (`rems-permit` router a `rems-docker-compose.yml`-ben); élesben az engedely.epkeb.hu-n ugyanígy kell.
+
 ## Nyitott kérdések
 
-- A nyilvános ellenőrzés jóváhagyása a titoktartási szabály miatt (lásd fent).
-- Mi a következő kiadandó engedélyszám? A 2026-os táblázat utolsó száma 2026-228; élesítéskor az akkori utolsó szám + 1.
-- Kerüljön-e a PDF-re a társelnök aláírásának képe, vagy elég a név?
-- Mindkét társelnök neve szerepeljen (ahogy a mostani sablonon), vagy csak a kiállítóé?
 - A régi, papíralapú engedélyeket be kell-e vinni a rendszerbe (ellenőrizhetőség miatt)?

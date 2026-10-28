@@ -518,6 +518,10 @@
  :enable-permits false
  :permit-first-number nil
  :permit-pdf-font nil
+ ;; The names of the co-chairs on the permits, by language, e.g.
+ ;; {:hu ["Minta Anna" "Példa Béla"] :en ["Anna Minta" "Béla Példa"]}.
+ ;; Without it, the permit names the chair who approved the application.
+ :permit-co-chairs nil
 
  ;; The deadline of a review in days from the request, shown in the reviewer
  ;; calendar, and of a re-review requested after the application was returned

@@ -3731,7 +3731,9 @@
   (with-redefs [rems.config/env (assoc rems.config/env
                                        :enable-permits true
                                        :permit-first-number {:year (time/year (time/now)) :sequence 229}
-                                       :permit-pdf-font "epkeb-theme/fonts/DejaVuSans.ttf")]
+                                       :permit-pdf-font "epkeb-theme/fonts/DejaVuSans.ttf"
+                                       :permit-co-chairs {:hu ["Minta Anna" "Példa Béla"]
+                                                          :en ["Anna Minta" "Béla Példa"]})]
     (let [form-id (test-helpers/create-form! {:form/fields [{:field/id "title"
                                                              :field/type :description
                                                              :field/title {:en "Title" :fi "Title" :sv "Title"}
@@ -3781,6 +3783,8 @@
           (is (str/includes? body "Gyermekek őszi útja"))
           (is (str/includes? body "Alice Applicant"))
           (is (str/includes? body "ÉRVÉNYES"))
+          (is (str/includes? body "Az EPKEB társelnökei: Minta Anna és Példa Béla"))
+          (is (str/includes? (body-text (api-response :get (str "/permit/" token "?lang=en"))) "Co-chairs of EPKEB: Anna Minta and Béla Példa"))
           (is (str/includes? body "noindex"))))
       (testing "the PDF"
         (let [response (api-response :get (str "/permit/" token "/pdf"))]

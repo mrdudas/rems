@@ -28,6 +28,8 @@
         :original "eredeti engedély: %s"
         :date "Engedélyezés dátuma"
         :approver "EPKEB társelnök"
+        :co-chairs "Az EPKEB társelnökei: %s"
+        :and " és "
         :valid "ÉRVÉNYES"
         :revoked "VISSZAVONVA"
         :revoked-on "Visszavonva: %s"
@@ -47,6 +49,8 @@
         :original "original approval: %s"
         :date "Date of approval"
         :approver "Co-chair of EPKEB"
+        :co-chairs "Co-chairs of EPKEB: %s"
+        :and " and "
         :valid "VALID"
         :revoked "REVOKED"
         :revoked-on "Revoked: %s"
@@ -95,6 +99,15 @@
     (get-in texts [lang :title-abbreviated])
     (get-in texts [lang :title])))
 
+(defn- signatories
+  "The co-chairs of the time of issuing (`:permit-co-chairs`), or the chair
+  who approved the application."
+  [permit lang]
+  (let [t (texts lang)]
+    (if-some [names (not-empty (localized (:permit/co-chairs permit) lang))]
+      (format (:co-chairs t) (str/join (:and t) names))
+      (str (:approver t) " – " (:permit/approver permit)))))
+
 ;;; QR code
 
 (defn- qr-image ^BufferedImage [^String url size]
@@ -138,7 +151,7 @@
                   [[:cell [:phrase {:style :bold :size 11} label]]
                    [:cell [:phrase {:size 11} value]]]))
           [:spacer 2]
-          [:paragraph {:size 11} (str (:approver t) " – " (:permit/approver permit))]
+          [:paragraph {:size 11} (signatories permit lang)]
           [:spacer 2]
           [:paragraph {:size 9 :color [91 107 128]} (:verify t)]
           [:paragraph {:size 9 :color [91 107 128]} url]
@@ -187,7 +200,7 @@ a{color:#1F6FD1}
              [:div.status.valid (:valid t)])
            [:p (format (:intro t) (institution permit lang))]
            (into [:dl] (mapcat (fn [[label value]] [[:dt label] [:dd value]]) (fields permit lang)))
-           [:p (:approver t) " – " (:permit/approver permit)]
+           [:p (signatories permit lang)]
            [:div.actions
             [:a.btn {:href (str "/permit/" token "/pdf?lang=" (name lang))} (:download t)]
             [:a {:href (str "/permit/" token "?lang=" (name other))} (get-in texts [lang :other-language])]]])))
