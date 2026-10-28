@@ -100,7 +100,7 @@ A REMS processing state funkciója (`:enable-processing-states`) a finomabb áll
 | Bírálói naptár | nincs | **kész**: „Bírálói naptár” menüpont az elnököknek és a titkárnak (lásd [jogosultsagok.md](jogosultsagok.md#elkészült-fejlesztések)). Az emlékeztető e-mailek még hiányoznak. |
 | Külső szakértő egy kérdéshez | nincs | **fejlesztés**: az elnök vagy a titkár vonja be, nem bíráló |
 | Bírálói kérdés és kérelmezői válasz | a bíráló `remark`-ja lehet nyilvános, de a kérelmező nem tud válaszolni | **kész**: `:enable-applicant-remarks`, a kérelmező oldal válasza mindig nyilvános, értesítés az elnököknek és a bírálóknak (lásd [jogosultsagok.md](jogosultsagok.md#elkészült-fejlesztések)) |
-| Strukturált bírálat javaslattal | `review` (szabad szöveg) + kísérleti `vote` (elfogad/elutasít, `:reviewers-vote`) | **fejlesztés**: bírálati lap űrlap, három javaslattal |
+| Strukturált bírálat javaslattal | `review` (szabad szöveg) + kísérleti `vote` (elfogad/elutasít, `:reviewers-vote`) | **részben kész**: kötelező javaslat (négy lehetőség) és indoklás, „Bírálatok” kártya, figyelmeztetés nem egységes véleménynél (`:enable-review-recommendations`, lásd [arculat.md](arculat.md#3-a-kérelemoldal)). Hiányzik: a kérelmezőnek szóló észrevételek külön mezője. |
 | Kiegészítés után vissza ugyanahhoz a két bírálóhoz | kézzel `request-review` | **fejlesztés**: automatikus újrafelkérés |
 | Bizottsági szavazás | `vote` csak handlernek vagy bírálónak | **fejlesztés**: a bizottsági tagok meghívása szavazásra, többségi szabály, elnöki döntés egyenlőségnél |
 | Határidők, emlékeztetők, felfüggesztés 30 nap után | nincs | **fejlesztés** |

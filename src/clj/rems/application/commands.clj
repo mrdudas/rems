@@ -112,7 +112,9 @@
 (s/defschema ReturnCommand
   CommandWithComment)
 (s/defschema ReviewCommand
-  CommandWithComment)
+  (assoc CommandWithComment
+         ;; see :enable-review-recommendations
+         (s/optional-key :recommendation) schema-base/ReviewRecommendation))
 (s/defschema RevokeCommand
   CommandWithComment)
 (s/defschema SaveDraftCommand
@@ -684,11 +686,12 @@
   (or (actor-is-not-reviewer-error application cmd)
       (let [last-request-for-actor (get-in application [:rems.application.model/latest-review-request-by-user (:actor cmd)])]
         (add-comment-and-attachments cmd application injections
-                                     {:event/type :application.event/reviewed
-                                      ;; Currently we want to tie all comments to the latest request.
-                                      ;; In the future this might change so that commenters can freely continue to comment
-                                      ;; on any request they have gotten.
-                                      :application/request-id last-request-for-actor}))))
+                                     (assoc-some {:event/type :application.event/reviewed
+                                                  ;; Currently we want to tie all comments to the latest request.
+                                                  ;; In the future this might change so that commenters can freely continue to comment
+                                                  ;; on any request they have gotten.
+                                                  :application/request-id last-request-for-actor}
+                                                 :review/recommendation (:recommendation cmd))))))
 
 (defmethod command-handler :application.command/remark
   [cmd application injections]

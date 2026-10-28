@@ -82,6 +82,15 @@ Belépés után mindenki a saját teendőit lássa:
 
 ### 3. A kérelemoldal
 
+**Kész (2026-10-28):**
+
+- **Bírálati javaslat** (`:enable-review-recommendations`): a bíráló a bírálatkor kötelezően választ: *Jóváhagyás*, *Kiegészítés kérése*, *Elutasítás* vagy *Az EPKEB nem illetékes*; mellette indoklás és megjegyzés az elnöknek (a kérelmező nem látja). A javaslat a `reviewed` esemény `:review/recommendation` mezőjében tárolódik.
+- **„Bírálatok” kártya az elnöknek** a kérelem oldalán: a legutóbbi benyújtás óta felkért bírálók, mindegyiknél az állapot (határidő és hátralévő napok, piros késés, vagy a leadás napja), a javaslat színes címkével és az indoklás. Felül összesítés: „A bírálói vélemény egységes: …” vagy „nem egységes”.
+- **Figyelmeztetés döntéskor**: a „Jóváhagyás vagy elutasítás” űrlapon, ha nincs meg minden bírálat, vagy a javaslatok eltérnek: hány bírálat hiányzik, milyen javaslatok vannak, és hogy az elnök ettől függetlenül dönthet. Ez a 2. tétel „elnöki felülbírálás figyelmeztetéssel” követelménye.
+- **„Kérdések és válaszok”** kártya mindenkinek: a bizottság nyilvános megjegyzései (a kérelmezőknek névtelenül, „Bizottság” néven) és a kérelmező oldal válaszai egy szálban, a bizottságé balra kékkel, a válaszok jobbra.
+
+Még nincs meg: a bíráló kérelmezőnek szóló észrevételei külön mezőben (a visszaküldésnél az elnök most kézzel másolja át), és a javaslat a levelekben.
+
 - „Bírálatok” kártya az elnöknek: ki bírál, állapot, határidő, javaslat; itt a figyelmeztetés, ha a bírálói vélemény nem egységes.
 - „Kérdések és válaszok” szál az eseménynapló helyett.
 - Az űrlap szakaszokra bontása a kitöltöttség jelzésével (az új kéreleműrlappal együtt).

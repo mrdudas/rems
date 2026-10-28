@@ -490,6 +490,12 @@
  ;; an organization.
  :restrict-organization-owners false
 
+ ;; When true, reviewers choose a recommendation (approve, request changes,
+ ;; reject, or not competent) when reviewing. Handlers see the reviews with
+ ;; their recommendations on the application page, and are warned when
+ ;; approving or rejecting if the reviews are missing or not unanimous.
+ :enable-review-recommendations false
+
  ;; The deadline of a review in days from the request, shown in the reviewer
  ;; calendar, and of a re-review requested after the application was returned
  ;; for changes. Only used with `:reviewer-pool-organization`.

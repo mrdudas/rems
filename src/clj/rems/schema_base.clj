@@ -71,6 +71,10 @@
          {:organization/short-name LocalizedString
           :organization/name LocalizedString}))
 
+(def ReviewRecommendation
+  "The recommendation of a reviewer, see `:enable-review-recommendations`."
+  (s/enum :approve :revise :reject :not-competent))
+
 (def ReviewerStatus
   "Status of a member of the reviewer pool, see `:reviewer-pool-organization`.
   `:active` and `:limited` reviewers can be requested to review."

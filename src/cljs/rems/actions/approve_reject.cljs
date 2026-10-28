@@ -6,6 +6,7 @@
             [rems.actions.components :refer [action-attachment action-button comment-field action-form-view command! perform-action-button]]
             [rems.atoms :as atoms]
             [rems.globals]
+            [rems.reviews :as reviews]
             [rems.text :refer [text localize-utc-date]]))
 
 (def ^:private action-form-id "approve-reject")
@@ -62,7 +63,7 @@
                   :on-click #(rf/dispatch [::open-form])}])
 
 (defn approve-reject-view
-  [{:keys [application-id end on-set-entitlement-end on-approve on-reject]}]
+  [{:keys [application-id end on-set-entitlement-end on-approve on-reject warning]}]
   [action-form-view action-form-id
    (text :t.actions/approve-reject)
    [[perform-action-button {:id "reject"
@@ -74,6 +75,7 @@
                             :class "btn-success"
                             :on-click on-approve}]]
    [:<>
+    warning
     [comment-field {:field-key action-form-id
                     :label (text :t.form/add-comments-shown-to-applicant)}]
     [action-attachment {:field-key action-form-id
@@ -97,11 +99,13 @@
            :aria-label (text :t.actions/clear)}
           [atoms/close-symbol]]])]]]])
 
-(defn approve-reject-form [application-id on-finished]
-  (let [comment @(rf/subscribe [:rems.actions.components/comment action-form-id])
+(defn approve-reject-form [application on-finished]
+  (let [application-id (:application/id application)
+        comment @(rf/subscribe [:rems.actions.components/comment action-form-id])
         attachments @(rf/subscribe [:rems.actions.components/attachments action-form-id])
         end @(rf/subscribe [::entitlement-end])]
     [approve-reject-view {:application-id application-id
+                          :warning [reviews/decision-warning application]
                           :end end
                           :on-set-entitlement-end #(rf/dispatch [::set-entitlement-end %])
                           :on-approve #(rf/dispatch [::send-approve {:application-id application-id

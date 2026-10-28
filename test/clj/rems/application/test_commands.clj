@@ -2027,6 +2027,36 @@
                                                           :application/reviewers ["reviewer2"]})
                                                   dummy-reviewed-event])))))))
 
+(deftest test-review-recommendation
+  (let [request (ok-command {:type :application.command/request-review
+                             :actor handler-user-id
+                             :reviewers ["reviewer"]
+                             :comment ""}
+                            (build-application-view [dummy-created-event
+                                                     dummy-submitted-event]))
+        application (build-application-view [dummy-created-event
+                                             dummy-submitted-event
+                                             request])]
+    (testing "the recommendation of the reviewer is stored in the event"
+      (is (= {:event/type :application.event/reviewed
+              :event/time test-time
+              :event/actor "reviewer"
+              :application/id app-id
+              :application/request-id (:application/request-id request)
+              :application/comment "fine"
+              :review/recommendation :approve}
+             (ok-command {:type :application.command/review
+                          :actor "reviewer"
+                          :comment "fine"
+                          :recommendation :approve}
+                         application))))
+    (testing "the recommendation is optional"
+      (is (not (contains? (ok-command {:type :application.command/review
+                                       :actor "reviewer"
+                                       :comment "fine"}
+                                      application)
+                          :review/recommendation))))))
+
 (deftest test-reviewer-pool
   (let [pool [{:userid "reviewer" :reviewer/organization "org2" :reviewer/status :active}
               {:userid "reviewer2" :reviewer/organization "org1" :reviewer/status :active}

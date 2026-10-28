@@ -46,6 +46,7 @@
                     :enable-organization-contacts
                     :reviewer-pool-organization
                     :restrict-organization-owners
+                    :enable-review-recommendations
                     :review-deadline-days
                     :re-review-deadline-days
                     :tables])

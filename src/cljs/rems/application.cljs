@@ -12,6 +12,7 @@
             [rems.actions.add-licenses :refer [add-licenses-action-button add-licenses-form]]
             [rems.actions.add-member :refer [add-member-action-button add-member-form]]
             [rems.actions.approve-reject :refer [approve-reject-action-button approve-reject-form]]
+            [rems.reviews :as reviews]
             [rems.actions.approve-supervision :refer [approve-supervision-action-button approve-supervision-form]]
             [rems.actions.assign-external-id :refer [assign-external-id-button assign-external-id-form]]
             [rems.actions.change-applicant :refer [change-applicant-action-button change-applicant-form]]
@@ -1145,7 +1146,7 @@
                   [revoke-form app-id reload]
                   [decide-form app-id reload]
                   [return-form app-id reload]
-                  [approve-reject-form app-id reload]
+                  [approve-reject-form application reload]
                   [assign-external-id-form app-id reload]
                   [delete-form app-id go-to-applications]
                   [vote-form app-id application reload]
@@ -1375,6 +1376,8 @@
     [:div.col-lg-8.application-content.spaced-vertically-5
      [application-state {:application application
                          :userid userid}]
+     [reviews/reviews-card application]
+     [reviews/questions-card application]
      [applicants-info application userid]
      (when (:show-resources-section @rems.globals/config)
        [applied-resources application userid])

@@ -158,7 +158,9 @@
 (s/defschema ReviewedEvent
   (assoc EventWithComment
          :event/type (s/enum :application.event/reviewed)
-         :application/request-id s/Uuid))
+         :application/request-id s/Uuid
+         ;; see :enable-review-recommendations
+         (s/optional-key :review/recommendation) schema-base/ReviewRecommendation))
 (s/defschema RevokedEvent
   (assoc EventWithComment
          :event/type (s/enum :application.event/revoked)))
