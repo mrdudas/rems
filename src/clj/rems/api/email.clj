@@ -28,4 +28,11 @@
       :roles #{:api-key}
       (extended-logging request)
       (email/generate-reviewer-reminder-emails!)
+      (ok "OK"))
+
+    (POST "/send-deadline-reminders" request
+      :summary "Send the reminders about the deadlines of reviews and requested changes that are due today. These are sent daily with :enable-deadline-reminders; this sends them again."
+      :roles #{:api-key}
+      (extended-logging request)
+      (email/generate-deadline-reminder-emails!)
       (ok "OK"))))

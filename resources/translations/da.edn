@@ -493,7 +493,19 @@
   ;; %4 - name of applicant
   ;; %5 - catalogue items of application, comma separated list
   ;; %6 - link to application
-  :email {:applicant-changed {:subject-to-member "Ansøger til ansøgning %3 blev ændret"
+  :email {:changes-due-soon {:subject "(%2) Frist for ændringerne: %4"
+                             :message "Kære %1,\n\nPåmindelse: fristen for ændringerne i ansøgning %2 er %4, om %5 dage.\n\nAnsøgningen: %3"}
+          :changes-overdue {:subject "(%2) Fristen for ændringerne er udløbet"
+                            :message "Kære %1,\n\nFristen for ændringerne i ansøgning %2 var %4.\n\nAnsøgningen: %3"
+                            :subject-to-handler "(%2) Fristen for ændringerne er udløbet"
+                            :message-to-handler "Kære %1,\n\nFristen for ændringerne i ansøgning %2 var %4, og ansøgeren har ikke indsendt dem.\n\nAnsøgningen: %3"}
+          :review-due-soon {:subject "(%2) Frist for bedømmelse: %4"
+                            :message "Kære %1,\n\nPåmindelse: fristen for din bedømmelse af ansøgning %2 er %4, om %5 dage.\n\nAnsøgningen og bedømmelsen: %3"}
+          :review-overdue {:subject "(%2) Fristen for bedømmelsen er udløbet"
+                           :message "Kære %1,\n\nFristen for din bedømmelse af ansøgning %2 var %4; bedømmelsen er %5 dage forsinket.\n\nAnsøgningen og bedømmelsen: %3"
+                           :subject-to-handler "(%2) En bedømmelse er forsinket"
+                           :message-to-handler "Kære %1,\n\nBedømmelsen fra %6 af ansøgning %2 er %5 dage forsinket (frist: %4).\n\nAnsøgningen: %3"}
+          :applicant-changed {:subject-to-member "Ansøger til ansøgning %3 blev ændret"
                               :message-to-member "Kære %1,\n\nAnsøgeren til ansøgningen %3 blev ændret til %4 af %2.\n\nDu kan se ansøgningen på %6."
                               :subject-to-handler "(%3) Ansøger ændret"
                               :message-to-handler "Kære %1,\n\nAnsøgeren til ansøgningen %3 blev ændret til %4 af %2.\n\nDu kan se ansøgningen på %6."}
@@ -705,7 +717,11 @@
             :settings "Indstillinger"
             :warning-about-missing-email [:<> "Du er nødt til at " [:a {:href "/profile"} "tilføje en e-mailadresse til dine indstillinger"] ", så du kan modtage notifikationer om dine ansøgninger."]
             :your-details "Dine brugerdetaljer"}
-  :my-tasks {:answer-question "Et spørgsmål er kommet – svar med knappen Bemærkning"
+  :my-tasks {:returned-deadline "Returneret til supplering – frist %1 (%2 dage tilbage)"
+             :returned-overdue "Returneret til supplering – fristen (%1) udløb for %2 dage siden"
+             :decide-mixed "Bedømmelserne er forskellige – beslut, eller anmod om en tredje bedømmelse"
+             :changes-overdue "Fristen for ændringerne (%1) udløb for %2 dage siden"
+             :answer-question "Et spørgsmål er kommet – svar med knappen Bemærkning"
              :approve-supervision "Afventer din godkendelse"
              :approve-supervision-ready "Markeret som klar – godkend den"
              :as-applicant "Som kontaktperson"

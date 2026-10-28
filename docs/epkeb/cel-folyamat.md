@@ -44,7 +44,7 @@ Ez a dokumentum a rendszer **cél-folyamatát** írja le. Nem a mostani PDF-űrl
 8. Bírálókijelölés:
    - **jelentkezés**: a bírálói kör tagjai látják a bírálóra váró kérelmeket (címmel, eljárásmóddal), és jelentkezhetnek;
    - **kiosztás**: az elnök listából választ. A listán csak aktív bírálók szerepelnek, **a kérelmező intézményéből senki** (eljárásrend), és minden név mellett ott van az idei bírálatok száma, a folyamatban lévők száma és az intézmény terhelési aránya;
-   - normál eljárásban **két bíráló**; rövidített eljárásban nincs bíráló, az illetékes társelnök egy személyben dönt.
+   - normál eljárásban **két bíráló**; rövidített eljárásban nincs bíráló, az illetékes társelnök egy személyben dönt (megerősítve 2026-10-28; a 2026-os táblázatban a gyakorlat ettől eltért, lásd [esetek.md](esetek.md#fontos-eltérés-a-szabályoktól-rövidített-eljárás)).
 9. A bírálók felkérést kapnak, 20 napos határidővel.
 
 ### 4. Bírálat
@@ -103,5 +103,5 @@ A REMS processing state funkciója (`:enable-processing-states`) a finomabb áll
 | Strukturált bírálat javaslattal | `review` (szabad szöveg) + kísérleti `vote` (elfogad/elutasít, `:reviewers-vote`) | **részben kész**: kötelező javaslat (négy lehetőség) és indoklás, „Bírálatok” kártya, figyelmeztetés nem egységes véleménynél (`:enable-review-recommendations`, lásd [arculat.md](arculat.md#3-a-kérelemoldal)). Hiányzik: a kérelmezőnek szóló észrevételek külön mezője. |
 | Kiegészítés után vissza ugyanahhoz a két bírálóhoz | kézzel `request-review` | **fejlesztés**: automatikus újrafelkérés |
 | Bizottsági szavazás | `vote` csak handlernek vagy bírálónak | **fejlesztés**: a bizottsági tagok meghívása szavazásra, többségi szabály, elnöki döntés egyenlőségnél |
-| Határidők, emlékeztetők, felfüggesztés 30 nap után | nincs | **fejlesztés** |
+| Határidők, emlékeztetők, felfüggesztés 30 nap után | nincs | **kész**: emlékeztetők a bírálati és a módosítási határidőkről, késéskor az elnöknek is; a 30 nap után az elnök teendője a felfüggesztés (lezárás), lásd [esetek.md](esetek.md#amit-a-táblázatban-kézzel-csinálnak-és-most-a-rendszer-végzi-2026-10-28) |
 | Illetékes társelnök | minden handler kap értesítést | **kész** az értesítésekre: csak a tagintézmény illetékes elnökei kapnak e-mailt (lásd [jogosultsagok.md](jogosultsagok.md#elkészült-fejlesztések)); az engedélyen szereplő név a virtuális engedéllyel jön |

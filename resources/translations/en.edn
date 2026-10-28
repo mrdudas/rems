@@ -522,7 +522,19 @@
   ;;
   ;; Vector parameters (%1, %2, ...) in extra translations are supported for backwards compatibility.
   ;; They cannot be mixed with named format parameters, and have fixed positions.
-  :email {:applicant-changed {:subject-to-member "Applicant for application %:application-id% changed"
+  :email {:changes-due-soon {:subject "(%:application-id%) Deadline of the changes: %:deadline%"
+                             :message "Dear %:recipient%,\n\nThis is a reminder that the deadline for submitting the changes to application %:application-id% is %:deadline%, %:days% days from now. Missing the deadline leads to the suspension of the procedure.\n\nThe application: %:application-url%"}
+          :changes-overdue {:subject "(%:application-id%) The deadline of the changes has passed"
+                            :message "Dear %:recipient%,\n\nThe deadline for submitting the changes to application %:application-id% was %:deadline%. According to the rules of procedure, the procedure is suspended; the chair decides about it.\n\nThe application: %:application-url%"
+                            :subject-to-handler "(%:application-id%) The deadline of the changes has passed"
+                            :message-to-handler "Dear %:recipient%,\n\nThe deadline for submitting the changes to application %:application-id% was %:deadline%, and the applicant has not submitted them. The procedure can be suspended (by closing the application).\n\nThe application: %:application-url%"}
+          :review-due-soon {:subject "(%:application-id%) Review deadline: %:deadline%"
+                            :message "Dear %:recipient%,\n\nThis is a reminder that the deadline of your review of application %:application-id% is %:deadline%, %:days% days from now.\n\nThe application and the review: %:application-url%"}
+          :review-overdue {:subject "(%:application-id%) The review deadline has passed"
+                           :message "Dear %:recipient%,\n\nThe deadline of your review of application %:application-id% was %:deadline%; the review is %:days% days overdue. Please submit it as soon as possible, or let the chair know if you cannot.\n\nThe application and the review: %:application-url%"
+                           :subject-to-handler "(%:application-id%) A review is overdue"
+                           :message-to-handler "Dear %:recipient%,\n\nThe review of %:reviewer% for application %:application-id% is %:days% days overdue (deadline: %:deadline%).\n\nThe application: %:application-url%"}
+          :applicant-changed {:subject-to-member "Applicant for application %:application-id% changed"
                               :message-to-member "Dear %:recipient%,\n\nThe applicant for application %:application-id% has been changed to %:applicant% by %:event-actor%.\n\nYou can view the application at %:application-url%."
                               :subject-to-handler "(%:application-id%) Applicant changed"
                               :message-to-handler "Dear %:recipient%,\n\nThe applicant for application %:application-id% has been changed to %:applicant% by %:event-actor%.\n\nYou can view the application at %:application-url%."}
@@ -760,7 +772,11 @@
             :settings "Settings"
             :warning-about-missing-email [:<> "You will need to " [:a {:href "/profile"} "add an email address to your settings"] ", so that you can receive notifications about your applications."]
             :your-details "Your user details"}
-  :my-tasks {:answer-question "A question arrived – answer with the Remark button"
+  :my-tasks {:returned-deadline "Returned for changes – deadline %1 (%2 days left)"
+             :returned-overdue "Returned for changes – the deadline (%1) passed %2 days ago"
+             :decide-mixed "The reviews differ – decide, or request a third review"
+             :changes-overdue "The deadline of the changes (%1) passed %2 days ago – the procedure can be suspended"
+             :answer-question "A question arrived – answer with the Remark button"
              :approve-supervision "Waiting for your approval"
              :approve-supervision-ready "Marked ready – approve it"
              :as-applicant "As a contact person"

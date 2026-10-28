@@ -10,6 +10,7 @@
             [rems.config]
             [rems.db.applications]
             [rems.db.outbox]
+            [rems.email.core]
             [rems.db.blacklist]
             [rems.db.core :as db]
             [rems.service.test-data :as test-data :refer [+test-api-key+]]
@@ -3681,3 +3682,42 @@
                                                          :comment "ok"}))))
         (is (= [] (tasks "tasks-reviewer1" :reviewer)))
         (is (= ["decide"] (tasks "handler" :handler)))))))
+
+;; EPKEB: reminders about the deadlines
+(deftest test-deadline-reminders
+  (test-helpers/create-user! {:userid "deadline-reviewer" :name "Deadline Reviewer" :email "deadline-reviewer@example.com"})
+  (let [workflow-id (test-helpers/create-workflow! {:type :workflow/default
+                                                    :handlers ["handler"]})
+        cat-item-id (test-helpers/create-catalogue-item! {:workflow-id workflow-id})
+        app-id (test-helpers/create-application! {:catalogue-item-ids [cat-item-id]
+                                                  :actor "alice"})
+        emails (atom [])
+        send! (fn []
+                (reset! emails [])
+                (with-redefs [rems.db.outbox/puts! (fn [new-emails] (swap! emails concat new-emails))]
+                  (rems.email.core/generate-deadline-reminder-emails!))
+                (->> @emails
+                     (map :outbox/email)
+                     (filter #(str/includes? (:body %) (str app-id)))
+                     (mapv (juxt :to-user :subject))))]
+    (test-helpers/command! {:type :application.command/submit
+                            :application-id app-id
+                            :actor "alice"})
+    (test-helpers/command! {:type :application.command/request-review
+                            :application-id app-id
+                            :actor "handler"
+                            :reviewers ["deadline-reviewer"]
+                            :comment ""
+                            :time (time/minus (time/now) (time/days 13))})
+    (testing "the reviewer is reminded 7 days before the deadline"
+      (let [sent (send!)]
+        (is (= ["deadline-reviewer"] (map first sent)))
+        (is (str/includes? (second (first sent)) "Review deadline"))))
+    (testing "an overdue review is reminded of to the reviewer and the handlers"
+      (test-helpers/command! {:type :application.command/request-review
+                              :application-id app-id
+                              :actor "handler"
+                              :reviewers ["deadline-reviewer"]
+                              :comment ""
+                              :time (time/minus (time/now) (time/days 21))})
+      (is (= #{"deadline-reviewer" "handler"} (set (map first (send!))))))))

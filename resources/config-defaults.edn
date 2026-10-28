@@ -496,6 +496,18 @@
  ;; approving or rejecting if the reviews are missing or not unanimous.
  :enable-review-recommendations false
 
+ ;; Reminders about the deadlines (EPKEB). With :enable-deadline-reminders,
+ ;; once a day after :deadline-reminders-hour (in :deadline-reminders-time-zone)
+ ;; reviewers are reminded 7 and 3 days before the deadline of their review
+ ;; (:review-deadline-days), and on the first day after it and then weekly also
+ ;; the handlers; the applicants are reminded 7 and 3 days before the deadline
+ ;; of the changes requested by returning the application
+ ;; (:changes-deadline-days), and on the day after it also the handlers.
+ :enable-deadline-reminders false
+ :deadline-reminders-hour 8
+ :deadline-reminders-time-zone "Europe/Budapest"
+ :changes-deadline-days 30
+
  ;; The deadline of a review in days from the request, shown in the reviewer
  ;; calendar, and of a re-review requested after the application was returned
  ;; for changes. Only used with `:reviewer-pool-organization`.

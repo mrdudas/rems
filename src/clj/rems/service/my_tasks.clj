@@ -2,8 +2,11 @@
   "The tasks of the user on the applications, by role: what the contact
   person, the researcher, the supervisor, the reviewer and the chair should
   do next."
-  (:require [rems.common.application-util :as application-util]
+  (:require [clj-time.core :as time]
+            [rems.common.application-util :as application-util]
+            [rems.config :refer [env]]
             [rems.db.applications]
+            [rems.service.deadlines :as deadlines]
             [rems.service.reviewer-calendar :as reviewer-calendar]))
 
 (defn- roles-of [application userid]
@@ -47,6 +50,17 @@
          {:task/type type}
          details))
 
+(defn- days-from-now [t]
+  (deadlines/days-between (time/now) t (time/time-zone-for-id (:deadline-reminders-time-zone env))))
+
+(defn- returned-task
+  "The application was returned for changes, with the deadline of the changes."
+  [application]
+  (let [deadline (deadlines/changes-deadline application)]
+    (task application :returned (when deadline
+                                  {:task/deadline deadline
+                                   :task/days-left (days-from-now deadline)}))))
+
 (defn- applicant-task
   "The task of the contact person (applicant)."
   [application]
@@ -55,7 +69,7 @@
     (task application :answer-question)
 
     (= :application.state/returned (:application/state application))
-    (task application :returned)
+    (returned-task application)
 
     (not (editable? application))
     nil
@@ -78,7 +92,7 @@
     (task application :answer-question)
 
     (= :application.state/returned (:application/state application))
-    (task application :returned)
+    (returned-task application)
 
     (and (editable? application)
          (not (:application/marked-ready application)))
@@ -96,10 +110,29 @@
     (task application :review (dissoc review :userid
                                       :application/id :application/external-id :application/description))))
 
-(defn- handler-task
-  "The task of a chair (handler) on a submitted application."
+(defn- recommendations-since-submission
+  "The recommendations of the reviews since the latest submission, see
+  `:enable-review-recommendations`."
   [application]
-  (when (submitted? application)
+  (let [events (:application/events application)
+        submitted (last (filter #(= :application.event/submitted (:event/type %)) events))]
+    (->> events
+         (filter #(and (= :application.event/reviewed (:event/type %))
+                       submitted
+                       (not (time/before? (:event/time %) (:event/time submitted)))))
+         (keep :review/recommendation)
+         set)))
+
+(defn- handler-task
+  "The task of a chair (handler) on a submitted application, or on a
+  returned application whose deadline of changes has passed."
+  [application]
+  (if-not (submitted? application)
+    (when-some [deadline (deadlines/changes-deadline application)]
+      (let [days-left (days-from-now deadline)]
+        (when (neg? days-left)
+          (task application :changes-overdue {:task/deadline deadline
+                                              :task/overdue-days (- days-left)}))))
     (let [can-request-reviews? (contains? (get-in application [:application/role-permissions :handler])
                                           :application.command/request-review)
           requested (reviewer-calendar/reviewers-since-submission application)
@@ -115,6 +148,10 @@
         (seq open)
         (task application :reviews-in-progress {:task/reviewers (count requested)
                                                 :task/open-reviews (count open)})
+
+        ;; the chair may decide, or request a third review
+        (< 1 (count (recommendations-since-submission application)))
+        (task application :decide-mixed {:task/reviewers (count requested)})
 
         :else
         (task application :decide)))))

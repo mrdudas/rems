@@ -76,7 +76,7 @@ Tanulságok:
 
 A követelményjegyzék szerint rövidített eljárásban nincs bíráló, az elnök egy személyben dönt. A táblázat szerint 2026-ban **mind a 14 rövidített ügyben két „bíráló” szerepel, és ez szinte mindig a két társelnök** volt (néhány nap alatt). A gyakorlat tehát: a két társelnök hagyja jóvá.
 
-A rendszerben most a rövidített munkafolyamat tiltja a bírálatkérést, és bármelyik elnök egy lépésben jóváhagyhat. **Nyitott kérdés az elnökség felé:** egy társelnök dönt (a szabály), vagy mindkettő jóváhagyása kell (a gyakorlat)? Ha mindkettőé, a rövidített eljárásban a két társelnök „bírálóként” jelezné az egyetértését, és a „Bírálatok” kártya mutatná, ha még hiányzik az egyik.
+**Döntés (2026-10-28):** rövidített eljárásban egy elnök egyedül dönt, bírálatkérés nélkül – a szabály szerint. A rendszer így működik: a rövidített munkafolyamat tiltja a bírálatkérést, és bármelyik elnök egy lépésben jóváhagyhat.
 
 ### A táblázat oszlopai a rendszerben
 
@@ -103,8 +103,12 @@ A táblázat mindent kézzel követ; a rendszerben ezek az adatok az eseményekb
 
 A mostani gyakorlat szerint valószínűleg ugyanezt a táblázatot szeretnék látni a rendszerben is. Ezt nem másoljuk le: a teendők, a bírálói naptár és a kérelem oldala mutatja ugyanezt, mindig naprakészen. Ha mégis kell egy áttekintő lista, a REMS kérelemlistája és az exportja (CSV) adja; egy szűrhető „nyilvántartás” nézet később készülhet hozzá.
 
-### Ami a táblázatból még hiányzik a rendszerből
+### Amit a táblázatban kézzel csinálnak, és most a rendszer végzi (2026-10-28)
 
-- **Emlékeztetők** a bírálói határidő előtt és késéskor, és figyelmeztetés a kérelmezőnek a 30 napos módosítási határidőnél (a táblázat szerint ezeket ma kézzel küldik).
-- **Harmadik bíráló** bevonása (a REMS-ben lehetséges, de a „Bírálatok” kártya és a szabályok két bírálóval számolnak).
-- **Lefoglalt sorszámok**: a táblázatban előre kiosztott üres sorok vannak; a rendszerben erre nincs szükség.
+- **Emlékeztetők** (`:enable-deadline-reminders`), naponta egyszer reggel 8 után:
+  - a bírálónak 7 és 3 nappal a bírálati határidő előtt; késéskor az első napon, majd hetente a bírálónak és az illetékes elnöknek is;
+  - a kérelmezőknek 7 és 3 nappal a 30 napos módosítási határidő előtt (`:changes-deadline-days`); a lejárat utáni napon a kérelmezőknek és az elnöknek, hogy az eljárás felfüggeszthető (a kérelem lezárásával – erről az elnök dönt).
+  - Kézi indítás: `POST /api/email/send-deadline-reminders` (API-kulccsal). Egy napon belüli újraindítás után az aznapi emlékeztetők újra kimehetnek.
+- **Teendők**: a kérelmezőnél a visszaküldött kérelem mellett a módosítás határideje (pirossal, ha lejárt); az elnöknél „A módosítás határideje lejárt – az eljárás felfüggeszthető”.
+- **Harmadik bíráló**: ha a bírálatok beérkeztek és a javaslatok eltérnek, az elnök teendője „Eltérő bírálatok – döntsön, vagy kérjen harmadik bírálót”. A harmadik bíráló a szokásos bírálatkéréssel vonható be; a „Bírálatok” kártya, a naptár és a figyelmeztetés tetszőleges számú bírálóval működik.
+- **Lefoglalt sorszámok**: a rendszerben nincs rájuk szükség.

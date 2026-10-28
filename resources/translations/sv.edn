@@ -461,7 +461,19 @@
         :title "Data Use Ontology (DUO)"
         :validation {:mondo-not-valid "Angivna Mondo koder är inte kompatibla:"
                      :needs-validation "DUO begränsningen kunde inte valideras automatiskt:"}}
-  :email {:applicant-changed {:subject-to-member "Sökande för ansökan %3 bytte"
+  :email {:changes-due-soon {:subject "(%2) Tidsfrist för ändringarna: %4"
+                             :message "Hej %1,\n\nPåminnelse: tidsfristen för ändringarna i ansökan %2 är %4, om %5 dagar.\n\nAnsökan: %3"}
+          :changes-overdue {:subject "(%2) Tidsfristen för ändringarna har gått ut"
+                            :message "Hej %1,\n\nTidsfristen för ändringarna i ansökan %2 var %4.\n\nAnsökan: %3"
+                            :subject-to-handler "(%2) Tidsfristen för ändringarna har gått ut"
+                            :message-to-handler "Hej %1,\n\nTidsfristen för ändringarna i ansökan %2 var %4, och sökanden har inte skickat in dem.\n\nAnsökan: %3"}
+          :review-due-soon {:subject "(%2) Tidsfrist för granskning: %4"
+                            :message "Hej %1,\n\nPåminnelse: tidsfristen för din granskning av ansökan %2 är %4, om %5 dagar.\n\nAnsökan och granskningen: %3"}
+          :review-overdue {:subject "(%2) Tidsfristen för granskningen har gått ut"
+                           :message "Hej %1,\n\nTidsfristen för din granskning av ansökan %2 var %4; granskningen är %5 dagar försenad.\n\nAnsökan och granskningen: %3"
+                           :subject-to-handler "(%2) En granskning är försenad"
+                           :message-to-handler "Hej %1,\n\nGranskningen av %6 för ansökan %2 är %5 dagar försenad (tidsfrist: %4).\n\nAnsökan: %3"}
+          :applicant-changed {:subject-to-member "Sökande för ansökan %3 bytte"
                               :message-to-member "%1,\n\nSökande för ansökan %3 har bytts ut till %4 av %2.\n\nDu kan granska ansökningen här: %6." ; TODO check
                               :subject-to-handler "(%3) Sökande bytte"
                               :message-to-handler "%1,\n\nSökande för ansökan %3 har bytts ut till %4 av %2.\n\nDu kan granska ansökningen här: %6."} ; TODO check
@@ -656,7 +668,11 @@
             :settings "Inställningar"
             :warning-about-missing-email [:<> "Du måste " [:a {:href "/profile"} "lägga till din e-postadress i dina inställningar"] ", för att kunna ta emot meddelanden om din ansökan."]
             :your-details "Dina användardetaljer"} ; TODO check
-  :my-tasks {:answer-question "En fråga har kommit – svara med knappen Anmärkning"
+  :my-tasks {:returned-deadline "Returnerad för komplettering – tidsfrist %1 (%2 dagar kvar)"
+             :returned-overdue "Returnerad för komplettering – tidsfristen (%1) gick ut för %2 dagar sedan"
+             :decide-mixed "Granskningarna skiljer sig – besluta eller begär en tredje granskning"
+             :changes-overdue "Tidsfristen för ändringarna (%1) gick ut för %2 dagar sedan"
+             :answer-question "En fråga har kommit – svara med knappen Anmärkning"
              :approve-supervision "Väntar på ditt godkännande"
              :approve-supervision-ready "Markerad som klar – godkänn den"
              :as-applicant "Som kontaktperson"

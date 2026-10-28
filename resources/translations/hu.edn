@@ -522,7 +522,19 @@
   ;;
   ;; Vector parameters (%1, %2, ...) in extra translations are supported for backwards compatibility.
   ;; They cannot be mixed with named format parameters, and have fixed positions.
-  :email {:applicant-changed {:subject-to-member "A(z) %:application-id% kérelem kapcsolattartója megváltozott"
+  :email {:changes-due-soon {:subject "(%:application-id%) A módosítás határideje: %:deadline%"
+                             :message "Tisztelt %:recipient%!\n\nEmlékeztetjük, hogy a(z) %:application-id% kérelem módosításának beküldési határideje %:deadline%, még %:days% nap van hátra. A határidő elmulasztása az eljárás felfüggesztését vonja maga után.\n\nA kérelem: %:application-url%"}
+          :changes-overdue {:subject "(%:application-id%) Lejárt a módosítás határideje"
+                            :message "Tisztelt %:recipient%!\n\nA(z) %:application-id% kérelem módosításának beküldési határideje %:deadline% volt. Az eljárásrend szerint az eljárás felfüggesztésre kerül; erről az elnök dönt.\n\nA kérelem: %:application-url%"
+                            :subject-to-handler "(%:application-id%) Lejárt a módosítás határideje"
+                            :message-to-handler "Tisztelt %:recipient%!\n\nA(z) %:application-id% kérelem módosításának beküldési határideje %:deadline% volt, a kérelmező nem küldte be. Az eljárás felfüggeszthető (a kérelem lezárása).\n\nA kérelem: %:application-url%"}
+          :review-due-soon {:subject "(%:application-id%) Bírálati határidő: %:deadline%"
+                            :message "Tisztelt %:recipient%!\n\nEmlékeztetjük, hogy a(z) %:application-id% kérelem bírálatának határideje %:deadline%, még %:days% nap van hátra.\n\nA kérelem és a bírálat: %:application-url%"}
+          :review-overdue {:subject "(%:application-id%) Lejárt a bírálati határidő"
+                           :message "Tisztelt %:recipient%!\n\nA(z) %:application-id% kérelem bírálatának határideje %:deadline% volt, a bírálat %:days% napja késik. Kérjük, mielőbb adja le, vagy jelezze az elnöknek, ha nem tudja vállalni.\n\nA kérelem és a bírálat: %:application-url%"
+                           :subject-to-handler "(%:application-id%) Késik egy bírálat"
+                           :message-to-handler "Tisztelt %:recipient%!\n\n%:reviewer% bírálata a(z) %:application-id% kérelemhez %:days% napja késik (határidő: %:deadline%).\n\nA kérelem: %:application-url%"}
+          :applicant-changed {:subject-to-member "A(z) %:application-id% kérelem kapcsolattartója megváltozott"
                               :message-to-member "Tisztelt %:recipient%!\n\nA(z) %:application-id% kérelem kapcsolattartóját %:event-actor% megváltoztatta a következőre: %:applicant%.\n\nA kérelmet itt tekintheti meg: %:application-url%."
                               :subject-to-handler "(%:application-id%) Kapcsolattartó megváltozott"
                               :message-to-handler "Tisztelt %:recipient%!\n\nA(z) %:application-id% kérelem kapcsolattartóját %:event-actor% megváltoztatta a következőre: %:applicant%.\n\nA kérelmet itt tekintheti meg: %:application-url%."}
@@ -760,7 +772,11 @@
             :settings "Beállítások"
             :warning-about-missing-email [:<> "Szüksége lesz egy " [:a {:href "/profile"} "e-mail cím hozzáadására a beállításoknál"] ", hogy értesítéseket kaphasson a kérelmeiről."]
             :your-details "Az Ön adatai"}
-  :my-tasks {:answer-question "Kérdés érkezett – válaszoljon a Megjegyzés gombbal"
+  :my-tasks {:returned-deadline "Kiegészítésre visszaküldve – határidő %1 (még %2 nap)"
+             :returned-overdue "Kiegészítésre visszaküldve – a határidő (%1) %2 napja lejárt"
+             :decide-mixed "Eltérő bírálatok – döntsön, vagy kérjen harmadik bírálót"
+             :changes-overdue "A módosítás határideje (%1) %2 napja lejárt – az eljárás felfüggeszthető"
+             :answer-question "Kérdés érkezett – válaszoljon a Megjegyzés gombbal"
              :approve-supervision "Jóváhagyásra vár"
              :approve-supervision-ready "Beadhatónak jelölték – hagyja jóvá"
              :as-applicant "Kapcsolattartóként"

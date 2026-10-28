@@ -31,7 +31,12 @@
   [task]
   (case (keyword (:task/type task))
     :answer-question [(text :t.my-tasks/answer-question) :urgent]
-    :returned [(text :t.my-tasks/returned) :urgent]
+    :returned (if-some [deadline (:task/deadline task)]
+                (let [days (:task/days-left task)]
+                  (if (neg? days)
+                    [(text-format :t.my-tasks/returned-overdue (date-text deadline) (- days)) :overdue]
+                    [(text-format :t.my-tasks/returned-deadline (date-text deadline) days) :urgent]))
+                [(text :t.my-tasks/returned) :urgent])
     :submit [(text :t.my-tasks/submit) :urgent]
     :waiting-for-supervisor [(text :t.my-tasks/waiting-for-supervisor) :waiting]
     :draft [(text :t.my-tasks/draft) :normal]
@@ -49,6 +54,8 @@
     :request-reviews [(text-format :t.my-tasks/request-reviews (:task/reviewers task)) :urgent]
     :reviews-in-progress [(text-format :t.my-tasks/reviews-in-progress (:task/open-reviews task) (:task/reviewers task)) :waiting]
     :decide [(text :t.my-tasks/decide) :urgent]
+    :decide-mixed [(text :t.my-tasks/decide-mixed) :urgent]
+    :changes-overdue [(text-format :t.my-tasks/changes-overdue (date-text (:task/deadline task)) (:task/overdue-days task)) :overdue]
     [(str (:task/type task)) :normal]))
 
 (def ^:private badge-colors

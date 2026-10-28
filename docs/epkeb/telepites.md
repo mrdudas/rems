@@ -65,6 +65,7 @@ Az állapot 2026-10-27-i felmérése. A beállításokat (űrlapok, workflow-k, 
 :enable-processing-states true
 :enable-autosave true
 :enable-review-recommendations true
+:enable-deadline-reminders true
 :reviewer-pool-organization "EPKEB"
 :restrict-organization-owners true
 :theme-path "/rems/epkeb-theme/theme.edn"

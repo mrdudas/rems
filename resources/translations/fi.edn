@@ -461,7 +461,19 @@
         :title "Data Use Ontology (DUO)"
         :validation {:mondo-not-valid "Annetut Mondo-koodit eivät ole yhteensopivia"
                      :needs-validation "DUO-rajoitetta ei voitu tarkistaa automaattisesti:"}}
-  :email {:applicant-changed {:subject-to-member "Hakemuksen %3 hakija vaihtunut"
+  :email {:changes-due-soon {:subject "(%2) Muutosten määräaika: %4"
+                             :message "Hyvä %1,\n\nMuistutus: hakemuksen %2 muutosten määräaika on %4, %5 päivää jäljellä.\n\nHakemus: %3"}
+          :changes-overdue {:subject "(%2) Muutosten määräaika on umpeutunut"
+                            :message "Hyvä %1,\n\nHakemuksen %2 muutosten määräaika oli %4.\n\nHakemus: %3"
+                            :subject-to-handler "(%2) Muutosten määräaika on umpeutunut"
+                            :message-to-handler "Hyvä %1,\n\nHakemuksen %2 muutosten määräaika oli %4, eikä hakija ole lähettänyt muutoksia.\n\nHakemus: %3"}
+          :review-due-soon {:subject "(%2) Arvion määräaika: %4"
+                            :message "Hyvä %1,\n\nMuistutus: hakemuksen %2 arviosi määräaika on %4, %5 päivää jäljellä.\n\nHakemus ja arvio: %3"}
+          :review-overdue {:subject "(%2) Arvion määräaika on umpeutunut"
+                           :message "Hyvä %1,\n\nHakemuksen %2 arviosi määräaika oli %4; arvio on %5 päivää myöhässä.\n\nHakemus ja arvio: %3"
+                           :subject-to-handler "(%2) Arvio on myöhässä"
+                           :message-to-handler "Hyvä %1,\n\nArvioijan %6 arvio hakemukseen %2 on %5 päivää myöhässä (määräaika: %4).\n\nHakemus: %3"}
+          :applicant-changed {:subject-to-member "Hakemuksen %3 hakija vaihtunut"
                               :message-to-member "Hyvä %1,\n\n%2 on vaihtanut hakemuksen %3 hakijan käyttäjäksi %4.\n\nVoit tarkastella hakemusta: %6."
                               :subject-to-handler "(%3) Hakija vaihtunut"
                               :message-to-handler "Hyvä %1,\n\n%2 on vaihtanut hakemuksen %3 hakijan käyttäjäksi %4.\n\nVoit tarkastella hakemusta: %6."}
@@ -656,7 +668,11 @@
             :settings "Asetukset"
             :warning-about-missing-email [:<> "Sinun on " [:a {:href "/profile"} "lisättävä sähköpostiosoite asetuksiisi"] ", jotta voisit vastaanottaa ilmoituksia hakemuksistasi."]
             :your-details "Käyttäjätietosi"}
-  :my-tasks {:answer-question "Kysymys saapui – vastaa Huomautus-painikkeella"
+  :my-tasks {:returned-deadline "Palautettu täydennettäväksi – määräaika %1 (%2 päivää jäljellä)"
+             :returned-overdue "Palautettu täydennettäväksi – määräaika (%1) umpeutui %2 päivää sitten"
+             :decide-mixed "Arviot eroavat – päätä tai pyydä kolmas arvio"
+             :changes-overdue "Muutosten määräaika (%1) umpeutui %2 päivää sitten"
+             :answer-question "Kysymys saapui – vastaa Huomautus-painikkeella"
              :approve-supervision "Odottaa hyväksyntääsi"
              :approve-supervision-ready "Merkitty valmiiksi – hyväksy"
              :as-applicant "Yhteyshenkilönä"

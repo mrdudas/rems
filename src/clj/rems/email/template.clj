@@ -434,3 +434,44 @@
                                  [:recipient :invited-by :workflow :invitation-url])
                 (text :t.email/regards)
                 (text :t.email/footer))}))))
+
+;;; EPKEB deadline reminders, see rems.service.deadlines
+
+(defn- deadline-reminder-email [recipient application reminder subject-text body-text]
+  (with-language (:language (rems.db.user-settings/get-user-settings (:userid recipient)))
+    (let [params {:recipient (application-util/get-member-name recipient)
+                  :application-id (format-application-for-email application)
+                  :application-url (link-to-application (:application/id application))
+                  :deadline (localize-utc-date (:reminder/deadline reminder))
+                  :days (or (:reminder/days-left reminder) (:reminder/days-overdue reminder))
+                  :reviewer (some-> (:reminder/reviewer reminder) rems.db.users/get-user application-util/get-member-name)}
+          ks [:recipient :application-id :application-url :deadline :days :reviewer]]
+      {:to-user (:userid recipient)
+       :subject (text-format-map subject-text params ks)
+       :body (str (text-format-map body-text params ks)
+                  (text :t.email/regards)
+                  (text :t.email/footer))})))
+
+(defn deadline-reminder-emails
+  "The emails of a reminder about a deadline of the application."
+  [application reminder]
+  (let [reviewer (some-> (:reminder/reviewer reminder) rems.db.users/get-user)
+        applying-users (application-util/applicant-and-members application)
+        emails (fn [recipients subject body]
+                 (for [recipient recipients]
+                   (deadline-reminder-email recipient application reminder subject body)))]
+    (vec
+     (case (:reminder/type reminder)
+       :review-due-soon
+       (emails [reviewer] :t.email.review-due-soon/subject :t.email.review-due-soon/message)
+
+       :review-overdue
+       (concat (emails [reviewer] :t.email.review-overdue/subject :t.email.review-overdue/message)
+               (emails (handlers application) :t.email.review-overdue/subject-to-handler :t.email.review-overdue/message-to-handler))
+
+       :changes-due-soon
+       (emails applying-users :t.email.changes-due-soon/subject :t.email.changes-due-soon/message)
+
+       :changes-overdue
+       (concat (emails applying-users :t.email.changes-overdue/subject :t.email.changes-overdue/message)
+               (emails (handlers application) :t.email.changes-overdue/subject-to-handler :t.email.changes-overdue/message-to-handler))))))

@@ -59,7 +59,10 @@
    :application/last-activity DateTime
    :task/type (s/enum :answer-question :returned :submit :waiting-for-supervisor :draft
                       :fill-in :approve-supervision :review
-                      :reviews-overdue :request-reviews :reviews-in-progress :decide)
+                      :reviews-overdue :request-reviews :reviews-in-progress :decide :decide-mixed
+                      :changes-overdue)
+   (s/optional-key :task/deadline) DateTime
+   (s/optional-key :task/days-left) s/Int
    (s/optional-key :task/marked-ready) s/Bool
    (s/optional-key :task/reviewers) s/Int
    (s/optional-key :task/open-reviews) s/Int

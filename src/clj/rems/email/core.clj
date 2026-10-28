@@ -18,6 +18,7 @@
             [rems.db.users]
             [rems.db.workflow]
             [rems.email.template :as template]
+            [rems.service.deadlines :as deadlines]
             [rems.scheduler :as scheduler]
             [clojure.string :as str])
   (:import [javax.mail.internet InternetAddress]
@@ -84,6 +85,46 @@
          (map rems.db.users/get-user)
          (keep #(generate-reviewer-reminder-outbox % deadline))
          rems.db.outbox/puts!)))
+
+(defn- deadline-time-zone []
+  (time/time-zone-for-id (:deadline-reminders-time-zone env)))
+
+(defn generate-deadline-reminder-emails!
+  "Emails the reminders about the deadlines of the reviews and of the
+  requested changes, see rems.service.deadlines. Meant to be run once a day."
+  []
+  (let [deadline (-> (time/now) (.plus ^Period (:email-retry-period env)))
+        now (time/now)
+        zone (deadline-time-zone)
+        emails (for [application (rems.db.applications/get-all-unrestricted-applications)
+                     reminder (deadlines/reminders application now zone)
+                     email (template/deadline-reminder-emails application reminder)
+                     :when email]
+                 {:outbox/type :email
+                  :outbox/email email
+                  :outbox/deadline deadline})]
+    (log/info "Deadline reminders:" (count emails))
+    (rems.db.outbox/puts! emails)))
+
+(defonce ^:private deadline-reminders-sent-on (atom nil))
+
+(defn- send-deadline-reminders-daily!
+  "Sends the reminders once a day after `:deadline-reminders-hour`. A restart
+  on the same day may send them again."
+  []
+  (let [zone (deadline-time-zone)
+        now (time/to-time-zone (time/now) zone)
+        today (time/local-date (time/year now) (time/month now) (time/day now))]
+    (when (and (>= (time/hour now) (:deadline-reminders-hour env))
+               (not= today @deadline-reminders-sent-on))
+      (reset! deadline-reminders-sent-on today)
+      (generate-deadline-reminder-emails!))))
+
+(mount/defstate deadline-reminder-poller
+  :start (when (:enable-deadline-reminders env)
+           (scheduler/start! "deadline-reminder-poller" send-deadline-reminders-daily! (Duration/standardMinutes 10)))
+  :stop (when deadline-reminder-poller
+          (scheduler/stop! deadline-reminder-poller)))
 
 (defn- render-invitation-template [invitation]
   (let [lang (:default-language env)] ; we don't know the preferred languages here since there is no user
