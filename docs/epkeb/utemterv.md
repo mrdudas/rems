@@ -41,7 +41,7 @@
 
 ### 7. Élesítés
 
-- Az éles munka addig a Google Drive-on folyik; azt a rendszer nem módosítja. Átálláskor a folyamatban lévő kérelmek kezelését és a kezdő engedélyszámot külön kell egyeztetni.
+- Az éles munka addig a Google Drive-on folyik; azt a rendszer nem módosítja. Átálláskor a folyamatban lévő kérelmek kezelését külön kell egyeztetni; a rendszer engedélyszámai 2026-1000-től indulnak.
 - Átköltözés az **engedely.epkeb.hu** domainre (DNS, Traefik-szabály és TLS-tanúsítvány, `:public-url`, a Keycloak-kliens átirányítási címei).
 - Ha a rems.analyst.hu alatt már készült valódi engedély: a `/permit/...` útvonalak 301-es átirányítása az új domainre.
 
@@ -59,16 +59,14 @@
 | Bírálókiosztás | egyelőre kézi, listából választva; jelentkezés is lehetséges; terhelés arányos |
 | Elutasított kérelem | később újra beadható (új eljárás) |
 | Rövidített eljárás | egy elnök egyedül dönt, bírálatkérés nélkül (2026-10-28) |
+| Engedély | a kiállítással a nyilvános ellenőrzés is jóvá van hagyva; kezdő szám 2026-1000; mindkét társelnök neve, aláírás nélkül (2026-10-28, [virtualis-engedely.md](virtualis-engedely.md#döntések-2026-10-28)) |
 | Eltérő bírálatok | az elnök felülbírálhatja a bírálókat (engedélyt ad vagy elutasít); a rendszer figyelmeztet, ha a bírálói vélemény nem egységes |
 
 ## Nyitott kérdések
 
 | Kérdés | Kinek |
 |---|---|
-| Következő kiadandó engedélyszám | elnökség |
-| Aláíráskép a PDF-en; egy vagy két társelnök neve | elnökség |
 | Régi engedélyek bevitele | elnökség |
-| Nyilvános engedély-ellenőrzés vs. titoktartási szabály ([virtualis-engedely.md](virtualis-engedely.md#titoktartás)) | bizottság |
 | A „Bírál\*” bírálói státusz jelentése | elnökség |
 | Felügyelői jóváhagyás: a javaslat a rendszerbeli jóváhagyás aláírt melléklet helyett ([cel-folyamat.md](cel-folyamat.md)) – elfogadható-e? | elnökség |
 | Az új űrlap terve ([urlap-terv.md](urlap-terv.md)): postacím kell-e, mezőlista jóváhagyása | elnökség |
