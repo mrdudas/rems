@@ -36,30 +36,18 @@ Az állapot 2026-10-27-i felmérése. A beállításokat (űrlapok, workflow-k, 
    Helyi építés (ha a GitHub nem elérhető): a `rems-docker-compose.yml`-ben az `image:` helyett a `build:` blokk, majd `docker compose build rems` (kb. 15–25 perc, 2–3 GB memória).
 5. Ellenőrzés a böngészőben. Újraindításkor a REMS-munkamenetek elvesznek, újra be kell lépni.
 
-## Azonosítás: külön `epkeb` realm
+## Azonosítás és tesztbelépés
 
-**Probléma (2026-10-28):** a REMS az `analyst` realmet használta, amelyen a többi analyst.hu-szolgáltatás is fut. A REMS kilépése csak a REMS-munkamenetet zárta le, a Keycloakét nem, ezért a következő bejelentkezés jelszó nélkül ugyanazzal a fiókkal történt; más fiókra váltani nem lehetett. Ha a REMS a Keycloak munkamenetét is lezárná, az a többi szolgáltatásból is kiléptetne.
+**Probléma (2026-10-28):** a REMS az `analyst` realm `rems-client` kliensét használja, a többi analyst.hu-szolgáltatással közös Keycloak-munkamenettel. A REMS kilépése a Keycloak-munkamenetet nem zárja le, ezért a következő bejelentkezés ugyanazzal a fiókkal történik; más fiókra váltani így nem lehet, a Keycloak-munkamenet lezárása pedig a többi szolgáltatásból is kiléptetne.
 
-**Megoldás:**
+**Tesztelésre (jelenlegi állapot):**
 
-- Külön Keycloak realm a REMS-nek: `epkeb`. A bizottság felhasználói ide kerülnek, a kilépés csak ezt a munkamenetet zárja le. Az éles átálláskor (engedely.epkeb.hu) is ez marad.
-- A REMS kilépéskor a realm kijelentkező címére irányít az azonosító tokennel (`:oidc-end-session-on-logout true`, OIDC RP-initiated logout), így a Keycloak megerősítés nélkül kiléptet, majd visszairányít a REMS kezdőlapjára.
+- A REMS előtt Keycloak-belépés van (oauth2-proxy, mint a többi szolgáltatásnál), saját `rems-oauth2-proxy` forwardauth köztes réteggel (`rems-docker-compose.yml`). A közös `oauth2-proxy@docker` nem használható, mert az `authResponseHeadersRegex=^X-` beállítása a kérésből minden `X-` fejlécet töröl, így a REMS `X-CSRF-Token` fejlécét is, és minden mentés 401-et kap.
+- A REMS-ben a beépített tesztbelépés van bekapcsolva (`:authentication :fake`, `:fake-authentication-data :test`): a `/fake-login` oldalon jelszó nélkül lehet a beépített tesztfelhasználók (alice, elsa, frank, handler, carl, owner, ...) nevében belépni, és egy kattintással váltani. Csak az oauth2-proxy mögött szabad bekapcsolni.
+- Tesztszerepek: `alice` az EPKEB szervezet kapcsolattartója, `elsa` kutató, `frank` felügyelő, `handler` a „próba munkafolyamat” elnöke (handlere), `carl` bíráló, `owner` admin (`grant-role owner owner`; a szerepet a futó REMS újraindítás után látja).
+- A Keycloakos fiókok (az eredeti admin is) ilyenkor nem tudnak belépni.
 
-**Keycloak-beállítás** (admin konzol, Keycloak 26):
-
-1. Realm-választó → *Create realm* → név: `epkeb` → *Create*.
-2. *Clients* → *Create client*: típus OpenID Connect, *Client ID* `rems-client` → *Next* → *Client authentication* be, *Standard flow* be (a többi ki) → *Next* →
-   - *Root URL*: `https://rems.analyst.hu`
-   - *Valid redirect URIs*: `https://rems.analyst.hu/oidc-callback`
-   - *Valid post logout redirect URIs*: `https://rems.analyst.hu/*`
-   - *Web origins*: `https://rems.analyst.hu`
-   → *Save*.
-3. A kliens *Credentials* fülén a *Client secret* értéke kerül a REMS `:oidc-client-secret` beállításába.
-4. *Users* → *Add user*: felhasználónév, e-mail, kereszt- és vezetéknév (a REMS a nevet kötelezőnek veszi), *Email verified* be → *Create*; a *Credentials* fülön jelszó, *Temporary* ki. Az admin (owner) felhasználót is itt kell létrehozni.
-
-**REMS-beállítás:** `:oidc-metadata-url "https://auth.analyst.hu/auth/realms/epkeb/.well-known/openid-configuration"`, az új klienstitok és `:oidc-end-session-on-logout true`.
-
-**Felhasználói azonosítók:** a REMS a Keycloak `sub` azonosítóját használja, ami realmenként más. Az új realmben mindenki új REMS-felhasználó lesz; a régi bemutatóadat a régi azonosítókhoz tartozik. Az admin felhasználónak újra meg kell adni az `owner` szerepet (`docker exec rems java -jar rems.jar grant-role owner <userid>`), és fel kell venni a workflow-k handlerei közé.
+**Visszaállítás Keycloakos belépésre:** a `config.edn`-ben `:authentication :oidc` (a `:fake-authentication-data` sor törlése), majd `docker compose up -d rems`. A REMS-kilépés valódi Keycloak-kilépéssé tehető az `:oidc-end-session-on-logout true` beállítással (RP-initiated logout), de ez a közös realm miatt a többi szolgáltatásból is kiléptet; a fiókváltáshoz a `:oidc-additional-authorization-parameters "&prompt=login"` beállítás (mindig jelszót kér) elég, ez most is be van állítva.
 
 ## A próbarendszer beállításai (`config.edn`)
 
@@ -68,6 +56,7 @@ Az állapot 2026-10-27-i felmérése. A beállításokat (űrlapok, workflow-k, 
 :smtp-host "rems-mailpit"
 :smtp-port 1025
 :languages [:en :hu]
+:default-language :hu
 :enable-cart false
 :enable-organization-contacts true
 :enable-member-editing true
