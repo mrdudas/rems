@@ -543,7 +543,8 @@
                                  :subject-to-handler "(%:application-id%) A kérelmet jóváhagyták"
                                  :message-to-handler "Tisztelt %:recipient%!\n\n%:event-actor% jóváhagyta %:applicant% %:application-id% azonosítójú kérelmét.\n\nA kérelmet és a döntést itt tekintheti meg: %:application-url%"
                                  :subject-to-reviewer "EPKEB-kérelem %:application-id% – lezárult"
-                                 :message-to-reviewer "Kedves %:recipient%!\n\nSzeretnélek tájékoztatni, hogy az általad bírált %:application-id% kérelem engedélyezési folyamata sikeresen lezárult, a kérelmet az EPKEB jóváhagyta.\n\nKöszönjük a bírálatot!"}
+                                 :message-to-reviewer "Kedves %:recipient%!\n\nSzeretnélek tájékoztatni, hogy az általad bírált %:application-id% kérelem engedélyezési folyamata sikeresen lezárult, a kérelmet az EPKEB jóváhagyta.\n\nKöszönjük a bírálatot!"
+                                 :message-to-applicant-with-permit "Kedves %:recipient%!\n\nÖrömmel értesítjük, hogy a(z) %:application-id% kérelmet az EPKEB jóváhagyta. Az engedély száma: %:permit-number%.\n\nAz engedély itt tekinthető meg és tölthető le PDF-ben; ezt a linket megoszthatja azokkal (például folyóirattal, finanszírozóval), akiknek igazolnia kell az engedélyt:\n%:permit-url%\n\nSok sikert kívánunk a kutatáshoz!\n\nA kérelem: %:application-url%"}
           :application-rejected {:subject-to-applicant "A(z) %:application-id% kérelmét elutasították"
                                  :message-to-applicant "Tisztelt %:recipient%!\n\nA(z) %:application-id% kérelmét elutasították.\n\nA kérelmet és a döntést itt tekintheti meg: %:application-url%"
                                  :subject-to-handler "(%:application-id%) A kérelmet elutasították"
@@ -762,6 +763,11 @@
   :not-found-page {:not-found "Nem található"
                    :page-was-not-found "Az oldal nem található."}
   :pdf {:generated "Ez a PDF ekkor készült:"}
+  :permit {:download "PDF letöltése"
+           :revoked "visszavonva: %1"
+           :share "Az engedély nyilvános linkje: bejelentkezés nélkül megnyitható, és megosztható azokkal, akiknek igazolni kell az engedélyt (például folyóirat, finanszírozó)."
+           :title "Engedély"
+           :valid "érvényes"}
   :phases {:apply "Kitöltés"
            :approve "Bírálat és döntés"
            :approved "Engedély"

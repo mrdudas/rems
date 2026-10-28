@@ -482,7 +482,8 @@
                                  :subject-to-handler "(%3) Hakemus on hyväksytty"
                                  :message-to-handler "Hyvä %1,\n\n%2 on hyväksynyt käyttäjän %4 hakemuksen %3.\n\nVoit tarkastella hakemusta ja päätöstä osoitteessa %6"
                                  :subject-to-reviewer "(%3) Hakemus hyväksytty"
-                                 :message-to-reviewer "Hyvä %1,\n\nArvioimasi hakemus %3 on hyväksytty. Kiitos arviostasi!"}
+                                 :message-to-reviewer "Hyvä %1,\n\nArvioimasi hakemus %3 on hyväksytty. Kiitos arviostasi!"
+                                 :message-to-applicant-with-permit "Hyvä %1,\n\nHakemus %3 on hyväksytty (%10). Hyväksyntä: %9\n\nHakemus: %6"}
           :application-rejected {:subject-to-applicant "Hakemuksesi %3 on hylätty"
                                  :message-to-applicant "Hyvä %1,\n\nHakemuksesi %3 on hylätty.\n\nVoit tarkastella hakemusta ja päätöstä osoitteessa %6"
                                  :subject-to-handler "(%3) Hakemus on hylätty"
@@ -658,6 +659,11 @@
   :not-found-page {:not-found "Ei löytynyt"
                    :page-was-not-found "Tätä sivua ei löytynyt."}
   :pdf {:generated "Tämä PDF luotu"}
+  :permit {:download "Lataa PDF"
+           :revoked "peruttu: %1"
+           :share "Hyväksynnän julkinen linkki, jonka voi jakaa."
+           :title "Hyväksyntä"
+           :valid "voimassa"}
   :phases {:apply "Hae"
            :approve "Hyväksyntä"
            :approved "Hyväksytty"

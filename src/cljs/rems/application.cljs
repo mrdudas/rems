@@ -12,6 +12,7 @@
             [rems.actions.add-licenses :refer [add-licenses-action-button add-licenses-form]]
             [rems.actions.add-member :refer [add-member-action-button add-member-form]]
             [rems.actions.approve-reject :refer [approve-reject-action-button approve-reject-form]]
+            [rems.permit :as permit]
             [rems.reviews :as reviews]
             [rems.actions.approve-supervision :refer [approve-supervision-action-button approve-supervision-form]]
             [rems.actions.assign-external-id :refer [assign-external-id-button assign-external-id-form]]
@@ -1377,6 +1378,7 @@
     [:div.col-lg-8.application-content.spaced-vertically-5
      [application-state {:application application
                          :userid userid}]
+     [permit/permit-card application]
      [reviews/reviews-card application]
      [reviews/questions-card application]
      [applicants-info application userid]

@@ -2,7 +2,20 @@
 
 Döntés (2026-10-27): az engedély elsősorban **nem PDF, hanem egy link**. A linken bárki – külső szereplő is (folyóirat, finanszírozó, együttműködő intézmény) – ellenőrizheti, hogy az engedély létezik és érvényes, és onnan PDF-ben le is töltheti.
 
-Állapot: terv, még nincs implementálva.
+Állapot (2026-10-28): **elkészült**, a `:enable-permits` kapcsolóval.
+
+| Rész | Megvalósítás |
+|---|---|
+| Tábla | `permit` (migráció `20261028170000-epkeb-permits`): token, év, sorszám, kérelem, kiállítás, visszavonás, adatok (JSON pillanatkép); egyedi (év, sorszám) |
+| Számkiosztás | `rems.db.permits/issue-permit!`: az év legnagyobb sorszáma + 1, a parancsok közös zárolása alatt (nincs ütközés); `:permit-first-number {:year 2026 :sequence 229}` a kézi számozás folytatásához |
+| Kiállítás | `rems.service.permits/handle-events`: a jóváhagyás eseményére, a levelek előtt; az adatok a kérelemből: kutató(k) (a felügyelőn kívüli kutatók, ha nincsenek, a kapcsolattartó), felügyelő, cím, a kapcsolattartó szervezete és a tanszék mező, nyelv, rövidített eljárásnál az eredeti engedély száma, a jóváhagyó elnök |
+| Visszavonás | a `revoke` eseményre; az oldal és a PDF „VISSZAVONVA” állapotot mutat a dátummal |
+| Ellenőrző oldal | `/permit/<token>` (`rems.permit-page`), bejelentkezés nélkül, `noindex`, magyar/angol váltással, „PDF letöltése” gombbal |
+| PDF | `/permit/<token>/pdf`, menet közben generálva, QR-kóddal és a linkkel; a betűtípus `:permit-pdf-font` (a témában: DejaVu Sans, a magyar ékezetekhez) |
+| A kérelem oldalán | „Engedély” kártya: szám, állapot, a megosztható link, PDF (`GET /api/applications/:id/permit`) |
+| Levél | a jóváhagyó levélben az engedély száma és linkje |
+
+A próbarendszeren a Keycloak-belépés minden útvonal előtt ott van; a `/permit/` útvonalat a Traefikben külön szabály engedi bejelentkezés nélkül (`rems-docker-compose.yml`, `rems-permit` router).
 
 ## Életciklus
 

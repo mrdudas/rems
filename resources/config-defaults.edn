@@ -508,6 +508,17 @@
  :deadline-reminders-time-zone "Europe/Budapest"
  :changes-deadline-days 30
 
+ ;; EPKEB virtual approvals (permits), see docs/epkeb/virtualis-engedely.md.
+ ;; With :enable-permits, approving an application issues a permit with the
+ ;; next reference number of the year (YYYY-NNN), viewable without logging in
+ ;; at <public-url>/permit/<token>, with a PDF. Revoking the application
+ ;; revokes the permit. :permit-first-number continues a manual numbering,
+ ;; e.g. {:year 2026 :sequence 229}. :permit-pdf-font is a TTF font file for
+ ;; the PDF, needed for characters like ő and ű.
+ :enable-permits false
+ :permit-first-number nil
+ :permit-pdf-font nil
+
  ;; The deadline of a review in days from the request, shown in the reviewer
  ;; calendar, and of a re-review requested after the application was returned
  ;; for changes. Only used with `:reviewer-pool-organization`.

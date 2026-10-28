@@ -17,6 +17,7 @@
                  [com.cognitect/transit-clj "1.1.357"]
                  [com.draines/postal "2.0.5"]
                  [com.fasterxml.jackson.datatype/jackson-datatype-joda "2.21.2"]
+                 [com.google.zxing/core "3.5.3"] ; EPKEB: QR code on the permits
                  ^{:antq/exclude "2"} [com.icegreen/greenmail "1.6.15"]
                  [com.nextjournal/beholder "1.0.3"]
                  [com.rpl/specter "1.1.6"]

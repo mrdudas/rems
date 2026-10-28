@@ -514,7 +514,8 @@
                                  :subject-to-handler "(%3) Ansøgningen blev godkendt"
                                  :message-to-handler "Kære %1,\n\n%2 har godkendt ansøgningen %3 fra %4.\n\nDu kan se ansøgningen og afgørelsen på %6"
                                  :subject-to-reviewer "(%3) Ansøgning godkendt"
-                                 :message-to-reviewer "Kære %1,\n\nAnsøgning %3, som du bedømte, er godkendt. Tak for din bedømmelse!"}
+                                 :message-to-reviewer "Kære %1,\n\nAnsøgning %3, som du bedømte, er godkendt. Tak for din bedømmelse!"
+                                 :message-to-applicant-with-permit "Kære %1,\n\nAnsøgning %3 er godkendt (%10). Godkendelsen: %9\n\nAnsøgningen: %6"}
           :application-rejected {:subject-to-applicant "Din ansøgning %3 blev afslået"
                                  :message-to-applicant "Kære %1,\n\nDin ansøgning %3 blev afslået.\n\nDu kan se ansøgningen og afgørelsen på %6"
                                  :subject-to-handler "(%3) Ansøgningen blev afslået"
@@ -707,6 +708,11 @@
   :not-found-page {:not-found "Siden kunne ikke findes"
                    :page-was-not-found "Denne side kunne ikke findes."}
   :pdf {:generated "Denne PDF blev genereret"}
+  :permit {:download "Download PDF"
+           :revoked "tilbagekaldt: %1"
+           :share "Godkendelsens offentlige link, som kan deles."
+           :title "Godkendelse"
+           :valid "gyldig"}
   :phases {:apply "Indsend"
            :approve "Godkend"
            :approved "Godkendt"

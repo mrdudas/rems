@@ -3721,3 +3721,78 @@
                               :comment ""
                               :time (time/minus (time/now) (time/days 21))})
       (is (= #{"deadline-reviewer" "handler"} (set (map first (send!))))))))
+
+;; EPKEB: the virtual approvals (permits)
+(defn- body-text [response]
+  (let [body (:body response)]
+    (if (string? body) body (slurp body))))
+
+(deftest test-permits
+  (with-redefs [rems.config/env (assoc rems.config/env
+                                       :enable-permits true
+                                       :permit-first-number {:year (time/year (time/now)) :sequence 229}
+                                       :permit-pdf-font "epkeb-theme/fonts/DejaVuSans.ttf")]
+    (let [form-id (test-helpers/create-form! {:form/fields [{:field/id "title"
+                                                             :field/type :description
+                                                             :field/title {:en "Title" :fi "Title" :sv "Title"}
+                                                             :field/optional false}
+                                                            {:field/id "language"
+                                                             :field/type :option
+                                                             :field/title {:en "Language" :fi "Language" :sv "Language"}
+                                                             :field/options [{:key "hu" :label {:en "hu" :fi "hu" :sv "hu"}}
+                                                                             {:key "en" :label {:en "en" :fi "en" :sv "en"}}]
+                                                             :field/optional false}]})
+          workflow-id (test-helpers/create-workflow! {:type :workflow/default
+                                                      :handlers ["handler"]})
+          cat-item-id (test-helpers/create-catalogue-item! {:form-id form-id
+                                                            :workflow-id workflow-id})
+          approve! (fn [title]
+                     (let [app-id (test-helpers/create-application! {:catalogue-item-ids [cat-item-id]
+                                                                     :actor "alice"})]
+                       (test-helpers/command! {:type :application.command/save-draft
+                                               :application-id app-id
+                                               :actor "alice"
+                                               :field-values [{:form form-id :field "title" :value title}
+                                                              {:form form-id :field "language" :value "hu"}]})
+                       (test-helpers/command! {:type :application.command/submit
+                                               :application-id app-id
+                                               :actor "alice"})
+                       (is (= {:success true}
+                              (send-command "handler" {:type :application.command/approve
+                                                       :application-id app-id
+                                                       :comment ""})))
+                       app-id))
+          app-id (approve! "Gyermekek őszi útja")
+          year (time/year (time/now))
+          permit (api-call :get (str "/api/applications/" app-id "/permit") nil +test-api-key+ "alice")
+          token (last (str/split (:permit/url permit) #"/"))]
+      (testing "approving issues a permit continuing the manual numbering"
+        (is (= (format "%d-229" year) (:permit/number permit)))
+        (is (nil? (:permit/revoked permit))))
+      (testing "the next permit gets the next number"
+        (let [app-id2 (approve! "Második kutatás")]
+          (is (= (format "%d-230" year)
+                 (:permit/number (api-call :get (str "/api/applications/" app-id2 "/permit") nil +test-api-key+ "alice"))))))
+      (testing "the public page needs no login and shows the permit"
+        (let [response (api-response :get (str "/permit/" token))
+              body (body-text response)]
+          (is (= 200 (:status response)))
+          (is (str/includes? body (format "%d-229" year)))
+          (is (str/includes? body "Gyermekek őszi útja"))
+          (is (str/includes? body "Alice Applicant"))
+          (is (str/includes? body "ÉRVÉNYES"))
+          (is (str/includes? body "noindex"))))
+      (testing "the PDF"
+        (let [response (api-response :get (str "/permit/" token "/pdf"))]
+          (is (= 200 (:status response)))
+          (is (= "application/pdf" (get-in response [:headers "Content-Type"])))
+          (is (str/starts-with? (body-text response) "%PDF"))))
+      (testing "an unknown token"
+        (is (= 404 (:status (api-response :get "/permit/nosuchtoken")))))
+      (testing "revoking revokes the permit"
+        (is (= {:success true}
+               (send-command "handler" {:type :application.command/revoke
+                                        :application-id app-id
+                                        :comment "revoked"})))
+        (is (some? (:permit/revoked (api-call :get (str "/api/applications/" app-id "/permit") nil +test-api-key+ "alice"))))
+        (is (str/includes? (body-text (api-response :get (str "/permit/" token))) "VISSZAVONVA"))))))

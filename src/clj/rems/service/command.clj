@@ -17,6 +17,7 @@
             [rems.db.user-mappings]
             [rems.email.core :as email]
             [rems.event-notification :as event-notification]
+            [rems.service.permits]
             [rems.util :refer [secure-token]])
   (:import rems.TryAgainException))
 
@@ -25,6 +26,8 @@
 (defn run-process-managers [new-events]
   (concat
    (process-managers/revokes-to-blacklist new-events)
+   ;; before the emails, so that the approval email can link the permit
+   (rems.service.permits/handle-events new-events)
    (email/generate-event-emails! new-events)
    (rems.db.entitlements/update-entitlements-for-events new-events)
    (rejecter-bot/run-rejecter-bot new-events)

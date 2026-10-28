@@ -865,3 +865,21 @@ DO NOTHING;
 -- :name delete-user-mapping! :!
 DELETE FROM user_mappings
 WHERE userId = :userid;
+
+-- EPKEB permits, see rems.db.permits
+
+-- :name get-permit-max-sequence :? :1
+SELECT MAX(sequence) AS max FROM permit WHERE year = :year;
+
+-- :name add-permit! :insert
+INSERT INTO permit (token, year, sequence, appId, issued, data)
+VALUES (:token, :year, :sequence, :application, :issued, :data::jsonb);
+
+-- :name get-permit-by-token :? :1
+SELECT token, year, sequence, appId, issued, revoked, data::text FROM permit WHERE token = :token;
+
+-- :name get-permit-by-application :? :1
+SELECT token, year, sequence, appId, issued, revoked, data::text FROM permit WHERE appId = :application;
+
+-- :name revoke-permit! :!
+UPDATE permit SET revoked = :revoked WHERE appId = :application AND revoked IS NULL;

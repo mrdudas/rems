@@ -543,7 +543,8 @@
                                  :subject-to-handler "(%:application-id%) Application has been approved"
                                  :message-to-handler "Dear %:recipient%,\n\n%:event-actor% has approved the application %:application-id% from %:applicant%.\n\nYou can view the application and the decision at %:application-url%"
                                  :subject-to-reviewer "EPKEB application %:application-id% – closed"
-                                 :message-to-reviewer "Dear %:recipient%,\n\nI would like to inform you that the procedure of application %:application-id%, which you reviewed, has been closed successfully: the application has been approved by the EPKEB.\n\nThank you for your review!"}
+                                 :message-to-reviewer "Dear %:recipient%,\n\nI would like to inform you that the procedure of application %:application-id%, which you reviewed, has been closed successfully: the application has been approved by the EPKEB.\n\nThank you for your review!"
+                                 :message-to-applicant-with-permit "Dear %:recipient%,\n\nI am pleased to inform you that application %:application-id% has been approved by the EPKEB. The reference number of the approval is %:permit-number%.\n\nThe approval can be viewed and downloaded as a PDF at the link below; you can share the link with anyone (e.g. a journal or a funder) who needs to verify the approval:\n%:permit-url%\n\nWe wish you good luck with your research!\n\nThe application: %:application-url%"}
           :application-rejected {:subject-to-applicant "Your application %:application-id% has been rejected"
                                  :message-to-applicant "Dear %:recipient%,\n\nYour application %:application-id% has been rejected.\n\nYou can view the application and the decision at %:application-url%"
                                  :subject-to-handler "(%:application-id%) Application has been rejected"
@@ -762,6 +763,11 @@
   :not-found-page {:not-found "Not found"
                    :page-was-not-found "This page was not found."}
   :pdf {:generated "This PDF generated at"}
+  :permit {:download "Download PDF"
+           :revoked "revoked: %1"
+           :share "The public link of the approval: it opens without logging in, and can be shared with anyone who needs to verify the approval (e.g. a journal or a funder)."
+           :title "Approval"
+           :valid "valid"}
   :phases {:apply "Application"
            :approve "Review and decision"
            :approved "Approval"

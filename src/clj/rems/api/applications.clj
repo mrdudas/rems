@@ -9,6 +9,7 @@
             [rems.service.command :as command]
             [rems.service.licenses]
             [rems.service.my-tasks]
+            [rems.service.permits]
             [rems.service.reviewer-calendar]
             [rems.service.reviewer-pool]
             [rems.service.users]
@@ -353,6 +354,17 @@
                   404 {:schema s/Str :description "Not found"}}
       (if-let [app (rems.db.applications/get-application-for-user (getx-user-id) application-id)]
         (ok app)
+        (api-util/not-found-json-response)))
+
+    (GET "/:application-id/permit" []
+      :summary "The permit (approval) of the application with its public link, see `:enable-permits`. 404 if there is none."
+      :roles #{:logged-in}
+      :path-params [application-id :- (describe s/Int "application id")]
+      :responses {200 {:schema s/Any}
+                  404 {:schema s/Str :description "Not found"}}
+      (if-let [permit (when (rems.db.applications/get-application-for-user (getx-user-id) application-id)
+                        (rems.service.permits/get-permit-for-application application-id))]
+        (ok (select-keys permit [:permit/number :permit/url :permit/issued :permit/revoked]))
         (api-util/not-found-json-response)))
 
     (GET "/:application-id/raw" []

@@ -10,6 +10,7 @@
             [rems.db.user-settings]
             [rems.db.users]
             [rems.permissions :as permissions]
+            [rems.service.permits]
             [rems.service.reviewer-calendar :as reviewer-calendar]
             [rems.text :refer [localize-user localize-utc-date text text-no-fallback text-format-map with-language]]))
 
@@ -112,6 +113,13 @@
                       nil)]
       (time/plus t (time/days days)))))
 
+(defn- permit-of
+  "The permit issued by approving the application, see `:enable-permits`."
+  [event]
+  (when (and (:enable-permits env)
+             (= :application.event/approved (:event/type event)))
+    (rems.service.permits/get-permit-for-application (:application/id event))))
+
 (defn- emails-to-recipients [recipients event application subject-text body-text]
   (vec
    (for [recipient recipients
@@ -126,15 +134,17 @@
                                        :event-actor (localize-user (:event/actor-attributes event))
                                        :recipient (application-util/get-member-name recipient)
                                        :deadline (some-> (event-deadline event application) localize-utc-date)
-                                       :comment (:application/comment event)}]
+                                       :comment (:application/comment event)
+                                       :permit-url (some-> (permit-of event) :permit/url)
+                                       :permit-number (some-> (permit-of event) :permit/number)}]
                            {:to-user (:userid recipient)
                             :subject (text-format-map subject-text
                                                       params
-                                                      [:recipient :event-actor :application-id :applicant :catalogue-items :application-url :deadline :comment])
+                                                      [:recipient :event-actor :application-id :applicant :catalogue-items :application-url :deadline :comment :permit-url :permit-number])
                             :body (str
                                    (text-format-map body-text
                                                     params
-                                                    [:recipient :event-actor :application-id :applicant :catalogue-items :application-url :deadline :comment])
+                                                    [:recipient :event-actor :application-id :applicant :catalogue-items :application-url :deadline :comment :permit-url :permit-number])
                                    (text :t.email/regards)
                                    (text :t.email/footer))})))]
          :when email]
@@ -150,7 +160,10 @@
   (concat (emails-to-recipients (application-util/applicant-and-members application)
                                 event application
                                 :t.email.application-approved/subject-to-applicant
-                                :t.email.application-approved/message-to-applicant)
+                                (if (permit-of event)
+                                  ;; EPKEB: with the number and the link of the approval
+                                  :t.email.application-approved/message-to-applicant-with-permit
+                                  :t.email.application-approved/message-to-applicant))
           (emails-to-recipients (other-handlers event application)
                                 event application
                                 :t.email.application-approved/subject-to-handler

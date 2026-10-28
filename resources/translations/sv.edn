@@ -482,7 +482,8 @@
                                  :subject-to-handler "(%3) Ansökan är godkänd"
                                  :message-to-handler "%1,\n\n%2 har godkänt ansökan %3 från %4.\n\nDu kan granska ansökningen och beslutet här: %6"
                                  :subject-to-reviewer "(%3) Ansökan godkänd"
-                                 :message-to-reviewer "Hej %1,\n\nAnsökan %3 som du granskade har godkänts. Tack för din granskning!"}
+                                 :message-to-reviewer "Hej %1,\n\nAnsökan %3 som du granskade har godkänts. Tack för din granskning!"
+                                 :message-to-applicant-with-permit "Hej %1,\n\nAnsökan %3 har godkänts (%10). Godkännandet: %9\n\nAnsökan: %6"}
           :application-rejected {:subject-to-applicant "Din ansökan %3 har fått avslag"
                                  :message-to-applicant "%1,\n\nDin ansökan %3 har fått avslag.\n\nDu kan granska ansökningen och beslutet här: %6"
                                  :subject-to-handler "(%3) Avslag på ansökan"
@@ -658,6 +659,11 @@
   :not-found-page {:not-found "Sidan hittades inte"
                    :page-was-not-found "Denna sida hittades inte."}
   :pdf {:generated "Denna pdf skapades"}
+  :permit {:download "Ladda ner PDF"
+           :revoked "återkallat: %1"
+           :share "Godkännandets offentliga länk, som kan delas."
+           :title "Godkännande"
+           :valid "giltigt"}
   :phases {:apply "Skicka in"
            :approve "Godkänn"
            :approved "Godkänt"

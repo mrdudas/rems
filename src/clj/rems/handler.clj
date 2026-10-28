@@ -17,6 +17,7 @@
             [rems.application.eraser] ;; to enable expired application clean-up job
             [rems.layout :as layout]
             [rems.middleware :refer [wrap-cacheable wrap-base]]
+            [rems.permit-page :as permit-page]
             [rems.util :refer [getx-user-id never-match-route]]
             [ring.middleware.webjars :refer [wrap-webjars]]
             [ring.util.codec :refer [url-encode]]
@@ -128,6 +129,8 @@
             redirects))
    (auth/auth-routes)
    #'api-routes
+   ;; EPKEB: public, see docs/epkeb/virtualis-engedely.md
+   (permit-page/permit-routes)
    ;; TODO should we disable logging of resource requests?
    (wrap-cacheable
     (routes
