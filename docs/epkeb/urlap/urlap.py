@@ -48,7 +48,13 @@ def form(abbreviated):
         fields += [field("original-approval", "text", t("Az eredeti engedély(ek) száma", "Reference number(s) of the original approval(s)"),
                          max_length=100, placeholder=t("pl. 2025-052", "e.g. 2025-052")),
                    field("changes", "texta", t("Miben tér el a kutatás az eredetitől?", "How does the research differ from the original?"),
-                         max_length=4000)]
+                         max_length=4000),
+                   field("original-application", "attachment", t("Az eredeti kérelem és engedély", "The original application and approval"),
+                         info_text=t("Ha az eredeti kérelem még nem ebben a rendszerben készült.", "If the original application was not made in this system.")),
+                   field("abbreviated-note", "label",
+                         t("Rövidített eljárásban a többi kérdésre csak akkor kell válaszolni, ha a válasz eltér az eredeti kérelemétől.",
+                           "In the expedited procedure, answer the other questions only if the answer differs from the original application."),
+                         optional=True)]
     fields += [header("h2", "2. Kérelmező és felügyelő", "2. Applicant and supervisor"),
                field("position", "option", t("A kérelmező beosztása", "Position of the applicant"),
                      options=opts(("student", "hallgató (BA/MA)", "student (BA/MA)"),
@@ -134,6 +140,10 @@ def form(abbreviated):
                header("h7", "7. Egyéb", "7. Other"),
                field("other-ethics", "texta", t("Van-e a kutatásnak más, etikai szempontból fontos vonatkozása?", "Is there any further aspect of the research important for ethical consideration?"),
                      optional=True, max_length=4000)]
+    if abbreviated:
+        # only the changes are required, see the note above
+        required = {"language", "original-approval", "changes", "original-application"}
+        fields = [dict(f, **{"field/optional": f["field/id"] not in required}) for f in fields]
     return fields
 
 if __name__ == "__main__":

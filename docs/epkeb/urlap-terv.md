@@ -70,7 +70,7 @@ Egy beadott (angol nyelvű, v5 sablonú) kérelmet **álnevesítve** vettünk fe
 
 Ami még javítandó:
 
-- A levelek tárgyába a REMS a kérelem teljes címét is beteszi; a hosszú kutatási címek miatt a tárgy 200 karakter fölé nő. Elég a sorszám.
+- A levelek tárgyában a kérelem teljes címe szerepel, akkor is, ha hosszú (döntés, 2026-10-28: így marad).
 - A REMS-ben a használatban lévő űrlap nem módosítható, és a munkafolyamathoz csatolt űrlap sem cserélhető: minden űrlapváltozás új űrlapot, új munkafolyamatot és a katalóguselem átállítását jelenti. Az éles indulás előtt az űrlapot véglegesíteni kell.
 
 ## Az új űrlap terve

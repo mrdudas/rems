@@ -86,6 +86,7 @@ Az állapot 2026-10-27-i felmérése. A beállításokat (űrlapok, workflow-k, 
 | Katalóguselem #6 „Normál eljárás” és #7 „Rövidített eljárás” | workflow #5 és #6, saját űrlap nélkül (kivezetve) |
 | Űrlap #6 és #7, workflow #7 és #8, katalóguselem #8 „Normál eljárás” és #9 „Rövidített eljárás” (2026-10-28 óta) | az új űrlap ([urlap-terv.md](urlap-terv.md#az-új-űrlap-2026-10-28)); a #5 és #6 workflow neve „(régi, #5 űrlap)” |
 | Szervezet `DE-PI` „Debreceni Egyetem Pszichológiai Intézet” | bemutató tagintézmény: kapcsolattartó `alice`, illetékes elnök az EPKEB-é; a bírálói körben `malice` innen delegált (így a debreceni kérelmeknél nem kérhető fel) |
+| Űrlap #8, workflow #9, katalóguselem #10 „Rövidített eljárás” (2026-10-28 óta) | javított rövidített űrlap: csak a nyelv, az eredeti engedély száma, az eltérések és az eredeti kérelem kötelező; a #8 workflow neve „(régi, #7 űrlap)” |
 | Kérelem 2026/15 | álnevesített valódi kérelem az új űrlapon, benyújtva |
 | Kérelem 2026/8 | a kapcsolattartós létrehozás próbája |
 

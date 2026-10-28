@@ -69,6 +69,7 @@
 | Régi engedélyek bevitele | elnökség |
 | Nyilvános engedély-ellenőrzés vs. titoktartási szabály ([virtualis-engedely.md](virtualis-engedely.md#titoktartás)) | bizottság |
 | A „Bírál\*” bírálói státusz jelentése | elnökség |
+| Rövidített eljárás: egy társelnök dönt (szabály), vagy mindkettő jóváhagyása kell (a 2026-os gyakorlat, [esetek.md](esetek.md#fontos-eltérés-a-szabályoktól-rövidített-eljárás))? | elnökség |
 | Felügyelői jóváhagyás: a javaslat a rendszerbeli jóváhagyás aláírt melléklet helyett ([cel-folyamat.md](cel-folyamat.md)) – elfogadható-e? | elnökség |
 | Az új űrlap terve ([urlap-terv.md](urlap-terv.md)): postacím kell-e, mezőlista jóváhagyása | elnökség |
 | Még fel nem dolgozott anyagok: „Felosztás_2025.xlsx”, alapító okirat, a két almappa | – |
