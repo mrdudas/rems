@@ -20,7 +20,7 @@
   {:hu {:committee "EGYESÍTETT PSZICHOLÓGIAI KUTATÁSETIKAI BIZOTTSÁG"
         :title "Etikai engedély"
         :title-abbreviated "Etikai engedély (rövidített eljárás)"
-        :intro "Az Egyesített Pszichológiai Kutatásetikai Bizottság (EPKEB) az alábbi kutatási tervet etikai szempontból értékelte, és annak végrehajtásához %s megbízásából hozzájárul."
+        :intro "Az Egyesített Pszichológiai Kutatásetikai Bizottság (EPKEB) az alábbi kutatási tervet etikai szempontból értékelte, és annak végrehajtásához a(z) %s megbízásából hozzájárul."
         :researcher "Kutató"
         :supervisor "A kutatás felügyelője"
         :project-title "Kutatás címe"
