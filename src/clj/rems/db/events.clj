@@ -48,6 +48,7 @@
       (update-existing :workflow/type keyword)
       (update-existing :application/expires-on rems.json/datestring->datetime)
       (update-existing :application/decision keyword)
+      (update-existing :review/recommendation keyword)
       (update-existing :application/request-id #(java.util.UUID/fromString ^String %))
       (update-existing :application/accepted-licenses set)
       (update-existing :application/duo-codes coerce-duo-codes)))
@@ -62,6 +63,7 @@
                                [(must :workflow/type) (terminal keyword)]
                                [(must :application/expires-on) (terminal rems.json/datestring->datetime)]
                                [(must :application/decision) (terminal keyword)]
+                               [(must :review/recommendation) (terminal keyword)]
                                [(must :application/request-id) (terminal #(when % (java.util.UUID/fromString ^String %)))]
                                [(must :application/accepted-licenses) (terminal set)]
                                [(must :application/duo-codes) ALL (must :restrictions) ALL (must :type) (terminal keyword)])
