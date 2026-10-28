@@ -64,7 +64,7 @@ Az engedélyszámok sorszámok; ha a link ezekből állna, végigpróbálgatáss
 
 A bizottsági kommentek ([s][t]) a kézi aláírást támogatták, mert az automatikus aláírás feltörés esetén hamis engedélyekhez vezethet. A virtuális engedélynél nincs aláírt dokumentum; a hitelességet ez adja:
 
-- engedélyt csak bejelentkezett, handler szerepű elnök állíthat ki, normál eljárásnál csak két pozitív bírálat után;
+- engedélyt csak bejelentkezett, handler szerepű elnök állíthat ki; nem egységes bírálatok mellett is kiadhatja (felülbírálás), de a rendszer erre figyelmeztet, és a döntés naplózva van;
 - minden kiállítás és visszavonás naplózott REMS-esemény (ki, mikor);
 - az érvényesség mindig a hivatalos oldalon ellenőrizhető, nem a PDF-en – egy hamisított PDF linkje nem létező vagy más engedélyre mutat.
 

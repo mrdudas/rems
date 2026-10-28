@@ -41,7 +41,7 @@ Megjegyzés a fordításhoz: a telepített `hu.edn` a REMS „resource” fogalm
 | 1 | **Virtuális engedély** – számkiosztás, nyilvános ellenőrző oldal, PDF, visszavonás | A REMS-nek nincs engedélyfogalma, csak a kérvény teljes PDF-exportja. Lásd [virtualis-engedely.md](virtualis-engedely.md). |
 | 2 | **Bírálati lap mint űrlap**: négy kötelező döntés, indoklás, kérelmezőnek szóló és csak elnöknek szóló rész | A REMS `review` csak szabad szöveg és melléklet. |
 | 3 | **Névtelen továbbítás**: a bírálók kérelmezőnek szóló észrevételei bíráló neve nélkül jussanak el a kérelmezőhöz | A REMS-ben a bírálat a kérelmezőnek nem látszik. Ideiglenes megoldás: az elnök bemásolja a `return` megjegyzésébe. |
-| 4 | **Engedély csak két pozitív bírálat után** (normál eljárásnál) | Védőkorlát a jóváhagyásra. |
+| 4 | **Figyelmeztetés nem egységes bírálatnál** (normál eljárásnál) | Az elnök felülbírálhatja a bírálókat, ezért nem tiltás, hanem figyelmeztetés jóváhagyáskor és elutasításkor, ha a két bírálat nem egyezik vagy hiányzik. |
 | 5 | **Illetékes társelnök tagintézményenként**: értesítés csak neki, az engedélyen az ő neve | A REMS minden handlert értesít. Workflow-nként egy intézmény is megoldaná, de az ~20 workflow-t jelent. |
 | 6 | **Archív másolat** az elnok@epkeb.hu címre, csatolmánnyal | A gyári e-mail-értesítő nem tud másolatot és csatolmányt. Alternatíva: `:event-notification-targets` egy kis archiváló szolgáltatásra. |
 | 7 | **Határidők és emlékeztetők**: 20/10/14/30 nap, előtte 1 héttel és 3 nappal, késéskor | A REMS-ben nincs bírálati határidő. |

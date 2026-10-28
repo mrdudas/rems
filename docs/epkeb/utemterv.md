@@ -18,7 +18,7 @@
 
 - Bírálati lap űrlapként, négy döntéssel és kétféle láthatóságú szöveggel.
 - Névtelen továbbítás a kérelmezőnek.
-- Engedély csak két pozitív bírálat után.
+- Az elnök felülbírálhatja a bírálókat: jóváhagyáskor és elutasításkor figyelmeztetés, ha a bírálatok nem egységesek vagy hiányoznak.
 
 ### 4. Értesítések és határidők
 
@@ -56,6 +56,7 @@
 | Űrlap | nem a PDF másolata; újragondolva, duplikációk nélkül |
 | Bírálókiosztás | egyelőre kézi, listából választva; jelentkezés is lehetséges; terhelés arányos |
 | Elutasított kérelem | később újra beadható (új eljárás) |
+| Eltérő bírálatok | az elnök felülbírálhatja a bírálókat (engedélyt ad vagy elutasít); a rendszer figyelmeztet, ha a bírálói vélemény nem egységes |
 
 ## Nyitott kérdések
 

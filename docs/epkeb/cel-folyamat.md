@@ -62,6 +62,8 @@ Ez a dokumentum a rendszer **cél-folyamatát** írja le. Nem a mostani PDF-űrl
     - **valamelyik Kiegészítés kérése** (és egyik sem elutasítás) → a kérelem visszakerül a kérelmezőhöz, a bírálók kérelmezőnek szóló észrevételeivel, **névtelenül**. 30 nap határidő. A kiegészített kérelem **ugyanazzal a sorszámmal** visszakerül **ugyanahhoz a két bírálóhoz**, 10 napos határidővel. Ez többször is ismétlődhet;
     - **valamelyik Elutasítás** → a kérelem a **teljes bizottság** elé kerül, minden tag szavaz. Egyszerű többség dönt, szavazategyenlőség esetén a soros elnök szavazata dönt;
     - a bíráló a teljes bizottság véleményét kéri → ugyanez a szavazás.
+
+    Ez a szokásos menet, de **az elnök felülbírálhatja a bírálókat**: eltérő vagy nem egyező bírálatok mellett is kiadhatja az engedélyt vagy elutasíthatja a kérelmet. A rendszer ezt nem tiltja, de jóváhagyáskor és elutasításkor **figyelmeztet**, ha a bírálói vélemény nem egységes (vagy ha egy bírálat még hiányzik).
 13. Ha a kérelmező 30 napon belül nem nyújtja be a kiegészítést, az eljárás felfüggesztődik (a kérelem lezárul).
 
 ### 6. Elutasítás után
