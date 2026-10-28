@@ -125,12 +125,14 @@
 
 (defn- week-header [line]
   [:div {:style {:position :relative :height 22 :font-size "0.75rem" :color "#666"}}
-   (for [week (range (- (quot days-before 7)) (inc (quot days-after 7)))
+   ;; the end of the timeline has no label, since it would not fit
+   (for [week (range (- (quot days-before 7)) (quot days-after 7))
          :let [t (+ (:today line) (* week 7 day-ms))]]
      ^{:key week}
      [:span {:style {:position :absolute
                      :left (str (position line t) "%")
-                     :transform "translateX(-50%)"}}
+                     :transform "translateX(-50%)"
+                     :white-space :nowrap}}
       (if (zero? week)
         (text :t.reviewer-calendar/today)
         (subs (format-date t) 5))])])
