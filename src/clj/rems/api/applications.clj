@@ -8,6 +8,7 @@
             [rems.service.attachment]
             [rems.service.command :as command]
             [rems.service.licenses]
+            [rems.service.reviewer-calendar]
             [rems.service.reviewer-pool]
             [rems.service.users]
             [rems.api.util :as api-util :refer [extended-logging]] ; required for route :roles
@@ -20,7 +21,8 @@
             [rems.util :refer [getx-user-id]]
             [ring.util.http-response :refer :all]
             [schema.core :as s])
-  (:import java.io.ByteArrayInputStream))
+  (:import java.io.ByteArrayInputStream
+           org.joda.time.DateTime))
 
 ;; Response models
 
@@ -39,6 +41,25 @@
 
 (s/defschema Reviewers
   [Reviewer])
+
+(s/defschema CalendarReview
+  {:application/id s/Int
+   :application/external-id (s/maybe s/Str)
+   :application/description (s/maybe s/Str)
+   :review/requested DateTime
+   :review/deadline (s/maybe DateTime)
+   :review/overdue-days s/Int})
+
+(s/defschema ReviewerCalendar
+  {:reviewers [(merge schema-base/UserWithAttributes
+                      {:reviewer/organization s/Str
+                       :reviewer/status schema-base/ReviewerStatus
+                       :reviews [CalendarReview]})]
+   :waiting-applications [{:application/id s/Int
+                           :application/external-id (s/maybe s/Str)
+                           :application/description (s/maybe s/Str)
+                           :application/organization (s/maybe s/Str)
+                           :application/reviewers [schema-base/UserId]}]})
 
 (s/defschema Decider
   schema-base/UserWithAttributes)
@@ -185,6 +206,12 @@
       :query-params [{application-id :- (describe s/Int "the application to review") nil}]
       :return Reviewers
       (ok (get-reviewers application-id)))
+
+    (GET "/reviewer-calendar" []
+      :summary "The open reviews of the reviewer pool with their deadlines, and the applications waiting for reviewers, for the applications that the user handles. Only with `:reviewer-pool-organization`."
+      :roles #{:handler}
+      :return (s/maybe ReviewerCalendar)
+      (ok (rems.service.reviewer-calendar/get-calendar (getx-user-id))))
 
     (GET "/export" []
       :summary "Export all submitted applications of a given form as CSV"

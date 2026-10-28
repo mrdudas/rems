@@ -1,5 +1,6 @@
 (ns ^:integration rems.api.test-applications
-  (:require [clj-time.core :as time]
+  (:require [clj-time.coerce]
+            [clj-time.core :as time]
             [clojure.java.io :as io]
             [clojure.string :as str]
             [clojure.test :refer [deftest is testing use-fixtures]]
@@ -3561,4 +3562,40 @@
                         (filter #(= "pool-reviewer1" (:userid %)))
                         first
                         :reviewer/stats)
-                   (select-keys [:reviews-this-year :in-progress]))))))))
+                   (select-keys [:reviews-this-year :in-progress])))))
+      (testing "the reviewer calendar"
+        (let [calendar (api-call :get "/api/applications/reviewer-calendar" nil +test-api-key+ "handler")
+              reviews-of (fn [calendar userid]
+                           (->> (:reviewers calendar)
+                                (filter #(= userid (:userid %)))
+                                first
+                                :reviews))]
+          (testing "shows the open reviews with the deadline"
+            (is (= [[app-id 0]]
+                   (->> (reviews-of calendar "pool-reviewer1")
+                        (mapv (juxt :application/id :review/overdue-days)))))
+            (is (= 20 (let [review (first (reviews-of calendar "pool-reviewer1"))]
+                        (time/in-days (time/interval (clj-time.coerce/from-string (:review/requested review))
+                                                     (clj-time.coerce/from-string (:review/deadline review))))))))
+          (testing "shows the active reviewers without reviews"
+            (is (= [] (reviews-of calendar "pool-reviewer2")))
+            (is (nil? (reviews-of calendar "pool-reviewer3"))))
+          (testing "lists the application as waiting for reviewers"
+            (is (= [{:application/id app-id :application/reviewers ["pool-reviewer1"]}]
+                   (->> (:waiting-applications calendar)
+                        (filter #(= app-id (:application/id %)))
+                        (mapv #(select-keys % [:application/id :application/reviewers]))))))))
+      (testing "an overdue review"
+        (test-helpers/command! {:type :application.command/request-review
+                                :application-id app-id
+                                :actor "handler"
+                                :reviewers ["pool-reviewer2"]
+                                :comment ""
+                                :time (time/minus (time/now) (time/days 25))})
+        (is (= [[app-id 5]]
+               (->> (api-call :get "/api/applications/reviewer-calendar" nil +test-api-key+ "handler")
+                    :reviewers
+                    (filter #(= "pool-reviewer2" (:userid %)))
+                    first
+                    :reviews
+                    (mapv (juxt :application/id :review/overdue-days)))))))))

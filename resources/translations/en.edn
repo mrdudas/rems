@@ -723,6 +723,7 @@
           :title ""}
   :missing "Missing translation %1"
   :navigation {:actions "Actions"
+               :reviewer-calendar "Reviewer calendar"
                :administration "Administration"
                :applications "Applications"
                :catalogue "Catalogue"
@@ -755,6 +756,20 @@
             :settings "Settings"
             :warning-about-missing-email [:<> "You will need to " [:a {:href "/profile"} "add an email address to your settings"] ", so that you can receive notifications about your applications."]
             :your-details "Your user details"}
+  :reviewer-calendar {:already-requested "Requested"
+                      :deadline "deadline %1"
+                      :intro "The open reviews of the reviewer pool. A bar lasts from the request to the deadline; a red part shows how many days the review is overdue. Click a bar to open the application."
+                      :no-waiting-applications "No applications are waiting for reviewers."
+                      :not-requestable "Cannot review this application: not an active member of the pool, or delegated by the organization of the application."
+                      :not-requestable-short "Not available"
+                      :open-reviews "%1 open"
+                      :overdue "%1 days overdue"
+                      :request "Request"
+                      :request-reviews "Request reviews"
+                      :request-reviews-intro "Choose an application, then request a review from a reviewer in the calendar below."
+                      :reviewers-requested "%1 reviewers requested"
+                      :select-application "Application waiting for reviewers"
+                      :today "Today"}
   :roles {:anonymous-handler "Committee"
           :applicant "Contact person"
           :decider "Decider"

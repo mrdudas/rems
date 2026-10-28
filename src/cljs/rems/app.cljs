@@ -9,6 +9,7 @@
             [reagent.core :as r]
             [reagent.dom :as rd]
             [rems.actions :refer [actions-page]]
+            [rems.reviewer-calendar :refer [reviewer-calendar-page]]
             [rems.actions.accept-invitation :refer [accept-invitation-page]]
             [rems.accept-invitation :as accept-invitation]
             [rems.administration.blacklist :refer [blacklist-page]]
@@ -267,6 +268,7 @@
    :catalogue catalogue-page
    :guide guide-page
    :actions actions-page
+   :reviewer-calendar reviewer-calendar-page
    :application application-page
    :new-application new-application-page
    :applications applications-page
@@ -371,6 +373,10 @@
 (secretary/defroute "/actions" []
   (rf/dispatch [:rems.actions/enter-page])
   (rf/dispatch [:set-active-page :actions]))
+
+(secretary/defroute "/reviewer-calendar" []
+  (rf/dispatch [:rems.reviewer-calendar/enter-page])
+  (rf/dispatch [:set-active-page :reviewer-calendar]))
 
 (secretary/defroute "/invitation/accept-invitation" {{token :token type :type} :query-params}
   (rf/dispatch [:after-translations-are-loaded

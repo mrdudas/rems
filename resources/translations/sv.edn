@@ -620,6 +620,7 @@
           :title ""}
   :missing "Översättning hittades inte: %1"
   :navigation {:actions "Funktioner"
+               :reviewer-calendar "Granskarkalender"
                :administration "Administration"
                :applications "Ansökningar"
                :catalogue "Katalog"
@@ -651,6 +652,20 @@
             :settings "Inställningar"
             :warning-about-missing-email [:<> "Du måste " [:a {:href "/profile"} "lägga till din e-postadress i dina inställningar"] ", för att kunna ta emot meddelanden om din ansökan."]
             :your-details "Dina användardetaljer"} ; TODO check
+  :reviewer-calendar {:already-requested "Begärd"
+                      :deadline "tidsfrist %1"
+                      :intro "Granskarpoolens pågående granskningar. Stapeln varar från begäran till tidsfristen; den röda delen visar hur många dagar granskningen är försenad. Klicka på en stapel för att öppna ansökan."
+                      :no-waiting-applications "Inga ansökningar väntar på granskare."
+                      :not-requestable "Kan inte granska denna ansökan: inte aktiv medlem i poolen eller utsedd av ansökans organisation."
+                      :not-requestable-short "Inte tillgänglig"
+                      :open-reviews "%1 pågående"
+                      :overdue "%1 dagar försenad"
+                      :request "Begär"
+                      :request-reviews "Begär granskningar"
+                      :request-reviews-intro "Välj en ansökan och begär sedan granskning av en granskare i kalendern nedan."
+                      :reviewers-requested "%1 granskare begärda"
+                      :select-application "Ansökan som väntar på granskare"
+                      :today "I dag"}
   :roles {:anonymous-handler :sv.t.roles/handler
           :applicant "Sökande"
           :decider "Beslutare"

@@ -96,6 +96,10 @@
      (when (some roles/+handling-roles+ user-roles)
        [nav-link "/actions" (text :t.navigation/actions)])
 
+     (when (and (some #{:handler} user-roles)
+                (:reviewer-pool-organization @rems.globals/config))
+       [nav-link "/reviewer-calendar" (text :t.navigation/reviewer-calendar)])
+
      (when (roles/show-admin-pages? user-roles)
        [nav-link "/administration" (text :t.navigation/administration)])
 

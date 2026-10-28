@@ -620,6 +620,7 @@
           :title ""}
   :missing "Käännös puuttuu %1"
   :navigation {:actions "Toiminnot"
+               :reviewer-calendar "Arvioijakalenteri"
                :administration "Ylläpito"
                :applications "Hakemukset"
                :catalogue "Aineistoluettelo"
@@ -651,6 +652,20 @@
             :settings "Asetukset"
             :warning-about-missing-email [:<> "Sinun on " [:a {:href "/profile"} "lisättävä sähköpostiosoite asetuksiisi"] ", jotta voisit vastaanottaa ilmoituksia hakemuksistasi."]
             :your-details "Käyttäjätietosi"}
+  :reviewer-calendar {:already-requested "Pyydetty"
+                      :deadline "määräaika %1"
+                      :intro "Arvioijapoolin keskeneräiset arviot. Palkki kestää pyynnöstä määräaikaan; punainen osa näyttää, montako päivää arvio on myöhässä. Avaa hakemus napsauttamalla palkkia."
+                      :no-waiting-applications "Arvioijia odottavia hakemuksia ei ole."
+                      :not-requestable "Ei voi arvioida tätä hakemusta: ei poolin aktiivinen jäsen tai hakemuksen organisaation nimeämä."
+                      :not-requestable-short "Ei käytettävissä"
+                      :open-reviews "%1 kesken"
+                      :overdue "%1 päivää myöhässä"
+                      :request "Pyydä"
+                      :request-reviews "Pyydä arvioita"
+                      :request-reviews-intro "Valitse hakemus ja pyydä arvio alla olevasta kalenterista."
+                      :reviewers-requested "%1 arvioijaa pyydetty"
+                      :select-application "Arvioijia odottava hakemus"
+                      :today "Tänään"}
   :roles {:anonymous-handler :fi.t.roles/handler
           :applicant "Hakija"
           :decider "Päättäjä"

@@ -486,6 +486,12 @@
  ;; default) disables the pool.
  :reviewer-pool-organization nil
 
+ ;; The deadline of a review in days from the request, shown in the reviewer
+ ;; calendar, and of a re-review requested after the application was returned
+ ;; for changes. Only used with `:reviewer-pool-organization`.
+ :review-deadline-days 20
+ :re-review-deadline-days 10
+
  ;; When true, members of an application (e.g. the researcher invited by an
  ;; organization contact) may also fill in and save the draft, and mark it
  ;; ready for submission, which notifies the applicant. Submitting is still

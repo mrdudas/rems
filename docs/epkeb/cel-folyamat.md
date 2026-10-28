@@ -97,7 +97,7 @@ A REMS processing state funkciója (`:enable-processing-states`) a finomabb áll
 | Felügyelői jóváhagyás | nincs | **kész**: `invite-supervisor`, `designate-supervisor` és `approve-supervision`, a benyújtás feltétele; a felügyelő nem szerkeszt |
 | Benyújtás, visszaadás, másolat elutasítás után | `submit`, `return`, `copy-as-new` | – |
 | Bírálói kör, terhelés, saját intézmény kizárása | `request-review` bármely felhasználóra | **kész**: bírálói kör az `EPKEB` szervezeten (`:reviewer-pool-organization`), bírálat csak aktív körtagtól, a kérelmező tagintézményének delegáltjától nem; bírálóválasztó statisztikával (lásd [jogosultsagok.md](jogosultsagok.md#elkészült-fejlesztések)). A jelentkezés nincs meg. |
-| Bírálói naptár | nincs | **fejlesztés**: a bírálók folyamatban lévő bírálatai határidővel, a késés pirossal, felkérés ugyanonnan; csak az elnököknek és a titkárnak |
+| Bírálói naptár | nincs | **kész**: „Bírálói naptár” menüpont az elnököknek és a titkárnak (lásd [jogosultsagok.md](jogosultsagok.md#elkészült-fejlesztések)). Az emlékeztető e-mailek még hiányoznak. |
 | Külső szakértő egy kérdéshez | nincs | **fejlesztés**: az elnök vagy a titkár vonja be, nem bíráló |
 | Bírálói kérdés és kérelmezői válasz | a bíráló `remark`-ja lehet nyilvános, de a kérelmező nem tud válaszolni | **kész**: `:enable-applicant-remarks`, a kérelmező oldal válasza mindig nyilvános, értesítés az elnököknek és a bírálóknak (lásd [jogosultsagok.md](jogosultsagok.md#elkészült-fejlesztések)) |
 | Strukturált bírálat javaslattal | `review` (szabad szöveg) + kísérleti `vote` (elfogad/elutasít, `:reviewers-vote`) | **fejlesztés**: bírálati lap űrlap, három javaslattal |

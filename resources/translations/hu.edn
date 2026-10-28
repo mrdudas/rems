@@ -723,6 +723,7 @@
           :title ""}
   :missing "Hiányzó fordítás: %1"
   :navigation {:actions "Műveletek"
+               :reviewer-calendar "Bírálói naptár"
                :administration "Adminisztráció"
                :applications "Kérelmek"
                :catalogue "Katalógus"
@@ -755,6 +756,20 @@
             :settings "Beállítások"
             :warning-about-missing-email [:<> "Szüksége lesz egy " [:a {:href "/profile"} "e-mail cím hozzáadására a beállításoknál"] ", hogy értesítéseket kaphasson a kérelmeiről."]
             :your-details "Az Ön adatai"}
+  :reviewer-calendar {:already-requested "Felkérve"
+                      :deadline "határidő: %1"
+                      :intro "A bírálói kör folyamatban lévő bírálatai. A sáv a felkéréstől a határidőig tart; a piros rész mutatja, hány napja késik a bírálat. A sávra kattintva megnyílik a kérelem."
+                      :no-waiting-applications "Nincs bírálóra váró kérelem."
+                      :not-requestable "Ezt a kérelmet nem bírálhatja: nem aktív tagja a bírálói körnek, vagy a kérelmező tagintézményének delegáltja."
+                      :not-requestable-short "Nem kérhető"
+                      :open-reviews "%1 folyamatban"
+                      :overdue "%1 nap késés"
+                      :request "Felkérés"
+                      :request-reviews "Bírálók felkérése"
+                      :request-reviews-intro "Válasszon kérelmet, majd az alábbi naptárban kérje fel a bírálót."
+                      :reviewers-requested "%1 bíráló felkérve"
+                      :select-application "Bírálóra váró kérelem"
+                      :today "Ma"}
   :roles {:anonymous-handler "Bizottság"
           :applicant "Kapcsolattartó"
           :decider "Döntéshozó"
