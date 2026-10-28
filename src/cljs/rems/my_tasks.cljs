@@ -16,8 +16,10 @@
 
 (fetcher/reg-fetcher ::my-tasks "/api/applications/my-tasks")
 
-(defn- date-text [s]
-  (some-> s str (subs 0 10)))
+(defn- date-text
+  "The ISO date of a time, which is a string or a date object."
+  [t]
+  (some-> t js/Date. .toISOString (subs 0 10)))
 
 (defn- days-left [deadline]
   (when deadline
@@ -69,7 +71,8 @@
      [:div {:style {:flex "0 0 6rem" :font-weight 700}} (:application/external-id task)]
      [:div {:style {:flex "1 1 auto" :min-width 0}}
       [:div {:style {:overflow :hidden :text-overflow :ellipsis :white-space :nowrap}}
-       (or (:application/description task) [:span.text-muted (text :t.my-tasks/no-title)])]]
+       (or (not-empty (:application/description task))
+           [:span.text-muted (text :t.my-tasks/no-title)])]]
      [:div {:style (merge {:flex "0 0 auto"
                            :padding "0.25rem 0.75rem"
                            :border "1px solid"
