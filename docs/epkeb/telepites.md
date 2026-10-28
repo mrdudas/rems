@@ -63,6 +63,7 @@ Az állapot 2026-10-27-i felmérése. A beállításokat (űrlapok, workflow-k, 
 :enable-supervisor-approval true
 :enable-applicant-remarks true
 :enable-processing-states true
+:reviewer-pool-organization "EPKEB"
 :disable-commands [:application.command/change-resources
                    :application.command/assign-external-id
                    :application.command/add-licenses]

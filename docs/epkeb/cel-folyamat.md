@@ -51,7 +51,7 @@ Ez a dokumentum a rendszer **cél-folyamatát** írja le. Nem a mostani PDF-űrl
 
 10. A bíráló a kérelem oldalán:
     - **kérdezhet / információt kérhet** a kérelmezőtől. A kérdés névtelenül jelenik meg, a kérelmező a rendszerben válaszol; a kérelem közben nem kerül vissza;
-    - **külső szakértőt** vonhat be; erről az elnök értesítést kap;
+    - egy **kérdés megválaszolásához külső szakértőt** kérhet. A szakértő **nem bíráló**: nem tagja a bírálói körnek, és nem ad le bírálatot. A bevonásáról az elnök vagy a titkár dönt, és ő vonja be (tervezett: olvasási és megjegyzési jog a kérelemhez);
     - leadja a **bírálatot** a bírálati lap szerint: javaslat (*Jóváhagyás* / *Kiegészítés kérése* / *Elutasítás*, vagy *az EPKEB nem illetékes*), indoklás, a kérelmezőnek szóló észrevételek, az elnöknek szóló megjegyzések.
 11. Emlékeztető a határidő előtt 1 héttel és 3 nappal, késés esetén az illetékes elnöknek is.
 
@@ -96,7 +96,9 @@ A REMS processing state funkciója (`:enable-processing-states`) a finomabb áll
 | „Beadható” jelzés | nincs | **kész**: `mark-ready` parancs, értesítés a kapcsolattartónak (lásd [jogosultsagok.md](jogosultsagok.md#elkészült-fejlesztések)) |
 | Felügyelői jóváhagyás | nincs | **kész**: `invite-supervisor`, `designate-supervisor` és `approve-supervision`, a benyújtás feltétele; a felügyelő nem szerkeszt |
 | Benyújtás, visszaadás, másolat elutasítás után | `submit`, `return`, `copy-as-new` | – |
-| Bírálói kör, jelentkezés, terhelés, saját intézmény kizárása | `request-review` bármely felhasználóra | **fejlesztés** |
+| Bírálói kör, terhelés, saját intézmény kizárása | `request-review` bármely felhasználóra | **kész**: bírálói kör az `EPKEB` szervezeten (`:reviewer-pool-organization`), bírálat csak aktív körtagtól, a kérelmező tagintézményének delegáltjától nem; bírálóválasztó statisztikával (lásd [jogosultsagok.md](jogosultsagok.md#elkészült-fejlesztések)). A jelentkezés nincs meg. |
+| Bírálói naptár | nincs | **fejlesztés**: a bírálók folyamatban lévő bírálatai határidővel, a késés pirossal, felkérés ugyanonnan; csak az elnököknek és a titkárnak |
+| Külső szakértő egy kérdéshez | nincs | **fejlesztés**: az elnök vagy a titkár vonja be, nem bíráló |
 | Bírálói kérdés és kérelmezői válasz | a bíráló `remark`-ja lehet nyilvános, de a kérelmező nem tud válaszolni | **kész**: `:enable-applicant-remarks`, a kérelmező oldal válasza mindig nyilvános, értesítés az elnököknek és a bírálóknak (lásd [jogosultsagok.md](jogosultsagok.md#elkészült-fejlesztések)) |
 | Strukturált bírálat javaslattal | `review` (szabad szöveg) + kísérleti `vote` (elfogad/elutasít, `:reviewers-vote`) | **fejlesztés**: bírálati lap űrlap, három javaslattal |
 | Kiegészítés után vissza ugyanahhoz a két bírálóhoz | kézzel `request-review` | **fejlesztés**: automatikus újrafelkérés |
