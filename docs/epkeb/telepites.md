@@ -80,9 +80,9 @@ Az állapot 2026-10-27-i felmérése. A beállításokat (űrlapok, workflow-k, 
 | Szervezet `EPKEB` | kapcsolattartó és illetékes elnök beállítva |
 | Workflow #3 „próba munkafolyamat” (normál eljárás) | *anonymize handling* be; tiltások: `approve` a bírálónak, `copy-as-new` a tagnak, `change-applicant`, `redact-attachments` a bírálónak; állapotcímkék: Bírálók kijelölve, Bírálók felkérve, Módosítás alatt, Bizottsági szavazás |
 | Workflow #4 „Rövidített eljárás” | *anonymize handling* be; tiltások: `copy-as-new` a tagnak, `change-applicant`, `request-review`, `invite-reviewer`, `request-decision`, `invite-decider`, `vote` |
-| Katalóguselem #4 „Normál eljárás” (2026-10-28 óta, a #2 helyett) | workflow #3, űrlap #5 |
-| Katalóguselem #5 „Rövidített eljárás” (2026-10-28 óta, a #3 helyett) | workflow #4, űrlap #5 (az új űrlap elkészültéig) |
 | Űrlap #5 | az #3 másolata, „A kutatás címe” címmezőként (description), így a listákban a kérelem címe látszik. A használatban lévő űrlap nem szerkeszthető, ezért kellett másolat. |
+| Workflow #5 „próba munkafolyamat” és #6 „Rövidített eljárás” | a #3 és #4 másolata (elnökök, nyilatkozatok, tiltások, névtelenítés, állapotcímkék) az #5 űrlappal. A munkafolyamathoz csatolt űrlap utólag nem cserélhető, és a katalóguselem űrlapja a munkafolyamaté mellé kerül (két űrlap), ezért kellett új munkafolyamat. A #3 és #4 neve „(régi)”; a korábbi kérelmek azokon maradnak. |
+| Katalóguselem #6 „Normál eljárás” és #7 „Rövidített eljárás” (2026-10-28 óta) | workflow #5 és #6, saját űrlap nélkül |
 | Kérelem 2026/8 | a kapcsolattartós létrehozás próbája |
 
 ## Upstream verzió
