@@ -49,13 +49,13 @@ Az áttekintés (2026-10-28) a kapcsolattartó, az elnök és a bíráló nézet
 | Mit láttunk | Javítás |
 |---|---|
 | Fekete dobozfejlécek, egyforma fekete gombok, üres sáv az oldal tetején | **kész:** EPKEB-téma |
-| A „Cím” oszlop mindenhol üres | „A kutatás címe” mezőt az űrlapon címmezővé (description) állítani |
-| Az állapotsáv „Kérelem → Jóváhagyás → Jóváhagyva” | EPKEB-lépések: Kitöltés → Benyújtva → Bírálat → Döntés → Engedély |
-| A bíráló és az elnök is a kérelmezőnek szóló bevezetőt látja („Töltse ki és nyújtsa be…”), benne a REMS-es „hozzáférés megszerzése” | szerepenként más bevezető, a „hozzáférés” szóhasználat kigyomlálása (a feltételeknél is: „az eljárások eléréséhez”) |
-| Az elnöknél kilenc gomb, köztük a nem használt „Döntés kérése” | a nem használt műveletek tiltása a munkafolyamatban; a fő művelet kiemelése |
-| A katalógus a nem kapcsolattartóknak üres („Nincsenek sorok”) | a menüpont elrejtése, akinek nem kell |
-| „Üdvözlettel: REMS” a levelekben, „Analyst Platform – EPKEB” a láblécben | EPKEB-aláírás és -lábléc |
-| Kézi mentés a hosszú űrlapon | automatikus mentés (`:enable-autosave`) |
+| A „Cím” oszlop mindenhol üres | **kész** (próbarendszer): új űrlap (#5) címmezővel, a két eljárás erre állítva; a régi kérelmeknél az elnök figyelmeztetést lát, hogy a régi eljárás kivezetett |
+| Az állapotsáv „Kérelem → Jóváhagyás → Jóváhagyva” | **kész**: Kitöltés → Bírálat és döntés → Engedély |
+| A bíráló és az elnök is a kérelmezőnek szóló bevezetőt látja („Töltse ki és nyújtsa be…”), benne a REMS-es „hozzáférés megszerzése” | **kész**: külön bevezető az elnököknek és bírálóknak; „felhasználási feltételek” helyett „nyilatkozatok”, a „hozzáférés” helyett „engedély” |
+| Az elnöknél kilenc gomb, köztük a nem használt „Döntés kérése” | **kész**: a „Döntés kérése” tiltva (`:disable-commands`); szerepenként a fő művelet kék gomb (kutató: beadható jelzés, felügyelő: jóváhagyás, bíráló: bírálat, elnök: bírálat kérése, jóváhagyás vagy elutasítás) |
+| A katalógus a nem kapcsolattartóknak üres („Nincsenek sorok”) | **kész**: csak kapcsolattartónak és adminnak látszik; a többiek belépés után a kérelmeikre érkeznek |
+| „Üdvözlettel: REMS” a levelekben, „Analyst Platform – EPKEB” a láblécben | **kész** |
+| Kézi mentés a hosszú űrlapon | **kész** (`:enable-autosave true`) |
 
 ### 2. Szerepenkénti teendőlista
 
