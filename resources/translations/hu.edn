@@ -11,7 +11,7 @@
             :add-licenses "Nyilatkozatok hozzáadása"
             :add-member "Kutató hozzáadása"
             :approve "Jóváhagyás"
-            :approve-end-date "Hozzáférési jogok lejárati dátuma (opcionális)"
+            :approve-end-date "Az engedély érvényességének vége (opcionális)"
             :approve-reject "Jóváhagyás vagy elutasítás"
             :mark-ready "Beadhatónak jelölöm"
             :mark-ready-intro "A kapcsolattartó értesítést kap, hogy a kérelem benyújtható. Ha van felügyelő, aki még nem hagyta jóvá a kérelmet, előbb ő kap értesítést."
@@ -48,7 +48,7 @@
                      :organization-does-not-exist "A(z) \"%1\" szervezet nem létezik"
                      :validation-errors "Ellenőrizze a következő hibákat:"
                      :validation-warnings "Ellenőrizze a következőket benyújtás előtt:"
-                     :entitlement-end-not-in-future "A hozzáférési jogok lejárati dátumának a jövőben kell lennie."}
+                     :entitlement-end-not-in-future "Az engedély érvényességének vége a jövőben kell legyen."}
             :handled-applications "Feldolgozott kérelmek"
             :handled-applications-count "%:count% feldolgozott kérelem van."
             :invite-member "Kutató meghívása"
@@ -236,7 +236,7 @@
                  :duos {:validation {:missing-duo-codes "Az eljárásokban megadott Data Use Ontology kódok hiányoznak a kérelemből:"}}
                  :empty "Nincsenek kérelmek."
                  ;; %1 - date
-                 :entitlement-end "A hozzáférési jogok lejárnak: %1."
+                 :entitlement-end "Az engedély érvényes eddig: %1."
 
                  ;; Format parameters for all events:
                  ;; %1 - %:event-actor% - name of event actor

@@ -11,7 +11,7 @@
             :add-licenses "Add declarations"
             :add-member "Add member"
             :approve "Approve"
-            :approve-end-date "Date for access rights to expire (optional)"
+            :approve-end-date "End of the validity of the approval (optional)"
             :approve-reject "Approve or reject"
             :mark-ready "Mark as ready for submission"
             :mark-ready-intro "The contact person will be notified that the application can be submitted. If there is a supervisor who has not approved the application yet, the supervisor is notified first."
@@ -48,7 +48,7 @@
                      :organization-does-not-exist "Organization \"%1\" does not exist"
                      :validation-errors "Check the following errors:"
                      :validation-warnings "Check the following before submit:"
-                     :entitlement-end-not-in-future "The expiration date for access rights must be in the future."}
+                     :entitlement-end-not-in-future "The end of the validity of the approval must be in the future."}
             :handled-applications "Processed applications"
             :handled-applications-count "There are %:count% processed applications."
             :invite-member "Invite member"
@@ -236,7 +236,7 @@
                  :duos {:validation {:missing-duo-codes "Data Use Ontology codes are specified in resources but missing from application:"}}
                  :empty "No applications."
                  ;; %1 - date
-                 :entitlement-end "Access rights end %1."
+                 :entitlement-end "The approval is valid until %1."
 
                  ;; Format parameters for all events:
                  ;; %1 - %:event-actor% - name of event actor

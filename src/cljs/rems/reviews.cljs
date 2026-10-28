@@ -3,7 +3,6 @@
   (see `:enable-review-recommendations`), and the questions and answers
   between the committee and the applicants."
   (:require [rems.collapsible :as collapsible]
-            [rems.common.application-util :refer [is-handling-user?]]
             [rems.globals]
             [rems.text :refer [localize-time localize-user text text-format]]))
 
@@ -175,11 +174,13 @@
                 [:div {:style {:white-space :pre-wrap :margin-top "0.35rem" :color "#3A4A60"}} comment])])])}])))
 
 (defn- committee-actor?
-  "Applicants see the handling users anonymized, without their roles."
+  "Everybody else than the applicant and the members is the committee. The
+  roles of the other users are not available in the UI, and the applicants
+  see the handling users anonymized."
   [application event]
-  (or (= "rems-handler" (:event/actor event))
-      (= "rems-handler" (get-in event [:event/actor-attributes :userid]))
-      (is-handling-user? application (:event/actor event))))
+  (let [applying-users (set (map :userid (cons (:application/applicant application)
+                                               (:application/members application))))]
+    (not (contains? applying-users (:event/actor event)))))
 
 (defn- question-or-answer? [application event]
   (and (= :application.event/remarked (:event/type event))

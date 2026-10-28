@@ -95,7 +95,7 @@
                                                      :name "Bob Bond"}
                             :application/decider {:email "user@example.com"
                                                   :name "User Urquhart"}})))
-    (is (= "Bob Bond approved the application. Access rights end 2020-01-02."
+    (is (= "Bob Bond approved the application. The approval is valid until 2020-01-02."
            (localize-event {:event/type :application.event/approved
                             :event/actor "bob"
                             :event/actor-attributes {:userid "bob"
