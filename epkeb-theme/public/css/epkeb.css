@@ -172,10 +172,8 @@ h1 {
 .fields-readonly .application-field-label {
   display: block;
   margin-bottom: 0.3rem;
-  font-size: 0.8rem;
+  font-size: 0.9rem;
   font-weight: 600;
-  letter-spacing: 0.02em;
-  text-transform: uppercase;
   color: #5B6B80;
 }
 .fields-readonly div.form-control {
