@@ -107,6 +107,13 @@
  :oidc-logout-redirect-url "/"
  ;; Should REMS POST to the revocation_endpoint received from OIDC metadata?
  :oidc-perform-revoke-on-logout true
+ ;; Should the logout also end the session at the OIDC provider (RP-initiated
+ ;; logout through the `end_session_endpoint` of the OIDC metadata)? Then the
+ ;; user is redirected via the provider to `:oidc-logout-redirect-url`, which
+ ;; must be allowed as a post logout redirect URI of the client. Without this,
+ ;; the next login may happen silently as the same user, if the provider still
+ ;; has a session.
+ :oidc-end-session-on-logout false
  ;; Should REMS use `state` parameter in the OIDC login.
  ;; If set to `:csrf-token` then REMS will send the `state` parameter
  ;; and check the return value in the callback. (default is not to send)

@@ -14,7 +14,9 @@
             [rems.plugins :as plugins]
             [rems.service.users]
             [ring.util.response :refer [redirect]])
-  (:import [java.util UUID]
+  (:import [java.net URLEncoder]
+           [java.nio.charset StandardCharsets]
+           [java.util UUID]
            [java.time Instant]))
 
 (defn maybe-create-oidc-csrf-token []
@@ -205,6 +207,8 @@
                 (assoc :session (:session request))
                 (dissoc-in [:session :oidc-csrf-token]) ; cleanup, not used again
                 (assoc-in [:session :access-token] access-token)
+                ;; the id token is needed for ending the session at the IdP on logout
+                (cond-> (:oidc-end-session-on-logout env) (assoc-in [:session :id-token] id-token))
                 (assoc-in [:session :identity] user))))))
 
 (defn- oidc-revoke [token]
@@ -230,20 +234,58 @@
     (-> (redirect (login-url {:oidc-csrf-token oidc-csrf-token}))
         (update :session assoc :oidc-csrf-token oidc-csrf-token))))
 
+(defn- url-encode [s]
+  (URLEncoder/encode (str s) StandardCharsets/UTF_8))
+
+(defn- absolute-url [url]
+  (if (str/starts-with? url "http")
+    url
+    (str (getx env :public-url) (str/replace-first url #"^/" ""))))
+
+(defn end-session-url
+  "Returns the URL of the RP-initiated logout at the IdP, which ends the
+  session at the IdP too and then redirects to `redirect-url`, or nil if
+  it is not enabled or not supported."
+  [id-token redirect-url]
+  (when-let [endpoint (and (:oidc-end-session-on-logout env)
+                           id-token
+                           (:end_session_endpoint oidc-configuration))]
+    (str endpoint
+         "?id_token_hint=" (url-encode id-token)
+         "&client_id=" (url-encode (getx env :oidc-client-id))
+         "&post_logout_redirect_uri=" (url-encode (absolute-url redirect-url)))))
+
+(deftest test-end-session-url
+  (with-redefs [env {:oidc-end-session-on-logout true
+                     :oidc-client-id "rems-client"
+                     :public-url "https://rems.example.org/"}
+                oidc-configuration {:end_session_endpoint "https://idp.example.org/logout"}]
+    (is (= "https://idp.example.org/logout?id_token_hint=abc&client_id=rems-client&post_logout_redirect_uri=https%3A%2F%2Frems.example.org%2F"
+           (end-session-url "abc" "/")))
+    (is (= "https://idp.example.org/logout?id_token_hint=abc&client_id=rems-client&post_logout_redirect_uri=https%3A%2F%2Fexample.org%2Fbye"
+           (end-session-url "abc" "https://example.org/bye")))
+    (testing "not without an id token"
+      (is (nil? (end-session-url nil "/")))))
+  (with-redefs [env {:oidc-end-session-on-logout false}
+                oidc-configuration {:end_session_endpoint "https://idp.example.org/logout"}]
+    (testing "not when disabled"
+      (is (nil? (end-session-url "abc" "/"))))))
+
 (defn oidc-logout [request]
   (let [session (get request :session)
-        redirect-url (:oidc-logout-redirect-url env)]
+        redirect-url (or (end-session-url (:id-token session) (:oidc-logout-redirect-url env))
+                         (:oidc-logout-redirect-url env))]
     (when (:log-authentication-details env)
       (log/info "logging out" (:identity session)))
 
-    (when (:oidc-perform-revoke-in-logout env)
+    (when (:oidc-perform-revoke-on-logout env)
       (oidc-revoke (:access-token session)))
 
     (when (:log-authentication-details env)
       (log/info "redirecting to" redirect-url))
 
     (assoc (redirect redirect-url)
-           :session (dissoc session :identity :access-token))))
+           :session (dissoc session :identity :access-token :id-token))))
 
 (defroutes routes
   (GET "/oidc-login" req (oidc-login req))
