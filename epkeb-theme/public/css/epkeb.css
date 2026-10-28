@@ -153,3 +153,60 @@ h1 {
   background-color: var(--epkeb-blue-dark) !important;
   border-color: var(--epkeb-blue-dark) !important;
 }
+
+/* Read-only answers look like a document instead of a disabled form:
+   the questions as small headings and the answers as running text.
+   The application page marks read-only forms with .fields-readonly. */
+.fields-readonly {
+  max-width: 52rem;
+  padding: 0.25rem 0.5rem;
+}
+.fields-readonly .form-group.field {
+  margin-bottom: 0;
+  padding: 0.9rem 0;
+  border-bottom: 1px solid var(--epkeb-line);
+}
+.fields-readonly .form-group.field:last-child {
+  border-bottom: none;
+}
+.fields-readonly .application-field-label {
+  display: block;
+  margin-bottom: 0.3rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: #5B6B80;
+}
+.fields-readonly div.form-control {
+  height: auto;
+  min-height: 0;
+  padding: 0;
+  border: none;
+  background: transparent !important;
+  box-shadow: none;
+  color: var(--epkeb-navy);
+  font-size: 1rem;
+  line-height: 1.6;
+  white-space: pre-wrap;
+}
+.fields-readonly div.form-control:empty::after {
+  content: "–";
+  color: #9AA7B8;
+}
+.fields-readonly .list-group-item {
+  border: none;
+  padding: 0.1rem 0;
+  background: transparent;
+}
+/* section headings of the form */
+.fields-readonly h3 {
+  margin: 1.6rem 0 0.2rem;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--epkeb-navy);
+}
+/* tables of the form */
+.fields-readonly table {
+  font-size: 0.95rem;
+}

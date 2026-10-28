@@ -626,7 +626,8 @@
           [collapsible/component
            {:class "mb-3"
             :title (or (localized (:form/external-title form)) (text :t.form/application))
-            :always (into [:div.fields]
+            ;; read-only answers are shown like a document, see the theme
+            :always (into [:div.fields {:class (when @(rf/subscribe [::readonly?]) "fields-readonly")}]
                           (for [field (:form/fields form)]
                             [field-container (merge field
                                                     {:form/id form-id

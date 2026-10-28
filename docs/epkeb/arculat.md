@@ -89,6 +89,8 @@ Belépés után mindenki a saját teendőit lássa:
 - **Figyelmeztetés döntéskor**: a „Jóváhagyás vagy elutasítás” űrlapon, ha nincs meg minden bírálat, vagy a javaslatok eltérnek: hány bírálat hiányzik, milyen javaslatok vannak, és hogy az elnök ettől függetlenül dönthet. Ez a 2. tétel „elnöki felülbírálás figyelmeztetéssel” követelménye.
 - **„Kérdések és válaszok”** kártya mindenkinek: a bizottság nyilvános megjegyzései (a kérelmezőknek névtelenül, „Bizottság” néven) és a kérelmező oldal válaszai egy szálban, a bizottságé balra kékkel, a válaszok jobbra.
 
+- **Dokumentumnézet**: aki nem szerkeszti a kérelmet (bíráló, elnök, felügyelő, a benyújtott kérelemnél a kérelmező is), az űrlapot dokumentumként látja: a kérdések kis fejezetcímek, a válaszok keret nélküli folyó szöveg, a mezők között vékony elválasztó, az üres válasz „–”. A „(kötelező)” és a hosszkorlát csak szerkesztéskor látszik. A kérelemoldal a csak olvasható űrlapot `.fields-readonly` osztállyal jelöli, a megjelenést a téma CSS-e adja.
+
 Még nincs meg: a bíráló kérelmezőnek szóló észrevételei külön mezőben (a visszaküldésnél az elnök most kézzel másolja át), és a javaslat a levelekben.
 
 - „Bírálatok” kártya az elnöknek: ki bírál, állapot, határidő, javaslat; itt a figyelmeztetés, ha a bírálói vélemény nem egységes.

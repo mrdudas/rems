@@ -73,16 +73,20 @@
                      max-length :field/max-length
                      title :field/title
                      optional :field/optional
-                     :keys [fieldset]
+                     :keys [fieldset readonly]
                      :as opts}]
   (let [raw-title (localized title)
         info-text (localized info-text)
+        ;; the limits of the answer matter only when editing
         label (->> (conj []
                          (linkify raw-title)
-                         (when max-length (text-format :t.form/maxlength (str max-length)))
-                         (if optional
-                           (text :t.form/optional)
-                           (text :t.form/required)))
+                         (when (and max-length (not readonly))
+                           (text-format :t.form/maxlength (str max-length)))
+                         (when-not readonly
+                           (if optional
+                             (text :t.form/optional)
+                             (text :t.form/required))))
+                   (remove nil?)
                    (interpose " "))
         the-field-name (field-name opts)
         info-toggle (when (not-blank info-text)
