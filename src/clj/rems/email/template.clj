@@ -252,7 +252,10 @@
   (with-language (:default-language env)
     (let [invited-user (:application/member event)
           supervisor? (:invitation/supervisor event)
-          params {:applicant (application-util/get-applicant-name application)
+          ;; the supervisor is invited by whoever invited them, often a member
+          params {:applicant (if supervisor?
+                               (localize-user (:event/actor-attributes event))
+                               (application-util/get-applicant-name application))
                   :application-id (format-application-for-email application)
                   :invitation-url (invitation-link (:invitation/token event))
                   :recipient (application-util/get-member-name invited-user)}]

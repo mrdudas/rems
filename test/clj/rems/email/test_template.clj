@@ -178,6 +178,18 @@
                   :application/member {:name "Some Body" :email "somebody@example.com"}
                   :invitation/token "abc"}))))
 
+(deftest test-supervisor-invited
+  (is (= [{:to "somebody@example.com"
+           :subject "Invitation to be the supervisor of application 2001/3, \"Application title\""
+           :body "Dear Some Body,\n\nYou have been invited to be the supervisor of application 2001/3, \"Application title\", by Hannah Handler. As the supervisor, you approve the application before it is submitted.\n\nYou can view the application and accept the invitation at http://example.com/accept-invitation?token=abc"}]
+         (emails base-events
+                 {:application/id 7
+                  :event/type :application.event/member-invited
+                  :event/actor "handler"
+                  :application/member {:name "Some Body" :email "somebody@example.com"}
+                  :invitation/supervisor true
+                  :invitation/token "abc"}))))
+
 (deftest test-reviewing
   (let [request {:application/id 7
                  :event/type :application.event/review-requested
