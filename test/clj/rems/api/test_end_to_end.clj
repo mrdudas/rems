@@ -270,7 +270,7 @@
             (testing "email for approved application"
               (let [mail (last @email-atom)]
                 (is (= "applicant@example.com" (:to mail)))
-                (is (.contains (:subject mail) "approved"))
+                (is (.contains (:subject mail) "approval"))
                 (is (.startsWith (:body mail) "Dear E2E Applicant,")))
               (reset! email-atom []))
 

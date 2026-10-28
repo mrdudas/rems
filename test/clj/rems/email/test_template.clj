@@ -1,11 +1,13 @@
 (ns rems.email.test-template
-  (:require [clojure.test :refer [deftest is testing use-fixtures]]
+  (:require [clojure.string :as str]
+            [clojure.test :refer [deftest is testing use-fixtures]]
             [clj-time.core :as time]
             [mount.core :as mount]
             [rems.application.model :as model]
             [rems.common.application-util :as application-util]
             [rems.config]
             [rems.db.user-settings]
+            [rems.db.users]
             [rems.email.template :as template]
             [rems.locales]
             [rems.text]
@@ -159,12 +161,12 @@
   (let [mails (emails created-events submit-event)]
     (is (= #{"applicant" "assistant" "handler"} (email-recipients mails)))
     (is (= {:to-user "applicant"
-            :subject "Your application 2001/3, \"Application title\" has been submitted"
-            :body "Dear Alice Applicant,\n\nYour application 2001/3, \"Application title\" has been submitted. You will be notified by email when the application has been handled.\n\nYou can view the application at http://example.com/application/7"}
+            :subject "EPKEB application 2001/3, \"Application title\" – submitted"
+            :body "Dear Alice Applicant,\n\nApplication 2001/3, \"Application title\" has been submitted to the EPKEB. You will be notified by email of the result of the review.\n\nThe application: http://example.com/application/7"}
            (email-to "applicant" mails)))
     (is (= {:to-user "assistant"
-            :subject "(2001/3, \"Application title\") A new application has been submitted"
-            :body "Dear Amber Assistant,\n\nAlice Applicant has submitted a new application 2001/3, \"Application title\" to access resource(s) en title 11, en title 21.\n\nYou can review the application at http://example.com/application/7"}
+            :subject "EPKEB application 2001/3, \"Application title\" – new application"
+            :body "Dear Amber Assistant,\n\nAlice Applicant has submitted a new application (2001/3, \"Application title\", en title 11, en title 21).\n\nThe application: http://example.com/application/7"}
            (email-to "assistant" mails)))))
 
 (deftest test-member-invited
@@ -201,8 +203,8 @@
       (let [mails (emails base-events request)]
         (is (= #{"reviewer1" "reviewer2"} (email-recipients mails)))
         (is (= {:to-user "reviewer1"
-                :subject "(2001/3, \"Application title\") Review request"
-                :body "Dear reviewer1,\n\nHannah Handler has requested your review on application 2001/3, \"Application title\", submitted by Alice Applicant.\n\nYou can review the application at http://example.com/application/7"}
+                :subject "EPKEB application 2001/3, \"Application title\" – review request"
+                :body "Dear reviewer1,\n\nHannah Handler asks you to review application 2001/3, \"Application title\". The deadline of the review is .\n\nPlease let the chair know if you cannot review it by the deadline.\n\nThe application and the review form: http://example.com/application/7"}
                (email-to "reviewer1" mails)))))
     (testing "reviewed"
       (let [mails (emails requested-events {:application/id 7
@@ -212,8 +214,8 @@
                                             :application/comment "this is a comment"})]
         (is (= #{"assistant" "handler"} (email-recipients mails)))
         (is (= {:to-user "assistant"
-                :subject "(2001/3, \"Application title\") Application has been reviewed"
-                :body "Dear Amber Assistant,\n\nreviewer2 has reviewed the application 2001/3, \"Application title\", submitted by Alice Applicant.\n\nYou can review the application at http://example.com/application/7"}
+                :subject "EPKEB application 2001/3, \"Application title\" – a review has arrived"
+                :body "Dear Amber Assistant,\n\nreviewer2 has reviewed application 2001/3, \"Application title\".\n\nThe application: http://example.com/application/7"}
                (email-to "assistant" mails)))))))
 
 (deftest test-remarked
@@ -293,12 +295,12 @@
                                          :event/actor "handler"})]
         (is (= #{"applicant" "member" "somebody" "assistant"} (email-recipients mails)))
         (is (= {:to-user "applicant"
-                :subject "Your application 2001/3, \"Application title\" has been approved"
-                :body "Dear Alice Applicant,\n\nYour application 2001/3, \"Application title\" has been approved.\n\nYou can view the application and the decision at http://example.com/application/7"}
+                :subject "EPKEB application 2001/3, \"Application title\" – approval"
+                :body "Dear Alice Applicant,\n\nI am pleased to inform you that application 2001/3, \"Application title\" has been approved by the EPKEB.\n\nWe wish you good luck with your research!\n\nThe application and the decision: http://example.com/application/7"}
                (email-to "applicant" mails)))
         (is (= {:to-user "member"
-                :subject "Your application 2001/3, \"Application title\" has been approved"
-                :body "Dear member,\n\nYour application 2001/3, \"Application title\" has been approved.\n\nYou can view the application and the decision at http://example.com/application/7"}
+                :subject "EPKEB application 2001/3, \"Application title\" – approval"
+                :body "Dear member,\n\nI am pleased to inform you that application 2001/3, \"Application title\" has been approved by the EPKEB.\n\nWe wish you good luck with your research!\n\nThe application and the decision: http://example.com/application/7"}
                (email-to "member" mails)))
         (is (= {:to-user "assistant"
                 :subject "(2001/3, \"Application title\") Application has been approved"
@@ -366,28 +368,28 @@
 (deftest test-id-field
   (with-redefs [rems.config/env (assoc rems.config/env :application-id-column :id)]
     (is (= {:to-user "assistant"
-            :subject "(7, \"Application title\") A new application has been submitted"
-            :body "Dear Amber Assistant,\n\nAlice Applicant has submitted a new application 7, \"Application title\" to access resource(s) en title 11, en title 21.\n\nYou can review the application at http://example.com/application/7"}
+            :subject "EPKEB application 7, \"Application title\" – new application"
+            :body "Dear Amber Assistant,\n\nAlice Applicant has submitted a new application (7, \"Application title\", en title 11, en title 21).\n\nThe application: http://example.com/application/7"}
            (email-to "assistant" (emails created-events submit-event))))))
 
 (deftest test-footer
   (with-redefs [rems.locales/translations (assoc-in rems.locales/translations [:en :t :email :footer] "\n\nPlease do not reply to this automatically generated message.")]
     (is (= {:to-user "assistant"
-            :subject "(2001/3, \"Application title\") A new application has been submitted"
-            :body "Dear Amber Assistant,\n\nAlice Applicant has submitted a new application 2001/3, \"Application title\" to access resource(s) en title 11, en title 21.\n\nYou can review the application at http://example.com/application/7\n\nPlease do not reply to this automatically generated message."}
+            :subject "EPKEB application 2001/3, \"Application title\" – new application"
+            :body "Dear Amber Assistant,\n\nAlice Applicant has submitted a new application (2001/3, \"Application title\", en title 11, en title 21).\n\nThe application: http://example.com/application/7\n\nPlease do not reply to this automatically generated message."}
            (email-to "assistant" (emails created-events submit-event))))))
 
 (deftest test-regards
   (with-redefs [rems.locales/translations (assoc-in rems.locales/translations [:en :t :email :regards] "\n\nKind regards, REMS")]
     (is (= {:to-user "assistant"
-            :subject "(2001/3, \"Application title\") A new application has been submitted"
-            :body "Dear Amber Assistant,\n\nAlice Applicant has submitted a new application 2001/3, \"Application title\" to access resource(s) en title 11, en title 21.\n\nYou can review the application at http://example.com/application/7\n\nKind regards, REMS"}
+            :subject "EPKEB application 2001/3, \"Application title\" – new application"
+            :body "Dear Amber Assistant,\n\nAlice Applicant has submitted a new application (2001/3, \"Application title\", en title 11, en title 21).\n\nThe application: http://example.com/application/7\n\nKind regards, REMS"}
            (email-to "assistant" (emails created-events submit-event))))))
 
 (deftest test-title-optional
   (is (= {:to-user "assistant"
-          :subject "(2001/3) A new application has been submitted"
-          :body "Dear Amber Assistant,\n\nAlice Applicant has submitted a new application 2001/3 to access resource(s) en title 11.\n\nYou can review the application at http://example.com/application/7"}
+          :subject "EPKEB application 2001/3 – new application"
+          :body "Dear Amber Assistant,\n\nAlice Applicant has submitted a new application (2001/3, en title 11).\n\nThe application: http://example.com/application/7"}
          (email-to "assistant"
                    (emails [{:application/id 7
                              :application/external-id "2001/3"
@@ -416,21 +418,21 @@
                   :event/type :application.event/submitted
                   :event/actor "applicant"}]
     (is (= [{:to-user "applicant"
-             :subject "Your application 2001/3, \"Application title\" needs to be amended"
-             :body "Dear Alice Applicant,\n\nYour application 2001/3, \"Application title\" has been returned for your consideration. Please, amend according to requests and resubmit.\n\nYou can view and edit the application at http://example.com/application/7"}
+             :subject "EPKEB application 2001/3, \"Application title\" – feedback from reviewers"
+             :body "Dear Alice Applicant,\n\nThe reviews for your application have arrived, and the application has been returned for changes. The feedback:\n\n[\"requesting changes\"]\n\nThe system highlights the changed answers to the reviewers; in the attachments, please indicate the changes in a clearly visible way (in highlighted colour and/or bold font).\n\nPlease note that you have 30 days to submit the amended application. Failure to meet the deadline () will result in suspension of the procedure. The applicant has the right to initiate a new procedure with the amended application, but in this case new reviewers will be appointed, who again have 20 days to evaluate the application.\n\nYou can change the application at http://example.com/application/7"}
             {:to-user "assistant"
-             :subject "(2001/3, \"Application title\") Application has been returned to applicant"
-             :body "Dear Amber Assistant,\n\nHannah Handler has returned the application 2001/3, \"Application title\" to the applicant Alice Applicant for modifications.\n\nYou can view the application at http://example.com/application/7"}]
+             :subject "EPKEB application 2001/3, \"Application title\" – returned for changes"
+             :body "Dear Amber Assistant,\n\nHannah Handler has returned application 2001/3, \"Application title\" for changes. The deadline of the changes is .\n\nThe application: http://example.com/application/7"}]
            (emails added return)))
     (let [mails (emails returned-events resubmit)]
       (is (= #{"applicant" "assistant" "handler"} (email-recipients mails)))
       (is (= {:to-user "applicant"
-              :subject "Your application 2001/3, \"Application title\" has been submitted",
-              :body "Dear Alice Applicant,\n\nYour application 2001/3, \"Application title\" has been submitted. You will be notified by email when the application has been handled.\n\nYou can view the application at http://example.com/application/7"}
+              :subject "EPKEB application 2001/3, \"Application title\" – submitted",
+              :body "Dear Alice Applicant,\n\nApplication 2001/3, \"Application title\" has been submitted to the EPKEB. You will be notified by email of the result of the review.\n\nThe application: http://example.com/application/7"}
              (email-to "applicant" mails)))
       (is (= {:to-user "assistant"
-              :subject "(2001/3, \"Application title\") Application has been resubmitted"
-              :body "Dear Amber Assistant,\n\nApplication 2001/3, \"Application title\" has been resubmitted by Alice Applicant.\n\nYou can review the application at http://example.com/application/7"}
+              :subject "EPKEB application 2001/3, \"Application title\" – revised application"
+              :body "Dear Amber Assistant,\n\nThe revised version of application 2001/3, \"Application title\" has arrived. Please ask the reviewers to review it again (with a 10-day deadline), or decide.\n\nThe application: http://example.com/application/7"}
              (email-to "assistant" mails))))))
 
 (deftest test-invite-reviewer-decider
@@ -578,8 +580,8 @@
       (is (= #{"applicant"} (email-recipients mails))
           "applicant gets the email but handler messages are not sent")
       (is (= {:to-user "applicant"
-              :subject "Your application 2001/3, \"Application title\" has been submitted"
-              :body "Dear Alice Applicant,\n\nYour application 2001/3, \"Application title\" has been submitted. You will be notified by email when the application has been handled.\n\nYou can view the application at http://example.com/application/7"}
+              :subject "EPKEB application 2001/3, \"Application title\" – submitted"
+              :body "Dear Alice Applicant,\n\nApplication 2001/3, \"Application title\" has been submitted to the EPKEB. You will be notified by email of the result of the review.\n\nThe application: http://example.com/application/7"}
              (email-to "applicant" mails)))))
 
   (with-redefs [rems.config/env (assoc rems.config/env :enable-handler-emails false)]
@@ -587,8 +589,8 @@
       (is (= #{"applicant"} (email-recipients mails))
           "applicant gets the email but handler messages are not sent")
       (is (= {:to-user "applicant"
-              :subject "Your application 2001/3, \"Application title\" has been submitted"
-              :body "Dear Alice Applicant,\n\nYour application 2001/3, \"Application title\" has been submitted. You will be notified by email when the application has been handled.\n\nYou can view the application at http://example.com/application/7"}
+              :subject "EPKEB application 2001/3, \"Application title\" – submitted"
+              :body "Dear Alice Applicant,\n\nApplication 2001/3, \"Application title\" has been submitted to the EPKEB. You will be notified by email of the result of the review.\n\nThe application: http://example.com/application/7"}
              (email-to "applicant" mails))))))
 
 (deftest test-expiration-notifications-sent-email
@@ -631,3 +633,44 @@
                      :subject "Ansökan 2001/3, \"Application title\" kommer att raderas efter 2023-06-26"
                      :body "member,\n\nDin ej inlämnad ansökan har varit inaktiv sedan 2023-03-28 och kommer att raderas efter 2023-06-26, om det inte ändras. \n\nDu kan granska ansökningen här: http://example.com/application/7"}]
                    (emails :sv member-events notifications-sent)))))))))
+
+;; EPKEB: the letters of the secretaries, see :enable-review-recommendations
+(deftest test-epkeb-review-letters
+  (with-redefs [rems.config/env (assoc rems.config/env :enable-review-recommendations true)
+                rems.db.users/get-user get-user]
+    (let [request {:application/id 7
+                   :event/type :application.event/review-requested
+                   :event/actor "handler"
+                   :application/request-id "r1"
+                   :application/reviewers ["reviewer1"]}
+          review {:application/id 7
+                  :event/type :application.event/reviewed
+                  :event/actor "reviewer1"
+                  :application/request-id "r1"
+                  :application/comment "changes needed"}
+          reviewed-events (conj base-events request review)
+          return {:application/id 7
+                  :event/type :application.event/returned
+                  :event/actor "handler"
+                  :application/comment "Please clarify the recruitment."}]
+      (testing "the handlers are told when all reviews are done"
+        (is (= #{"EPKEB application 2001/3, \"Application title\" – the reviews have arrived"}
+               (set (map :subject (emails (conj base-events request) review)))))
+      (testing "returning tells the applicants the feedback and the reviewers about it"
+        (let [mails (emails reviewed-events return)]
+          (is (= #{"applicant" "assistant" "reviewer1"} (email-recipients mails)))
+          (is (str/includes? (:body (email-to "applicant" mails)) "Please clarify the recruitment."))
+          (is (= "EPKEB application 2001/3, \"Application title\" – feedback from reviewers"
+                 (:subject (email-to "reviewer1" mails))))))
+      (testing "the reviewers are told when the application is approved"
+        (let [mails (emails reviewed-events {:application/id 7
+                                             :event/type :application.event/approved
+                                             :event/actor "handler"})]
+          (is (= "EPKEB application 2001/3, \"Application title\" – closed"
+                 (:subject (email-to "reviewer1" mails))))))
+      (testing "a review after the application was returned is a re-review"
+        (is (= ["EPKEB application 2001/3, \"Application title\" – revised application"]
+               (map :subject (emails (conj reviewed-events return {:application/id 7
+                                                                     :event/type :application.event/submitted
+                                                                     :event/actor "applicant"})
+                                     (assoc request :application/request-id "r2"))))))))))

@@ -1,5 +1,6 @@
 (ns rems.email.template
-  (:require [clojure.string :as str]
+  (:require [clj-time.core :as time]
+            [clojure.string :as str]
             [rems.application.model :as model]
             [rems.common.application-util :as application-util]
             [rems.common.util :refer [getx]]
@@ -9,6 +10,7 @@
             [rems.db.user-settings]
             [rems.db.users]
             [rems.permissions :as permissions]
+            [rems.service.reviewer-calendar :as reviewer-calendar]
             [rems.text :refer [localize-user localize-utc-date text text-no-fallback text-format-map with-language]]))
 
 ;;; Mapping events to emails
@@ -90,6 +92,26 @@
 (defmethod event-to-emails :default [_event _application]
   [])
 
+(defn- returned-before?
+  "Was the application returned before `t`, or ever if the times are not known."
+  [application t]
+  (some #(and (= :application.event/returned (:event/type %))
+              (or (nil? t)
+                  (nil? (:event/time %))
+                  (time/before? (:event/time %) t)))
+        (:application/events application)))
+
+(defn- event-deadline
+  "The deadline set by the event: of the requested review, or of the
+  changes requested by returning the application."
+  [event application]
+  (when-let [t (:event/time event)]
+    (when-let [days (case (:event/type event)
+                      :application.event/review-requested (reviewer-calendar/review-deadline-days application t)
+                      :application.event/returned (:changes-deadline-days env)
+                      nil)]
+      (time/plus t (time/days days)))))
+
 (defn- emails-to-recipients [recipients event application subject-text body-text]
   (vec
    (for [recipient recipients
@@ -102,15 +124,17 @@
                                        :application-url (link-to-application (:application/id event))
                                        :catalogue-items (resources-for-email application)
                                        :event-actor (localize-user (:event/actor-attributes event))
-                                       :recipient (application-util/get-member-name recipient)}]
+                                       :recipient (application-util/get-member-name recipient)
+                                       :deadline (some-> (event-deadline event application) localize-utc-date)
+                                       :comment (:application/comment event)}]
                            {:to-user (:userid recipient)
                             :subject (text-format-map subject-text
                                                       params
-                                                      [:recipient :event-actor :application-id :applicant :catalogue-items :application-url])
+                                                      [:recipient :event-actor :application-id :applicant :catalogue-items :application-url :deadline :comment])
                             :body (str
                                    (text-format-map body-text
                                                     params
-                                                    [:recipient :event-actor :application-id :applicant :catalogue-items :application-url])
+                                                    [:recipient :event-actor :application-id :applicant :catalogue-items :application-url :deadline :comment])
                                    (text :t.email/regards)
                                    (text :t.email/footer))})))]
          :when email]
@@ -130,7 +154,13 @@
           (emails-to-recipients (other-handlers event application)
                                 event application
                                 :t.email.application-approved/subject-to-handler
-                                :t.email.application-approved/message-to-handler)))
+                                :t.email.application-approved/message-to-handler)
+          ;; EPKEB: the reviewers are told that the procedure has closed
+          (when (:enable-review-recommendations env)
+            (emails-to-recipients (reviewers application)
+                                  event application
+                                  :t.email.application-approved/subject-to-reviewer
+                                  :t.email.application-approved/message-to-reviewer))))
 
 (defmethod event-to-emails :application.event/rejected [event application]
   (concat (emails-to-recipients (application-util/applicant-and-members application)
@@ -163,14 +193,24 @@
                                 :t.email.application-closed/message-to-handler)))
 
 (defmethod event-to-emails :application.event/returned [event application]
-  (concat (emails-to-recipients [(:application/applicant application)]
-                                event application
-                                :t.email.application-returned/subject-to-applicant
-                                :t.email.application-returned/message-to-applicant)
-          (emails-to-recipients (other-handlers event application)
-                                event application
-                                :t.email.application-returned/subject-to-handler
-                                :t.email.application-returned/message-to-handler)))
+  (let [epkeb? (:enable-review-recommendations env)]
+    (concat (emails-to-recipients (if epkeb?
+                                    ;; EPKEB: the researchers make the changes
+                                    (application-util/applicant-and-members application)
+                                    [(:application/applicant application)])
+                                  event application
+                                  :t.email.application-returned/subject-to-applicant
+                                  :t.email.application-returned/message-to-applicant)
+            (emails-to-recipients (other-handlers event application)
+                                  event application
+                                  :t.email.application-returned/subject-to-handler
+                                  :t.email.application-returned/message-to-handler)
+            ;; EPKEB: the reviewers are told about the feedback
+            (when epkeb?
+              (emails-to-recipients (reviewers application)
+                                    event application
+                                    :t.email.application-returned/subject-to-reviewer
+                                    :t.email.application-returned/message-to-reviewer)))))
 
 (defmethod event-to-emails :application.event/licenses-added [event application]
   (emails-to-recipients (application-util/applicant-and-members application)
@@ -195,16 +235,33 @@
                                   :t.email.application-resubmitted/message-to-handler))))
 
 (defmethod event-to-emails :application.event/review-requested [event application]
-  (emails-to-recipients (:application/reviewers event)
-                        event application
-                        :t.email.review-requested/subject
-                        :t.email.review-requested/message))
+  (if (and (:enable-review-recommendations env)
+           (returned-before? application (:event/time event)))
+    ;; EPKEB: a re-review of the changed application
+    (emails-to-recipients (:application/reviewers event)
+                          event application
+                          :t.email.review-requested/subject-re-review
+                          :t.email.review-requested/message-re-review)
+    (emails-to-recipients (:application/reviewers event)
+                          event application
+                          :t.email.review-requested/subject
+                          :t.email.review-requested/message)))
+
+(defn- reviews-pending? [application]
+  (some #(contains? (val %) :reviewer) (:application/user-roles application)))
 
 (defmethod event-to-emails :application.event/reviewed [event application]
-  (emails-to-recipients (handlers application)
-                        event application
-                        :t.email.reviewed/subject
-                        :t.email.reviewed/message))
+  (if (and (:enable-review-recommendations env)
+           (not (reviews-pending? application)))
+    ;; EPKEB: all reviews are done, the chair can decide
+    (emails-to-recipients (handlers application)
+                          event application
+                          :t.email.reviewed/subject-all-done
+                          :t.email.reviewed/message-all-done)
+    (emails-to-recipients (handlers application)
+                          event application
+                          :t.email.reviewed/subject
+                          :t.email.reviewed/message)))
 
 (defmethod event-to-emails :application.event/remarked [event application]
   (emails-to-recipients (->> (cond

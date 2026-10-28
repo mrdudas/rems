@@ -528,20 +528,22 @@
                             :message "Dear %:recipient%,\n\nThe deadline for submitting the changes to application %:application-id% was %:deadline%. According to the rules of procedure, the procedure is suspended; the chair decides about it.\n\nThe application: %:application-url%"
                             :subject-to-handler "(%:application-id%) The deadline of the changes has passed"
                             :message-to-handler "Dear %:recipient%,\n\nThe deadline for submitting the changes to application %:application-id% was %:deadline%, and the applicant has not submitted them. The procedure can be suspended (by closing the application).\n\nThe application: %:application-url%"}
-          :review-due-soon {:subject "(%:application-id%) Review deadline: %:deadline%"
-                            :message "Dear %:recipient%,\n\nThis is a reminder that the deadline of your review of application %:application-id% is %:deadline%, %:days% days from now.\n\nThe application and the review: %:application-url%"}
-          :review-overdue {:subject "(%:application-id%) The review deadline has passed"
-                           :message "Dear %:recipient%,\n\nThe deadline of your review of application %:application-id% was %:deadline%; the review is %:days% days overdue. Please submit it as soon as possible, or let the chair know if you cannot.\n\nThe application and the review: %:application-url%"
-                           :subject-to-handler "(%:application-id%) A review is overdue"
-                           :message-to-handler "Dear %:recipient%,\n\nThe review of %:reviewer% for application %:application-id% is %:days% days overdue (deadline: %:deadline%).\n\nThe application: %:application-url%"}
+          :review-due-soon {:subject "EPKEB application %:application-id% – reminder"
+                            :message "Dear %:recipient%,\n\nThis is a reminder that the deadline of your review of application %:application-id% is %:deadline% (%:days% days from now).\n\nPlease submit your review: %:application-url%"}
+          :review-overdue {:subject "EPKEB application %:application-id% – overdue reminder"
+                           :message "Dear %:recipient%,\n\nThis is a reminder that the deadline of your review of application %:application-id% was %:deadline%.\n\nPlease submit your review as soon as you can, or let the chair know if you cannot: %:application-url%"
+                           :subject-to-handler "EPKEB application %:application-id% – a review is overdue"
+                           :message-to-handler "Dear %:recipient%,\n\nThe review of %:reviewer% for application %:application-id% is %:days% days overdue (deadline: %:deadline%); the reviewer has been reminded.\n\nThe application: %:application-url%"}
           :applicant-changed {:subject-to-member "Applicant for application %:application-id% changed"
                               :message-to-member "Dear %:recipient%,\n\nThe applicant for application %:application-id% has been changed to %:applicant% by %:event-actor%.\n\nYou can view the application at %:application-url%."
                               :subject-to-handler "(%:application-id%) Applicant changed"
                               :message-to-handler "Dear %:recipient%,\n\nThe applicant for application %:application-id% has been changed to %:applicant% by %:event-actor%.\n\nYou can view the application at %:application-url%."}
-          :application-approved {:subject-to-applicant "Your application %:application-id% has been approved"
-                                 :message-to-applicant "Dear %:recipient%,\n\nYour application %:application-id% has been approved.\n\nYou can view the application and the decision at %:application-url%"
+          :application-approved {:subject-to-applicant "EPKEB application %:application-id% – approval"
+                                 :message-to-applicant "Dear %:recipient%,\n\nI am pleased to inform you that application %:application-id% has been approved by the EPKEB.\n\nWe wish you good luck with your research!\n\nThe application and the decision: %:application-url%"
                                  :subject-to-handler "(%:application-id%) Application has been approved"
-                                 :message-to-handler "Dear %:recipient%,\n\n%:event-actor% has approved the application %:application-id% from %:applicant%.\n\nYou can view the application and the decision at %:application-url%"}
+                                 :message-to-handler "Dear %:recipient%,\n\n%:event-actor% has approved the application %:application-id% from %:applicant%.\n\nYou can view the application and the decision at %:application-url%"
+                                 :subject-to-reviewer "EPKEB application %:application-id% – closed"
+                                 :message-to-reviewer "Dear %:recipient%,\n\nI would like to inform you that the procedure of application %:application-id%, which you reviewed, has been closed successfully: the application has been approved by the EPKEB.\n\nThank you for your review!"}
           :application-rejected {:subject-to-applicant "Your application %:application-id% has been rejected"
                                  :message-to-applicant "Dear %:recipient%,\n\nYour application %:application-id% has been rejected.\n\nYou can view the application and the decision at %:application-url%"
                                  :subject-to-handler "(%:application-id%) Application has been rejected"
@@ -558,22 +560,24 @@
           ;; %5 - %:application-url% - link to application
           :application-expiration-notification {:subject-to-member "Your unsubmitted application %:application-id% will be deleted soon"
                                                 :message-to-member "Dear %:recipient%,\n\nYour unsubmitted application has been inactive since %:last-activity% and it will be deleted after %:expires-on%, if it is not edited.\n\nYou can view and edit the application at %:application-url%"}
-          :application-returned {:subject-to-applicant "Your application %:application-id% needs to be amended"
-                                 :message-to-applicant "Dear %:recipient%,\n\nYour application %:application-id% has been returned for your consideration. Please, amend according to requests and resubmit.\n\nYou can view and edit the application at %:application-url%"
-                                 :subject-to-handler "(%:application-id%) Application has been returned to applicant"
-                                 :message-to-handler "Dear %:recipient%,\n\n%:event-actor% has returned the application %:application-id% to the applicant %:applicant% for modifications.\n\nYou can view the application at %:application-url%"}
+          :application-returned {:subject-to-applicant "EPKEB application %:application-id% – feedback from reviewers"
+                                 :message-to-applicant "Dear %:recipient%,\n\nThe reviews for your application have arrived, and the application has been returned for changes. The feedback:\n\n%:comment%\n\nThe system highlights the changed answers to the reviewers; in the attachments, please indicate the changes in a clearly visible way (in highlighted colour and/or bold font).\n\nPlease note that you have 30 days to submit the amended application. Failure to meet the deadline (%:deadline%) will result in suspension of the procedure. The applicant has the right to initiate a new procedure with the amended application, but in this case new reviewers will be appointed, who again have 20 days to evaluate the application.\n\nYou can change the application at %:application-url%"
+                                 :subject-to-handler "EPKEB application %:application-id% – returned for changes"
+                                 :message-to-handler "Dear %:recipient%,\n\n%:event-actor% has returned application %:application-id% for changes. The deadline of the changes is %:deadline%.\n\nThe application: %:application-url%"
+                                 :subject-to-reviewer "EPKEB application %:application-id% – feedback from reviewers"
+                                 :message-to-reviewer "Dear %:recipient%,\n\nFor your information: application %:application-id% has been returned for changes based on the reviews. The feedback sent to the applicant:\n\n%:comment%\n\nYou will be asked to review the revised application. The application: %:application-url%"}
           :application-revoked {:subject-to-applicant "Entitlements related to your application %:application-id% have been revoked"
                                 :message-to-applicant "Dear %:recipient%,\n\nEntitlements related to your application %:application-id% have been revoked.\n\nYou can view the application at %:application-url%"
                                 :subject-to-handler "(%:application-id%) Entitlements have been revoked"
                                 :message-to-handler "Dear %:recipient%,\n\n%:event-actor% has revoked the entitlements related to application %:application-id% from %:applicant%.\n\nYou can view the application at %:application-url%"}
           :application-licenses-added {:subject "Your application's %:application-id% declarations have changed"
                                        :message "Dear %:recipient%,\n\n%:event-actor% has requested your approval for changed declarations to application %:application-id%.\n\nYou can view the application and approve the changed declarations at %:application-url%"}
-          :application-resubmitted {:subject-to-handler "(%:application-id%) Application has been resubmitted"
-                                    :message-to-handler "Dear %:recipient%,\n\nApplication %:application-id% has been resubmitted by %:applicant%.\n\nYou can review the application at %:application-url%"}
-          :application-submitted {:subject-to-applicant "Your application %:application-id% has been submitted"
-                                  :message-to-applicant "Dear %:recipient%,\n\nYour application %:application-id% has been submitted. You will be notified by email when the application has been handled.\n\nYou can view the application at %:application-url%"
-                                  :subject-to-handler "(%:application-id%) A new application has been submitted"
-                                  :message-to-handler "Dear %:recipient%,\n\n%:applicant% has submitted a new application %:application-id% to access resource(s) %:catalogue-items%.\n\nYou can review the application at %:application-url%"}
+          :application-resubmitted {:subject-to-handler "EPKEB application %:application-id% – revised application"
+                                    :message-to-handler "Dear %:recipient%,\n\nThe revised version of application %:application-id% has arrived. Please ask the reviewers to review it again (with a 10-day deadline), or decide.\n\nThe application: %:application-url%"}
+          :application-submitted {:subject-to-applicant "EPKEB application %:application-id% – submitted"
+                                  :message-to-applicant "Dear %:recipient%,\n\nApplication %:application-id% has been submitted to the EPKEB. You will be notified by email of the result of the review.\n\nThe application: %:application-url%"
+                                  :subject-to-handler "EPKEB application %:application-id% – new application"
+                                  :message-to-handler "Dear %:recipient%,\n\n%:applicant% has submitted a new application (%:application-id%, %:catalogue-items%).\n\nThe application: %:application-url%"}
           :decided {:subject "(%:application-id%) Application decision notification"
                     :message "Dear %:recipient%,\n\n%:event-actor% has filed a decision on application %:application-id%, submitted by %:applicant%.\n\nYou can review the application at %:application-url%"}
           ;; Format parameters for decider-invited:
@@ -617,13 +621,17 @@
                                :message "Dear %:recipient%,\n\nYou have been invited to be the supervisor of application %:application-id%, by %:applicant%. As the supervisor, you approve the application before it is submitted.\n\nYou can view the application and accept the invitation at %:invitation-url%"}
           :member-invited {:subject "Invitation to participate in application %:application-id%"
                            :message "Dear %:recipient%,\n\nYou have been invited to participate in application %:application-id%, by %:applicant%.\n\nYou can view the application and accept the declarations at %:invitation-url%"}
-          :regards "\n\nKind regards,\n\nEPKEB – United Ethical Review Committee for Research in Psychology\n"
+          :regards "\n\nBest regards,\n\nEPKEB Secretariat\nUnited Ethical Review Committee for Research in Psychology\n"
           :remarked {:subject "(%:application-id%) Application has been commented"
                      :message "Dear %:recipient%,\n\n%:event-actor% has commented your application %:application-id%, submitted by %:applicant%.\n\nYou can view the application and the comment at %:application-url%"}
-          :review-requested {:subject "(%:application-id%) Review request"
-                             :message "Dear %:recipient%,\n\n%:event-actor% has requested your review on application %:application-id%, submitted by %:applicant%.\n\nYou can review the application at %:application-url%"}
-          :reviewed {:subject "(%:application-id%) Application has been reviewed"
-                     :message "Dear %:recipient%,\n\n%:event-actor% has reviewed the application %:application-id%, submitted by %:applicant%.\n\nYou can review the application at %:application-url%"}
+          :review-requested {:subject "EPKEB application %:application-id% – review request"
+                             :message "Dear %:recipient%,\n\n%:event-actor% asks you to review application %:application-id%. The deadline of the review is %:deadline%.\n\nPlease let the chair know if you cannot review it by the deadline.\n\nThe application and the review form: %:application-url%"
+                             :subject-re-review "EPKEB application %:application-id% – revised application"
+                             :message-re-review "Dear %:recipient%,\n\nThe revised version of application %:application-id% has arrived. Please indicate in a new review whether you accept the changes or request further changes. The system highlights the changed answers.\n\nThe deadline of the review is %:deadline%.\n\nThe application: %:application-url%"}
+          :reviewed {:subject "EPKEB application %:application-id% – a review has arrived"
+                     :message "Dear %:recipient%,\n\n%:event-actor% has reviewed application %:application-id%.\n\nThe application: %:application-url%"
+                     :subject-all-done "EPKEB application %:application-id% – the reviews have arrived"
+                     :message-all-done "Dear %:recipient%,\n\nThe reviews of application %:application-id% have arrived, and the application is waiting for a decision. The recommendations are on the \"Reviews\" card of the application.\n\nThe application: %:application-url%"}
           ;; Format parameters for reviewer-invited:
           ;; %1 - %:recipient% - name of recipient
           ;; %2 - %:applicant% - name of applicant

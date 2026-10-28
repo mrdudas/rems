@@ -3712,7 +3712,7 @@
     (testing "the reviewer is reminded 7 days before the deadline"
       (let [sent (send!)]
         (is (= ["deadline-reviewer"] (map first sent)))
-        (is (str/includes? (second (first sent)) "Review deadline"))))
+        (is (str/includes? (second (first sent)) "reminder"))))
     (testing "an overdue review is reminded of to the reviewer and the handlers"
       (test-helpers/command! {:type :application.command/request-review
                               :application-id app-id

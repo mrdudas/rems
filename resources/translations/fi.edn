@@ -480,7 +480,9 @@
           :application-approved {:subject-to-applicant "Hakemuksesi %3 on hyväksytty"
                                  :message-to-applicant "Hyvä %1,\n\nHakemuksesi %3 on hyväksytty.\n\nVoit tarkastella hakemusta ja päätöstä osoitteessa %6"
                                  :subject-to-handler "(%3) Hakemus on hyväksytty"
-                                 :message-to-handler "Hyvä %1,\n\n%2 on hyväksynyt käyttäjän %4 hakemuksen %3.\n\nVoit tarkastella hakemusta ja päätöstä osoitteessa %6"}
+                                 :message-to-handler "Hyvä %1,\n\n%2 on hyväksynyt käyttäjän %4 hakemuksen %3.\n\nVoit tarkastella hakemusta ja päätöstä osoitteessa %6"
+                                 :subject-to-reviewer "(%3) Hakemus hyväksytty"
+                                 :message-to-reviewer "Hyvä %1,\n\nArvioimasi hakemus %3 on hyväksytty. Kiitos arviostasi!"}
           :application-rejected {:subject-to-applicant "Hakemuksesi %3 on hylätty"
                                  :message-to-applicant "Hyvä %1,\n\nHakemuksesi %3 on hylätty.\n\nVoit tarkastella hakemusta ja päätöstä osoitteessa %6"
                                  :subject-to-handler "(%3) Hakemus on hylätty"
@@ -494,7 +496,9 @@
           :application-returned {:subject-to-applicant "Hakemuksesi %3 vaatii täydentämistä"
                                  :message-to-applicant "Hyvä %1,\n\nHakemuksesi %3 on palautettu muokattavaksesi. Ole hyvä ja täydennä hakemusta kommenttien mukaan.\n\nVoit tarkastella ja muokata hakemusta osoitteessa %6"
                                  :subject-to-handler "(%3) Hakemus on palautettu"
-                                 :message-to-handler "Hyvä %1,\n\n%2 on palauttanut käyttäjän %4 hakemuksen %3.\n\nVoit tarkastella hakemusta osoitteessa %6"}
+                                 :message-to-handler "Hyvä %1,\n\n%2 on palauttanut käyttäjän %4 hakemuksen %3.\n\nVoit tarkastella hakemusta osoitteessa %6"
+                                 :subject-to-reviewer "(%3) Hakemus palautettu"
+                                 :message-to-reviewer "Hyvä %1,\n\nHakemus %3 on palautettu muutettavaksi arvioiden perusteella:\n\n%8\n\nHakemus: %6"}
           :application-revoked {:subject-to-applicant "Hakemukseesi %3 liittyvät käyttöoikeudet on peruttu"
                                 :message-to-applicant "Hyvä %1,\n\nHakemukseesi %3 liittyvät käyttöoikeudet on peruttu.\n\nVoit tarkastella hakemusta: %6"
                                 :subject-to-handler "(%3) Käyttöoikeudet on peruttu"
@@ -537,9 +541,13 @@
           :remarked {:subject "(%3) Hakemusta kommentoitu"
                      :message "Hyvä %1,\n\n%2 on kommentoinut käyttäjän %4 lähettämää hakemusta %3.\n\nVoit nähdä kommentin ja tarkastella hakemusta osoitteessa %6"}
           :review-requested {:subject "(%3) Katselmointipyyntö"
-                             :message "Hyvä %1,\n\n%2 on pyytänyt katselmointiasi käyttäjän %4 lähettämälle hakemukselle %3.\n\nVoit tarkastella hakemusta osoitteessa %6"}
+                             :message "Hyvä %1,\n\n%2 on pyytänyt katselmointiasi käyttäjän %4 lähettämälle hakemukselle %3.\n\nVoit tarkastella hakemusta osoitteessa %6"
+                             :subject-re-review "(%3) Muutettu hakemus"
+                             :message-re-review "Hyvä %1,\n\nHakemuksen %3 muutettu versio on saapunut. Arvion määräaika on %7.\n\nHakemus: %6"}
           :reviewed {:subject "(%3) Hakemus katselmoitu"
-                     :message "Hyvä %1,\n\n%2 on katselmoinut käyttäjän %4 lähettämän hakemuksen %3.\n\nVoit tarkastella hakemusta osoitteessa %6"}
+                     :message "Hyvä %1,\n\n%2 on katselmoinut käyttäjän %4 lähettämän hakemuksen %3.\n\nVoit tarkastella hakemusta osoitteessa %6"
+                     :subject-all-done "(%3) Arviot ovat saapuneet"
+                     :message-all-done "Hyvä %1,\n\nHakemuksen %3 arviot ovat saapuneet, ja hakemus odottaa päätöstä.\n\nHakemus: %6"}
           :reviewer-invited {:subject "Kutsu osallistumaan hakemuksen %3 käsittelyyn"
                              :message "Hyvä %1,\n\nSinut on kutsuttu osallistumaan käyttäjän %2 jättämän hakemuksen %3 käsittelemiseen.\n\nVoit tarkastella hakemusta osoitteessa %4"}
           :reviewer-reminder {:application "%1, lähettänyt %2"

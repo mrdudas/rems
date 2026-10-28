@@ -512,7 +512,9 @@
           :application-approved {:subject-to-applicant "Din ansøgning %3 blev godkendt"
                                  :message-to-applicant "Kære %1,\n\nDin ansøgning %3 blev godkendt.\n\nDu kan se ansøgningen og afgørelsen på %6"
                                  :subject-to-handler "(%3) Ansøgningen blev godkendt"
-                                 :message-to-handler "Kære %1,\n\n%2 har godkendt ansøgningen %3 fra %4.\n\nDu kan se ansøgningen og afgørelsen på %6"}
+                                 :message-to-handler "Kære %1,\n\n%2 har godkendt ansøgningen %3 fra %4.\n\nDu kan se ansøgningen og afgørelsen på %6"
+                                 :subject-to-reviewer "(%3) Ansøgning godkendt"
+                                 :message-to-reviewer "Kære %1,\n\nAnsøgning %3, som du bedømte, er godkendt. Tak for din bedømmelse!"}
           :application-rejected {:subject-to-applicant "Din ansøgning %3 blev afslået"
                                  :message-to-applicant "Kære %1,\n\nDin ansøgning %3 blev afslået.\n\nDu kan se ansøgningen og afgørelsen på %6"
                                  :subject-to-handler "(%3) Ansøgningen blev afslået"
@@ -531,7 +533,9 @@
           :application-returned {:subject-to-applicant "Din ansøgning %3 mangler ændringer"
                                  :message-to-applicant "Kære %1,\n\nDin ansøgning %3 er sendt tilbage pga. mangler. Rediger den venligst i henhold til anmodninger og genindsend.\n\nDu kan se og redigere ansøgningen på %6"
                                  :subject-to-handler "(%3) Ansøgningen er sendt tilbage til ansøger."
-                                 :message-to-handler "Kære %1,\n\n%2 har sendt ansøgningen %3 tilbage til ansøger %4 for ændringer.\n\nDu kan se ansøgningen på %6"}
+                                 :message-to-handler "Kære %1,\n\n%2 har sendt ansøgningen %3 tilbage til ansøger %4 for ændringer.\n\nDu kan se ansøgningen på %6"
+                                 :subject-to-reviewer "(%3) Ansøgning returneret"
+                                 :message-to-reviewer "Kære %1,\n\nAnsøgning %3 er returneret til ændringer på grundlag af bedømmelserne:\n\n%8\n\nAnsøgningen: %6"}
           :application-revoked {:subject-to-applicant "Rettigheder relateret til din ansøgning %3 blev tilbagekaldt"
                                 :message-to-applicant "Kære %1,\n\nRettigheder relateret til din ansøgning %3 blev tilbagekaldt.\n\nDu kan se ansøgningen på %6"
                                 :subject-to-handler "(%3) Rettigheder blev tilbagekaldt"
@@ -583,9 +587,13 @@
           :remarked {:subject "(%3) Ansøgningen blev kommenteret"
                      :message "Kære %1,\n\n%2 har kommenteret på ansøgning %3, indsendt af %4.\n\nDu kan se ansøgningen og kommentaren på %6"}
           :review-requested {:subject "(%3) Anmodning om gennemsyn"
-                             :message "Kære %1,\n\n%2 har anmodet om dit gennemsyn af ansøgning %3, indsendt af %4.\n\nDu kan gennemse ansøgningen på %6"}
+                             :message "Kære %1,\n\n%2 har anmodet om dit gennemsyn af ansøgning %3, indsendt af %4.\n\nDu kan gennemse ansøgningen på %6"
+                             :subject-re-review "(%3) Revideret ansøgning"
+                             :message-re-review "Kære %1,\n\nDen reviderede version af ansøgning %3 er kommet. Fristen for bedømmelsen er %7.\n\nAnsøgningen: %6"}
           :reviewed {:subject "(%3) Ansøgningen blev gennemset"
-                     :message "Kære %1,\n\n%2 har gennemset ansøgningen %3, indsendt af %4.\n\nDu kan gennemse ansøgningen på %6"}
+                     :message "Kære %1,\n\n%2 har gennemset ansøgningen %3, indsendt af %4.\n\nDu kan gennemse ansøgningen på %6"
+                     :subject-all-done "(%3) Bedømmelserne er kommet"
+                     :message-all-done "Kære %1,\n\nBedømmelserne af ansøgning %3 er kommet, og ansøgningen afventer en beslutning.\n\nAnsøgningen: %6"}
           :reviewer-invited {:subject "Invitation til deltagelse i behandling af ansøgning %3"
                              :message "Kære %1,\n\nDu er blevet inviteret til at deltage i behandling af ansøgning %3, af %2.\n\nDu kan se ansøgningen på %4"}
           :reviewer-reminder {:application "%1, indsendt af %2"

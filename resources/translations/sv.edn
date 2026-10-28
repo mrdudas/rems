@@ -480,7 +480,9 @@
           :application-approved {:subject-to-applicant "Din ansökan %3 är godkänd"
                                  :message-to-applicant "%1,\n\nDin ansökan %3 är godkänd.\n\nDu kan granska ansökningen och beslutet här: %6"
                                  :subject-to-handler "(%3) Ansökan är godkänd"
-                                 :message-to-handler "%1,\n\n%2 har godkänt ansökan %3 från %4.\n\nDu kan granska ansökningen och beslutet här: %6"}
+                                 :message-to-handler "%1,\n\n%2 har godkänt ansökan %3 från %4.\n\nDu kan granska ansökningen och beslutet här: %6"
+                                 :subject-to-reviewer "(%3) Ansökan godkänd"
+                                 :message-to-reviewer "Hej %1,\n\nAnsökan %3 som du granskade har godkänts. Tack för din granskning!"}
           :application-rejected {:subject-to-applicant "Din ansökan %3 har fått avslag"
                                  :message-to-applicant "%1,\n\nDin ansökan %3 har fått avslag.\n\nDu kan granska ansökningen och beslutet här: %6"
                                  :subject-to-handler "(%3) Avslag på ansökan"
@@ -494,7 +496,9 @@
           :application-returned {:subject-to-applicant "Din ansökan %3 kräver komplettering"
                                  :message-to-applicant "%1,\n\nDin ansökan %3 har skickats tillbaka för komplettering. Var god och komplettera den enligt anvisningarna.\n\nDu kan granska ansökningen här: %6"
                                  :subject-to-handler "(%3) Ansökan returnerad"
-                                 :message-to-handler "%1,\n\n%2 har returnerat ansökan %3 från %4 .\n\nDu kan granska ansökningen här: %6"}
+                                 :message-to-handler "%1,\n\n%2 har returnerat ansökan %3 från %4 .\n\nDu kan granska ansökningen här: %6"
+                                 :subject-to-reviewer "(%3) Ansökan returnerad"
+                                 :message-to-reviewer "Hej %1,\n\nAnsökan %3 har returnerats för ändringar utifrån granskningarna:\n\n%8\n\nAnsökan: %6"}
           :application-revoked {:subject-to-applicant "Rättigheterna till %3 är återkallade."
                                 :message-to-applicant "%1,\n\nRättigheterna gällande ansökan %3 har blivit återkallade.\n\nDu kan granska ansökningen här: %6"
                                 :subject-to-handler "(%3) Användarrättigheter återkallade"
@@ -537,9 +541,13 @@
           :remarked {:subject "Ansökan (%3) har fått en kommentar"
                      :message "%1,\n\n%2 har kommenterat ansökan (%3) inlämnad av %4.\n\nDu kan se kommentar och granska ansökningen här: %6"}
           :review-requested {:subject "(%3) Begäran om granskning"
-                             :message "%1,\n\n%2 har bett dig granska %4s ansökan %3.\n\nDu kan granska ansökningen här: %6"}
+                             :message "%1,\n\n%2 har bett dig granska %4s ansökan %3.\n\nDu kan granska ansökningen här: %6"
+                             :subject-re-review "(%3) Reviderad ansökan"
+                             :message-re-review "Hej %1,\n\nDen reviderade versionen av ansökan %3 har kommit. Tidsfristen för granskningen är %7.\n\nAnsökan: %6"}
           :reviewed {:subject "Ansökan %3 granskad"
-                     :message "%1,\n\n%2 har granskat %4s ansökan %3.\n\nDu kan granska ansökningen här: %6"}
+                     :message "%1,\n\n%2 har granskat %4s ansökan %3.\n\nDu kan granska ansökningen här: %6"
+                     :subject-all-done "(%3) Granskningarna har kommit in"
+                     :message-all-done "Hej %1,\n\nGranskningarna av ansökan %3 har kommit in, och ansökan väntar på beslut.\n\nAnsökan: %6"}
           :reviewer-invited {:subject "Inbjudan att delta i behandling av ansökan %3" ; TODO check
                              :message "%1,\n\nDu är inbjuden att delta i handling av %2s ansökan %3 om tillgång till material.\n\nDu kan granska ansökningen här: %4"} ; TODO check
           :reviewer-reminder {:application "%1, skickad av %2"

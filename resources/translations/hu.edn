@@ -528,20 +528,22 @@
                             :message "Tisztelt %:recipient%!\n\nA(z) %:application-id% kérelem módosításának beküldési határideje %:deadline% volt. Az eljárásrend szerint az eljárás felfüggesztésre kerül; erről az elnök dönt.\n\nA kérelem: %:application-url%"
                             :subject-to-handler "(%:application-id%) Lejárt a módosítás határideje"
                             :message-to-handler "Tisztelt %:recipient%!\n\nA(z) %:application-id% kérelem módosításának beküldési határideje %:deadline% volt, a kérelmező nem küldte be. Az eljárás felfüggeszthető (a kérelem lezárása).\n\nA kérelem: %:application-url%"}
-          :review-due-soon {:subject "(%:application-id%) Bírálati határidő: %:deadline%"
-                            :message "Tisztelt %:recipient%!\n\nEmlékeztetjük, hogy a(z) %:application-id% kérelem bírálatának határideje %:deadline%, még %:days% nap van hátra.\n\nA kérelem és a bírálat: %:application-url%"}
-          :review-overdue {:subject "(%:application-id%) Lejárt a bírálati határidő"
-                           :message "Tisztelt %:recipient%!\n\nA(z) %:application-id% kérelem bírálatának határideje %:deadline% volt, a bírálat %:days% napja késik. Kérjük, mielőbb adja le, vagy jelezze az elnöknek, ha nem tudja vállalni.\n\nA kérelem és a bírálat: %:application-url%"
-                           :subject-to-handler "(%:application-id%) Késik egy bírálat"
-                           :message-to-handler "Tisztelt %:recipient%!\n\n%:reviewer% bírálata a(z) %:application-id% kérelemhez %:days% napja késik (határidő: %:deadline%).\n\nA kérelem: %:application-url%"}
+          :review-due-soon {:subject "EPKEB-kérelem %:application-id% – emlékeztető"
+                            :message "Kedves %:recipient%!\n\nEz egy emlékeztető levél: a(z) %:application-id% kérelem bírálati határideje %:deadline% (még %:days% nap).\n\nKérlek, add le a bírálatot: %:application-url%"}
+          :review-overdue {:subject "EPKEB-kérelem %:application-id% – határidőn túli emlékeztető"
+                           :message "Kedves %:recipient%!\n\nEz egy emlékeztető levél: a(z) %:application-id% kérelem bírálati határideje %:deadline% napon lejárt.\n\nKérlek, amint időd engedi, add le a bírálatot, vagy jelezd az elnöknek, ha nem tudod vállalni: %:application-url%"
+                           :subject-to-handler "EPKEB-kérelem %:application-id% – késik egy bírálat"
+                           :message-to-handler "Kedves %:recipient%!\n\n%:reviewer% bírálata a(z) %:application-id% kérelemhez %:days% napja késik (határidő: %:deadline%); a bíráló emlékeztetőt kapott.\n\nA kérelem: %:application-url%"}
           :applicant-changed {:subject-to-member "A(z) %:application-id% kérelem kapcsolattartója megváltozott"
                               :message-to-member "Tisztelt %:recipient%!\n\nA(z) %:application-id% kérelem kapcsolattartóját %:event-actor% megváltoztatta a következőre: %:applicant%.\n\nA kérelmet itt tekintheti meg: %:application-url%."
                               :subject-to-handler "(%:application-id%) Kapcsolattartó megváltozott"
                               :message-to-handler "Tisztelt %:recipient%!\n\nA(z) %:application-id% kérelem kapcsolattartóját %:event-actor% megváltoztatta a következőre: %:applicant%.\n\nA kérelmet itt tekintheti meg: %:application-url%."}
-          :application-approved {:subject-to-applicant "A(z) %:application-id% kérelmét jóváhagyták"
-                                 :message-to-applicant "Tisztelt %:recipient%!\n\nA(z) %:application-id% kérelmét jóváhagyták.\n\nA kérelmet és a döntést itt tekintheti meg: %:application-url%"
+          :application-approved {:subject-to-applicant "EPKEB-kérelem %:application-id% – engedély"
+                                 :message-to-applicant "Kedves %:recipient%!\n\nÖrömmel értesítjük, hogy a(z) %:application-id% kérelmet az EPKEB jóváhagyta, az engedély kiadható.\n\nSok sikert kívánunk a kutatáshoz!\n\nA kérelem és a döntés: %:application-url%"
                                  :subject-to-handler "(%:application-id%) A kérelmet jóváhagyták"
-                                 :message-to-handler "Tisztelt %:recipient%!\n\n%:event-actor% jóváhagyta %:applicant% %:application-id% azonosítójú kérelmét.\n\nA kérelmet és a döntést itt tekintheti meg: %:application-url%"}
+                                 :message-to-handler "Tisztelt %:recipient%!\n\n%:event-actor% jóváhagyta %:applicant% %:application-id% azonosítójú kérelmét.\n\nA kérelmet és a döntést itt tekintheti meg: %:application-url%"
+                                 :subject-to-reviewer "EPKEB-kérelem %:application-id% – lezárult"
+                                 :message-to-reviewer "Kedves %:recipient%!\n\nSzeretnélek tájékoztatni, hogy az általad bírált %:application-id% kérelem engedélyezési folyamata sikeresen lezárult, a kérelmet az EPKEB jóváhagyta.\n\nKöszönjük a bírálatot!"}
           :application-rejected {:subject-to-applicant "A(z) %:application-id% kérelmét elutasították"
                                  :message-to-applicant "Tisztelt %:recipient%!\n\nA(z) %:application-id% kérelmét elutasították.\n\nA kérelmet és a döntést itt tekintheti meg: %:application-url%"
                                  :subject-to-handler "(%:application-id%) A kérelmet elutasították"
@@ -558,22 +560,24 @@
           ;; %5 - %:application-url% - link to application
           :application-expiration-notification {:subject-to-member "A be nem nyújtott %:application-id% kérelme hamarosan törlésre kerül"
                                                 :message-to-member "Tisztelt %:recipient%!\n\nA be nem nyújtott kérelme %:last-activity% óta inaktív, és %:expires-on% után törlésre kerül, ha nem módosítja.\n\nA kérelmet itt tekintheti meg és szerkesztheti: %:application-url%"}
-          :application-returned {:subject-to-applicant "A(z) %:application-id% kérelmét módosítani kell"
-                                 :message-to-applicant "Tisztelt %:recipient%!\n\nA(z) %:application-id% kérelmét visszaküldték módosításra. Kérjük, végezze el a kért javításokat és nyújtsa be újra.\n\nA kérelmet itt tekintheti meg és szerkesztheti: %:application-url%"
-                                 :subject-to-handler "(%:application-id%) A kérelmet visszaküldték a kapcsolattartónak"
-                                 :message-to-handler "Tisztelt %:recipient%!\n\n%:event-actor% visszaküldte a(z) %:application-id% kérelmet %:applicant% kapcsolattartónak módosításra.\n\nA kérelmet itt tekintheti meg: %:application-url%"}
+          :application-returned {:subject-to-applicant "EPKEB-kérelem %:application-id% – bírálói visszajelzések"
+                                 :message-to-applicant "Kedves %:recipient%!\n\nBeérkeztek a kérelméhez tartozó bírálatok, és a kérelmet módosításra visszaküldtük. Az észrevételek:\n\n%:comment%\n\nA módosított válaszokat a rendszer a bírálóknak kiemeli; a mellékletekben kérjük, a módosításokat jól látható módon (színes kijelöléssel és/vagy félkövér betűtípussal) jelölje.\n\nA módosított kérelem beküldésére 30 nap áll rendelkezésére. A határidő (%:deadline%) elmulasztása az eljárás felfüggesztését vonja maga után. A kérelmezőnek joga van a módosított kérelemmel új eljárást kezdeményezni, ám ebben az esetben új bírálók kerülnek kijelölésre, akiknek ismételten 20 nap áll rendelkezésére a kérelem elbírálására.\n\nA kérelmet itt módosíthatja: %:application-url%"
+                                 :subject-to-handler "EPKEB-kérelem %:application-id% – módosításra visszaküldve"
+                                 :message-to-handler "Kedves %:recipient%!\n\n%:event-actor% módosításra visszaküldte a(z) %:application-id% kérelmet. A beküldési határidő %:deadline%.\n\nA kérelem: %:application-url%"
+                                 :subject-to-reviewer "EPKEB-kérelem %:application-id% – bírálói visszajelzések"
+                                 :message-to-reviewer "Kedves %:recipient%!\n\nTájékoztatásul: a(z) %:application-id% kérelmet a bírálatok alapján módosításra visszaküldtük. A kérelmezőnek küldött észrevételek:\n\n%:comment%\n\nA beérkező módosításról újabb felkérést kapsz. A kérelem: %:application-url%"}
           :application-revoked {:subject-to-applicant "A(z) %:application-id% kérelem engedélyét visszavonták"
                                 :message-to-applicant "Tisztelt %:recipient%!\n\nA(z) %:application-id% kérelem engedélyét visszavonták.\n\nA kérelmet itt tekintheti meg: %:application-url%"
                                 :subject-to-handler "(%:application-id%) Az engedélyt visszavonták"
                                 :message-to-handler "Tisztelt %:recipient%!\n\n%:event-actor% visszavonta a(z) %:application-id% kérelem engedélyét %:applicant% felhasználótól.\n\nA kérelmet itt tekintheti meg: %:application-url%"}
           :application-licenses-added {:subject "A(z) %:application-id% kérelem nyilatkozatai megváltoztak"
                                        :message "Tisztelt %:recipient%!\n\n%:event-actor% a jóváhagyását kéri a(z) %:application-id% kérelem megváltozott nyilatkozataihoz.\n\nA kérelmet megtekintheti és a feltételeket elfogadhatja itt: %:application-url%"}
-          :application-resubmitted {:subject-to-handler "(%:application-id%) A kérelmet újra benyújtották"
-                                    :message-to-handler "Tisztelt %:recipient%!\n\nA(z) %:application-id% kérelmet %:applicant% újra benyújtotta.\n\nA kérelmet itt bírálhatja el: %:application-url%"}
-          :application-submitted {:subject-to-applicant "A(z) %:application-id% kérelmét benyújtották"
-                                  :message-to-applicant "Tisztelt %:recipient%!\n\nA(z) %:application-id% kérelmét benyújtották. E-mailben értesítjük, amint a kérelmet feldolgozták.\n\nA kérelmet itt tekintheti meg: %:application-url%"
-                                  :subject-to-handler "(%:application-id%) Új kérelmet nyújtottak be"
-                                  :message-to-handler "Tisztelt %:recipient%!\n\n%:applicant% új kérelmet (%:application-id%) nyújtott be a következő eljárás(ok)hoz: %:catalogue-items%.\n\nA kérelmet itt bírálhatja el: %:application-url%"}
+          :application-resubmitted {:subject-to-handler "EPKEB-kérelem %:application-id% – beérkezett a módosítás"
+                                    :message-to-handler "Kedves %:recipient%!\n\nBeérkezett a(z) %:application-id% kérelem módosítása. Kérd fel újra a bírálókat (10 napos határidővel), vagy dönts.\n\nA kérelem: %:application-url%"}
+          :application-submitted {:subject-to-applicant "EPKEB-kérelem %:application-id% – benyújtva"
+                                  :message-to-applicant "Kedves %:recipient%!\n\nA(z) %:application-id% kérelmet benyújtották az EPKEB-hez. A bírálat eredményéről e-mailben értesítjük.\n\nA kérelem: %:application-url%"
+                                  :subject-to-handler "EPKEB-kérelem %:application-id% – új kérelem"
+                                  :message-to-handler "Kedves %:recipient%!\n\n%:applicant% új kérelmet nyújtott be (%:application-id%, %:catalogue-items%).\n\nA kérelem: %:application-url%"}
           :decided {:subject "(%:application-id%) Értesítés kérelemmel kapcsolatos döntésről"
                     :message "Tisztelt %:recipient%!\n\n%:event-actor% döntést hozott %:applicant% %:application-id% azonosítójú kérelméről.\n\nA kérelmet itt tekintheti meg: %:application-url%"}
           ;; Format parameters for decider-invited:
@@ -617,13 +621,17 @@
                                :message "Tisztelt %:recipient%!\n\n%:applicant% felkérte Önt a(z) %:application-id% azonosítójú kérelem felügyelőjének. Felügyelőként Ön hagyja jóvá a kérelmet a benyújtás előtt.\n\nA kérelmet megtekintheti és a felkérést elfogadhatja itt: %:invitation-url%"}
           :member-invited {:subject "Meghívás a(z) %:application-id% kérelemben való részvételre"
                            :message "Tisztelt %:recipient%!\n\nMeghívást kapott a(z) %:application-id% kérelemben való részvételre %:applicant% által.\n\nA kérelmet megtekintheti és a feltételeket elfogadhatja itt: %:invitation-url%"}
-          :regards "\n\nÜdvözlettel:\n\nEPKEB – Egyesített Pszichológiai Kutatásetikai Bizottság\n"
+          :regards "\n\nÜdvözlettel:\n\nAz EPKEB titkársága\nEgyesített Pszichológiai Kutatásetikai Bizottság\n"
           :remarked {:subject "(%:application-id%) Megjegyzés érkezett a kérelemhez"
                      :message "Tisztelt %:recipient%!\n\n%:event-actor% megjegyzést fűzött %:applicant% %:application-id% azonosítójú kérelméhez.\n\nA kérelmet és a megjegyzést itt tekintheti meg: %:application-url%"}
-          :review-requested {:subject "(%:application-id%) Bírálatkérés"
-                             :message "Tisztelt %:recipient%!\n\n%:event-actor% a bírálatát kéri %:applicant% %:application-id% azonosítójú kérelmével kapcsolatban.\n\nA kérelmet itt tekintheti meg: %:application-url%"}
-          :reviewed {:subject "(%:application-id%) A kérelmet bírálták"
-                     :message "Tisztelt %:recipient%!\n\n%:event-actor% bírálta %:applicant% %:application-id% azonosítójú kérelmét.\n\nA kérelmet itt tekintheti meg: %:application-url%"}
+          :review-requested {:subject "EPKEB-kérelem %:application-id% – bírálói felkérés"
+                             :message "Kedves %:recipient%!\n\n%:event-actor% felkér a(z) %:application-id% kérelem bírálására. A bírálati határidő %:deadline%.\n\nKérlek, jelezd az elnöknek, ha nem tudod határidőn belül vállalni.\n\nA kérelmet és a bírálati lapot itt találod: %:application-url%"
+                             :subject-re-review "EPKEB-kérelem %:application-id% – beérkezett módosítás"
+                             :message-re-review "Kedves %:recipient%!\n\nBeérkezett a(z) %:application-id% kérelemhez tartozó módosítás. Kérlek, egy újabb bírálattal jelezd, hogy elfogadod-e a javítást, vagy további módosítást kérsz. A módosított válaszokat a rendszer kiemeli.\n\nA módosított kérelem bírálati határideje %:deadline%.\n\nA kérelem: %:application-url%"}
+          :reviewed {:subject "EPKEB-kérelem %:application-id% – beérkezett egy bírálat"
+                     :message "Kedves %:recipient%!\n\n%:event-actor% leadta a bírálatát a(z) %:application-id% kérelemhez.\n\nA kérelem: %:application-url%"
+                     :subject-all-done "EPKEB-kérelem %:application-id% – a bírálatok beérkeztek"
+                     :message-all-done "Kedves %:recipient%!\n\nBeérkeztek a(z) %:application-id% kérelemhez tartozó bírálatok, a kérelem döntésre vár. A javaslatokat a kérelem oldalán, a „Bírálatok” kártyán látod.\n\nA kérelem: %:application-url%"}
           ;; Format parameters for reviewer-invited:
           ;; %1 - %:recipient% - name of recipient
           ;; %2 - %:applicant% - name of applicant

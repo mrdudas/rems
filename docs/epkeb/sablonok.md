@@ -107,6 +107,28 @@ Megfigyelések:
 - A sablonok fejléce és aláírása kép (a szövegkinyerés „automatically generated description” képleírást ad).
 - Az angol minta dátuma hibás formátumú („02 12, 2026”) – a generált engedélynél a dátumot a nyelvnek megfelelően kell formázni.
 
+## Levélsablonok a rendszerben
+
+A titkárok levélsablonjai („EPKEB levél sablonok_TITKÁROKNAK_angol+magyar bővített”) a rendszer leveleiben (2026-10-28). A szövegek a sablonokét követik (a bírálóknak és az elnököknek tegezve, a kérelmezőknek magázva), magyarul és angolul; a tárgy „EPKEB-kérelem *sorszám, „cím”* – …” alakú. Az EPKEB-re jellemző levelek a `:enable-review-recommendations` kapcsolóval együtt kapcsolnak be; a fordítási kulcsok a `resources/translations/*.edn` `:email` részében vannak.
+
+| Sablon | Rendszerlevél (`:t.email…`) | Kinek | Megjegyzés |
+|---|---|---|---|
+| Felkérés (20 nap) | `review-requested/subject`, `message` | bíráló | a bírálati határidő dátumával; a „Kérelem, Bírálati lap sablon” csatolmány helyett link a kérelemre, ahol a bírálat is leadható; titkos címzettek helyett mindenki külön levelet kap |
+| Emlékeztető 1 héttel és 3 nappal előtte | `review-due-soon` | bíráló | automatikus (`:enable-deadline-reminders`) |
+| Határidőn túli emlékeztető (társelnök cc) | `review-overdue`, `…-to-handler` | bíráló és az illetékes elnök | automatikus, a lejárat utáni napon, majd hetente |
+| Bírálói visszajelzés a kérelmezőnek (módosítás kell), kapcsolattartó is | `application-returned/…-to-applicant` | kapcsolattartó és kutatók | az elnök visszaküldő megjegyzése (a bírálók észrevételei) és a 30 napos határidő dátuma; a „jelölje a módosításokat” kérés csak a mellékletekre szól, mert a rendszer a változott válaszokat kiemeli |
+| Bírálói visszajelzés a bírálóknak (módosítást kértek) | `application-returned/…-to-reviewer` | bírálók | a kérelmezőnek küldött észrevételekkel |
+| Bírálói visszajelzés a bírálóknak (mindkettő jóváhagyta) | `application-approved/…-to-reviewer` | bírálók | a jóváhagyáskor |
+| Beérkezett módosítás a bírálóknak (10 nap) | `review-requested/subject-re-review`, `message-re-review` | bíráló | ha a kérelmet korábban visszaküldték; az elnök a módosítás beérkezésekor levelet kap (`application-resubmitted`), és újra felkéri a bírálókat |
+| Társelnöknek: engedély kiadható | `reviewed/subject-all-done`, `message-all-done` | illetékes elnök | amikor az utolsó bírálat is beérkezett; a javaslatok a „Bírálatok” kártyán |
+| Engedély kiküldése (normál, rövidített; magyar, angol) | `application-approved/…-to-applicant` | kapcsolattartó és kutatók | a levél nyelve a címzett beállítása; az engedélyszám és a PDF a [virtuális engedéllyel](virtualis-engedely.md) jön |
+| Aláírás | `:t.email/regards` | | „Az EPKEB titkársága” (név nélkül) |
+
+Nincs külön levele:
+
+- **Rövidített kérelem kiküldése a társelnöknek (14 nap):** az illetékes elnök a benyújtáskor kap levelet (`application-submitted/…-to-handler`); a 14 napos elnöki határidőt a rendszer még nem követi.
+- **Társelnök nevében küldött levelek:** a rendszerben a felkérést maga az elnök (vagy a titkár) küldi; a levélben az ő neve áll.
+
 ## Tagintézmények
 
 A *Résztvevő intézmények listája* szerint (zárójelben a csatlakozás éve, ahol ismert):
