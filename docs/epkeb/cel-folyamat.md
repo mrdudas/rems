@@ -89,7 +89,7 @@ A REMS processing state funkciója (`:enable-processing-states`) a finomabb áll
 | Funkció | REMS | Teendő |
 |---|---|---|
 | Kérelmező meghívása | `invite-member` | – |
-| Létrehozás csak kapcsolattartónak | nincs | **fejlesztés**: kapcsolattartók listája tagintézményenként, és a létrehozás ellenőrzése |
+| Létrehozás csak kapcsolattartónak | nincs | **kész**: `:enable-organization-contacts`, kapcsolattartók és illetékes elnökök a szervezeten (lásd [szervezetek.md](szervezetek.md#megvalósítás-1-lépés)) |
 | A meghívott tag szerkesztheti az űrlapot | csak az applicant szerkeszthet | **kész**: `:enable-member-editing` |
 | „Beadható” jelzés | nincs | **kész**: `mark-ready` parancs, értesítés a kapcsolattartónak (lásd [jogosultsagok.md](jogosultsagok.md#elkészült-fejlesztések)) |
 | Felügyelői jóváhagyás | nincs | **kész**: `designate-supervisor` és `approve-supervision`, a benyújtás feltétele |
