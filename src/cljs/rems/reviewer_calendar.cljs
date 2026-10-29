@@ -1,9 +1,9 @@
 (ns rems.reviewer-calendar
   "The /reviewer-calendar page: the open and done reviews of the reviewer
   pool on a scrollable timeline with their deadlines, and requesting new
-  reviews. See
-  `:reviewer-pool-organization`."
+  reviews. See `:reviewer-pool-organization`."
   (:require [re-frame.core :as rf]
+            [reagent.core :as r]
             [rems.atoms :refer [document-title]]
             [rems.collapsible :as collapsible]
             [rems.fetcher :as fetcher]
