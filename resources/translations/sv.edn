@@ -771,7 +771,7 @@
                        :share-hint "Granskarens andel av alla granskningar klara under perioden."
                        :status-hint "\"Granskar\" och \"Granskar (begränsat)\": kan begäras. \"Tillfälligt inte\": kan inte begäras nu. \"Nej\": rätten att granska återkallad."
                        :subject "Ämne"
-                       :title "Granskare"
+                       :title "Granskarpool"
                        :year "År"}
   :reviewer-calendar {:absent "Borta"
                       :already-requested "Begärd"
@@ -790,6 +790,7 @@
                       :request-reviews-intro "Välj en ansökan och begär sedan granskning av en granskare i kalendern nedan."
                       :reviewers-requested "%1 granskare begärda"
                       :select-application "Ansökan som väntar på granskare"
+                      :title "Granskarkalender"
                       :today "I dag"}
   :roles {:anonymous-handler :sv.t.roles/handler
           :applicant "Sökande"

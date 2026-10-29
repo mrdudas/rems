@@ -875,7 +875,7 @@
                        :share-hint "A bíráló részesedése az időszakban kész összes bírálatból."
                        :status-hint "„Bírál” és „Bírál*”: felkérhető. „Átmenetileg nem”: most nem kérhető fel. „Nem”: a bírálói jogkör visszavonva."
                        :subject "Tárgy"
-                       :title "Bírálók"
+                       :title "Bírálói kör"
                        :year "Év"}
   :reviewer-calendar {:absent "Távol"
                       :already-requested "Felkérve"
@@ -894,6 +894,7 @@
                       :request-reviews-intro "Válasszon kérelmet, majd az alábbi naptárban kérje fel a bírálót."
                       :reviewers-requested "%1 bíráló felkérve"
                       :select-application "Bírálóra váró kérelem"
+                      :title "Bírálói naptár"
                       :today "Ma"}
   :roles {:anonymous-handler "Bizottság"
           :applicant "Kapcsolattartó"

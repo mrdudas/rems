@@ -405,7 +405,7 @@
         [collapsible/component
          {:id "reviewer-calendar"
           :open? true
-          :title (text :t.navigation/reviewer-calendar)
+          :title (text :t.reviewer-calendar/title)
           :always [:div
                    [:p (text :t.reviewer-calendar/intro)]
                    [calendar-timeline]]}]

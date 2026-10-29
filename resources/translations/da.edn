@@ -820,7 +820,7 @@
                        :share-hint "Bedømmerens andel af alle bedømmelser færdige i perioden."
                        :status-hint "\"Bedømmer\" og \"Bedømmer (begrænset)\": kan anmodes. \"Midlertidigt ikke\": kan ikke anmodes nu. \"Nej\": retten til at bedømme er tilbagekaldt."
                        :subject "Emne"
-                       :title "Bedømmere"
+                       :title "Bedømmerpulje"
                        :year "År"}
   :reviewer-calendar {:absent "Fraværende"
                       :already-requested "Anmodet"
@@ -839,6 +839,7 @@
                       :request-reviews-intro "Vælg en ansøgning, og anmod derefter en bedømmer i kalenderen nedenfor."
                       :reviewers-requested "%1 bedømmere anmodet"
                       :select-application "Ansøgning der venter på bedømmere"
+                      :title "Bedømmerkalender"
                       :today "I dag"}
   :roles {:anonymous-handler :da.t.roles/handler
           :applicant "Ansøger"

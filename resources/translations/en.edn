@@ -875,7 +875,7 @@
                        :share-hint "The share of the reviewer of all the reviews done in the period."
                        :status-hint "\"Reviews\" and \"Reviews (limited)\": can be requested. \"Temporarily not\": cannot be requested now. \"No\": the right to review is revoked."
                        :subject "Subject"
-                       :title "Reviewers"
+                       :title "Reviewer pool"
                        :year "Year"}
   :reviewer-calendar {:absent "Away"
                       :already-requested "Requested"
@@ -894,6 +894,7 @@
                       :request-reviews-intro "Choose an application, then request a review from a reviewer in the calendar below."
                       :reviewers-requested "%1 reviewers requested"
                       :select-application "Application waiting for reviewers"
+                      :title "Reviewer calendar"
                       :today "Today"}
   :roles {:anonymous-handler "Committee"
           :applicant "Contact person"

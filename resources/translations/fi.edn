@@ -771,7 +771,7 @@
                        :share-hint "Arvioijan osuus kaikista jakson aikana valmistuneista arvioista."
                        :status-hint "\"Arvioi\" ja \"Arvioi (rajoitetusti)\": voi pyytää. \"Tilapäisesti ei\": ei voi pyytää nyt. \"Ei\": arviointioikeus peruttu."
                        :subject "Aihe"
-                       :title "Arvioijat"
+                       :title "Arvioijapooli"
                        :year "Vuosi"}
   :reviewer-calendar {:absent "Poissa"
                       :already-requested "Pyydetty"
@@ -790,6 +790,7 @@
                       :request-reviews-intro "Valitse hakemus ja pyydä arvio alla olevasta kalenterista."
                       :reviewers-requested "%1 arvioijaa pyydetty"
                       :select-application "Arvioijia odottava hakemus"
+                      :title "Arvioijakalenteri"
                       :today "Tänään"}
   :roles {:anonymous-handler :fi.t.roles/handler
           :applicant "Hakija"
