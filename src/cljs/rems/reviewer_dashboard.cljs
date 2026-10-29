@@ -80,7 +80,8 @@
 (fetcher/reg-fetcher ::dashboard "/api/reviewer-pool")
 (fetcher/reg-fetcher ::available-users "/api/organizations/available-owners" {:result (partial mapv enrich-user)})
 
-(rf/reg-sub ::period (fn [db _] (::period db)))
+;; the page may render before ::enter-page has set the period
+(rf/reg-sub ::period (fn [db _] (or (::period db) (current-period :month))))
 
 (rf/reg-event-fx
  ::set-period
