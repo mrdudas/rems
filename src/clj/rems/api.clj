@@ -20,6 +20,7 @@
             [rems.api.invitations :refer [invitations-api]]
             [rems.api.licenses :refer [licenses-api]]
             [rems.api.organizations :refer [organizations-api]]
+            [rems.api.reviewer-pool :refer [reviewer-pool-api]]
             [rems.api.permissions :refer [permissions-api]]
             [rems.api.public :as public]
             [rems.api.resources :refer [resources-api]]
@@ -233,6 +234,7 @@
       organizations-api
       permissions-api
       resources-api
+      reviewer-pool-api
       user-settings-api
       users-api
       workflows-api

@@ -9,6 +9,7 @@
             [rems.config]
             [rems.fetcher :as fetcher]
             [rems.flash-message :as flash-message]
+            [rems.reviewer-dashboard :as reviewer-dashboard]
             [rems.reviews :refer [recommendation-text]]
             [rems.spinner :as spinner]
             [rems.text :refer [localize-reviewer-status localize-state text text-format]]
@@ -18,7 +19,8 @@
  ::enter-page
  (fn [{:keys [db]} _]
    {:db (dissoc db ::selected-application)
-    :dispatch [::calendar]}))
+    :dispatch-n [[::calendar]
+                 [::reviewer-dashboard/enter-page]]}))
 
 (fetcher/reg-fetcher ::calendar "/api/applications/reviewer-calendar")
 (fetcher/reg-fetcher ::available-reviewers "/api/applications/reviewers")
@@ -186,6 +188,38 @@
       [:div {:style {:font-weight 600 :overflow :hidden :text-overflow :ellipsis}} title]
       [:div {:style {:overflow :hidden :text-overflow :ellipsis}} state " · " status]]]))
 
+(defn- date-ms
+  "The start of the date YYYY-MM-DD in the local time zone."
+  [date]
+  (let [[year month day] (map js/parseInt (.split date "-"))]
+    (.getTime (js/Date. year (dec month) day))))
+
+(defn- absence-blocks
+  "The absences of the reviewer, greyed out."
+  [line reviewer]
+  [:<>
+   (for [absence (:reviewer/absences reviewer)
+         :let [left (x line (date-ms (:start absence)))
+               right (x line (+ (date-ms (:end absence)) day-ms))]]
+     ^{:key (:start absence)}
+     [:div {:title (str (text :t.reviewer-calendar/absent) ": " (reviewer-dashboard/absence-text absence))
+            :style {:position :absolute :top 0 :bottom 0
+                    :left left
+                    :width (- right left)
+                    :background "repeating-linear-gradient(135deg, #d5dae2 0, #d5dae2 6px, #e6e9ee 6px, #e6e9ee 12px)"
+                    :color "#5B6B80"
+                    :font-size "0.75rem"
+                    :padding "2px 4px"
+                    :overflow :hidden
+                    :white-space :nowrap}}
+      (text :t.reviewer-calendar/absent)])])
+
+(defn- absent-today? [reviewer]
+  (let [today (format-date (- (.getTime (js/Date.)) (* 60000 (.getTimezoneOffset (js/Date.)))))]
+    (some #(and (<= (compare (:start %) today) 0)
+                (<= (compare today (:end %)) 0))
+          (:reviewer/absences reviewer))))
+
 (defn- weeks
   "The Mondays of the timeline."
   [line]
@@ -255,6 +289,7 @@
                     :position :relative
                     :height (* lane-count lane-height)
                     :background-color "#f6f8fb"}}
+      [absence-blocks line reviewer]
       [grid line]
       (for [review reviews]
         ^{:key (str (:application/id review) "/" (:review/requested review))}
@@ -269,6 +304,9 @@
         (cond
           (contains? requested (:userid reviewer))
           [:span.text-muted (text :t.reviewer-calendar/already-requested)]
+
+          (absent-today? reviewer)
+          [:span.text-muted (text :t.reviewer-calendar/absent)]
 
           (contains? available (:userid reviewer))
           [:button.btn.btn-primary.btn-sm
@@ -370,4 +408,9 @@
           :title (text :t.navigation/reviewer-calendar)
           :always [:div
                    [:p (text :t.reviewer-calendar/intro)]
-                   [calendar-timeline]]}]])]))
+                   [calendar-timeline]]}]
+        [collapsible/component
+         {:id "reviewer-dashboard"
+          :open? true
+          :title (text :t.reviewer-dashboard/title)
+          :always [reviewer-dashboard/reviewer-dashboard]}]])]))

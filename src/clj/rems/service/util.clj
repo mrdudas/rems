@@ -5,7 +5,7 @@
             [rems.context :as context]
             [rems.util :refer [getx-user-id]]))
 
-(defn- may-edit-organization? [organization]
+(defn may-edit-organization? [organization]
   (let [owner? (contains? context/*roles* :owner)
         organization-owners (set (map :userid (:organization/owners organization)))
         organization-owner? (contains? organization-owners (getx-user-id))]

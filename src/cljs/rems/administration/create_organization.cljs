@@ -80,7 +80,7 @@
   (->> reviewers
        (filter :userid)
        (mapv #(-> %
-                  (select-keys [:userid :reviewer/organization :reviewer/status])
+                  (select-keys [:userid :reviewer/organization :reviewer/status :reviewer/absences])
                   (update :reviewer/status (fnil keyword :active))))))
 
 (defn- valid-reviewers? [reviewers]

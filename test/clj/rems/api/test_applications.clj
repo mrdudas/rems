@@ -3613,6 +3613,119 @@
                     :reviews
                     (mapv (juxt :application/id (comp keyword :application/state) (comp some? :review/done))))))))))
 
+;; EPKEB: the reviewer dashboard
+(deftest test-reviewer-dashboard
+  (test-helpers/create-user! {:userid "owner" :name "Owner" :email "owner@example.com"} :owner)
+  (test-helpers/create-user! {:userid "dash-handler" :name "Dash Handler" :email "dash-handler@example.com"})
+  (doseq [userid ["dash-reviewer1" "dash-reviewer2" "dash-applicant"]]
+    (test-helpers/create-user! {:userid userid :name userid :email (str userid "@example.com")}))
+  (is (= {:success true :organization/id "dash-pool"}
+         (api-call :post "/api/organizations/create"
+                   {:organization/id "dash-pool"
+                    :organization/name {:fi "Pool" :en "Pool" :sv "Pool"}
+                    :organization/short-name {:fi "Pool" :en "Pool" :sv "Pool"}
+                    :organization/owners []
+                    :organization/review-emails []
+                    :organization/reviewers [{:userid "dash-reviewer1" :reviewer/organization "dash-pool" :reviewer/status :active}]}
+                   +test-api-key+ "owner")))
+  (with-redefs [rems.config/env (assoc rems.config/env :reviewer-pool-organization "dash-pool")]
+    (let [workflow-id (test-helpers/create-workflow! {:type :workflow/default
+                                                      :handlers ["dash-handler"]})
+          cat-item-id (test-helpers/create-catalogue-item! {:workflow-id workflow-id})
+          app-id (test-helpers/create-application! {:catalogue-item-ids [cat-item-id]
+                                                    :actor "dash-applicant"})
+          today (str (java.time.LocalDate/now (java.time.ZoneId/of "Europe/Budapest")))
+          year (subs today 0 4)
+          dashboard (fn [userid]
+                      (api-call :get (str "/api/reviewer-pool?from=" year "-01-01&to=" year "-12-31") nil
+                                +test-api-key+ userid))
+          stats-of (fn [userid reviewer]
+                     (->> (:reviewers (dashboard userid))
+                          (filter #(= reviewer (:userid %)))
+                          first))
+          available (fn [] (->> (api-call :get (str "/api/applications/reviewers?application-id=" app-id) nil
+                                          +test-api-key+ "dash-handler")
+                                (mapv :userid)))]
+      (test-helpers/command! {:type :application.command/submit
+                              :application-id app-id
+                              :actor "dash-applicant"})
+      (testing "only the owners of the pool organization may edit the pool"
+        (is (false? (:may-edit (dashboard "dash-handler"))))
+        (is (true? (:may-edit (dashboard "owner"))))
+        (is (response-is-forbidden?
+             (api-response :put "/api/reviewer-pool/reviewer"
+                           {:userid "dash-reviewer2" :reviewer/organization "dash-pool" :reviewer/status :active}
+                           +test-api-key+ "dash-handler"))))
+      (testing "adding a reviewer"
+        (is (= {:success true}
+               (api-call :put "/api/reviewer-pool/reviewer"
+                         {:userid "dash-reviewer2" :reviewer/organization "dash-pool" :reviewer/status :active}
+                         +test-api-key+ "owner")))
+        (is (= ["dash-reviewer1" "dash-reviewer2"] (sort (available)))))
+      (testing "an absent reviewer is not available"
+        (is (= {:success false :errors [{:type "t.reviewer-dashboard.errors/invalid-absence"}]}
+               (api-call :put "/api/reviewer-pool/reviewer"
+                         {:userid "dash-reviewer2" :reviewer/organization "dash-pool" :reviewer/status :active
+                          :reviewer/absences [{:start "2030-01-02" :end "2030-01-01"}]}
+                         +test-api-key+ "owner")))
+        (is (= {:success true}
+               (api-call :put "/api/reviewer-pool/reviewer"
+                         {:userid "dash-reviewer2" :reviewer/organization "dash-pool" :reviewer/status :active
+                          :reviewer/absences [{:start today :end today :comment "holiday"}]}
+                         +test-api-key+ "owner")))
+        (is (= ["dash-reviewer1"] (available)))
+        (is (= {:reviewer/absent true
+                :reviewer/absences [{:start today :end today :comment "holiday"}]}
+               (select-keys (stats-of "dash-handler" "dash-reviewer2") [:reviewer/absent :reviewer/absences]))))
+      (testing "revoking the right to review"
+        (is (= {:success true}
+               (api-call :put "/api/reviewer-pool/reviewer"
+                         {:userid "dash-reviewer2" :reviewer/organization "dash-pool" :reviewer/status :inactive}
+                         +test-api-key+ "owner")))
+        (is (= ["dash-reviewer1"] (available))))
+      (testing "the statistics"
+        (test-helpers/command! {:type :application.command/request-review
+                                :application-id app-id
+                                :actor "dash-handler"
+                                :reviewers ["dash-reviewer1"]
+                                :comment ""})
+        (is (= {:requested 1 :done 0 :open 1 :overdue 0}
+               (select-keys (:reviewer/stats (stats-of "dash-handler" "dash-reviewer1")) [:requested :done :open :overdue])))
+        (test-helpers/command! {:type :application.command/review
+                                :application-id app-id
+                                :actor "dash-reviewer1"
+                                :comment "ok"})
+        (is (= {:requested 1 :done 1 :share 1.0 :on-time 1 :open 0}
+               (select-keys (:reviewer/stats (stats-of "dash-handler" "dash-reviewer1")) [:requested :done :share :on-time :open])))
+        (testing "outside the period"
+          (is (= {:requested 0 :done 0}
+                 (-> (api-call :get "/api/reviewer-pool?from=2000-01-01&to=2000-12-31" nil +test-api-key+ "dash-handler")
+                     :reviewers
+                     (->> (filter #(= "dash-reviewer1" (:userid %))))
+                     first
+                     :reviewer/stats
+                     (select-keys [:requested :done]))))))
+      (testing "a message to a reviewer"
+        (is (= {:success false :errors [{:type "t.reviewer-dashboard.errors/not-in-pool"}]}
+               (api-call :post "/api/reviewer-pool/send-message"
+                         {:userid "dash-applicant" :subject "Hello" :body "Text"}
+                         +test-api-key+ "dash-handler")))
+        (is (= {:success true}
+               (api-call :post "/api/reviewer-pool/send-message"
+                         {:userid "dash-reviewer1" :subject "Hello" :body "Text"}
+                         +test-api-key+ "dash-handler")))
+        (is (= [{:to-user "dash-reviewer1"
+                 :subject "Hello"
+                 :reply-to "dash-handler@example.com"}]
+               (->> (rems.db.outbox/get-entries {:type :email})
+                    (map :outbox/email)
+                    (filter #(= "Hello" (:subject %)))
+                    (mapv #(select-keys % [:to-user :subject :reply-to])))))
+        (is (str/starts-with? (->> (rems.db.outbox/get-entries {:type :email})
+                                   (map :outbox/email)
+                                   (some #(when (= "Hello" (:subject %)) (:body %))))
+                              "Text\n\nDash Handler"))))))
+
 ;; EPKEB: the tasks of the user by role
 (deftest test-my-tasks
   (doseq [userid ["tasks-researcher" "tasks-reviewer1" "tasks-reviewer2"]]

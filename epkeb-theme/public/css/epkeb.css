@@ -49,11 +49,16 @@ h1 {
 }
 
 /* cards instead of black boxes */
+/* no overflow: hidden, it would cut off the dropdown menus inside */
 .collapsible.card,
 .card {
   border: 1px solid var(--epkeb-line);
   border-radius: var(--epkeb-radius);
-  overflow: hidden;
+}
+.card > .card-header:first-child,
+.collapsible > .card-header:first-child {
+  border-top-left-radius: var(--epkeb-radius);
+  border-top-right-radius: var(--epkeb-radius);
 }
 .collapsible > .card-header,
 .card-header {
@@ -101,10 +106,13 @@ h1 {
 }
 
 /* tables */
+/* rounded by the corner cells: overflow: hidden would cut off the
+   dropdown menus of the rows, e.g. "Modify" */
 .rems-table {
   border-radius: var(--epkeb-radius);
-  overflow: hidden;
 }
+.rems-table tr:first-child th:first-child { border-top-left-radius: var(--epkeb-radius); }
+.rems-table tr:first-child th:last-child { border-top-right-radius: var(--epkeb-radius); }
 .rems-table th {
   text-transform: uppercase;
   font-size: 0.75rem;

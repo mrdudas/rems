@@ -80,11 +80,19 @@
   `:active` and `:limited` reviewers can be requested to review."
   (s/enum :active :limited :paused :inactive))
 
+(s/defschema ReviewerAbsence
+  "A period when the reviewer does not review, e.g. a holiday. The dates are
+  inclusive, in the format YYYY-MM-DD."
+  {:start (s/constrained s/Str #(re-matches #"\d{4}-\d{2}-\d{2}" %))
+   :end (s/constrained s/Str #(re-matches #"\d{4}-\d{2}-\d{2}" %))
+   (s/optional-key :comment) (s/maybe s/Str)})
+
 (s/defschema ReviewerPoolEntry
   {:userid UserId
    ;; the organization that delegated the reviewer
    :reviewer/organization s/Str
-   :reviewer/status ReviewerStatus})
+   :reviewer/status ReviewerStatus
+   (s/optional-key :reviewer/absences) [ReviewerAbsence]})
 
 (s/defschema OrganizationFull
   (merge OrganizationOverview

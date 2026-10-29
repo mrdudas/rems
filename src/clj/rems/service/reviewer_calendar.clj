@@ -122,6 +122,7 @@
                      (assoc user
                             :reviewer/organization (:reviewer/organization entry)
                             :reviewer/status (:reviewer/status entry)
+                            :reviewer/absences (vec (sort-by :start (:reviewer/absences entry)))
                             :reviews (->> (reviews (:userid entry))
                                           (map #(dissoc % :userid))
                                           (sort-by :review/requested)

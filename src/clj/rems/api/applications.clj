@@ -86,6 +86,7 @@
   {:reviewers [(merge schema-base/UserWithAttributes
                       {:reviewer/organization s/Str
                        :reviewer/status schema-base/ReviewerStatus
+                       :reviewer/absences [schema-base/ReviewerAbsence]
                        :reviews [CalendarReview]})]
    :waiting-applications [{:application/id s/Int
                            :application/external-id (s/maybe s/Str)
@@ -247,7 +248,7 @@
 
     (GET "/reviewer-calendar" []
       :summary "The open and done reviews of the reviewer pool with their deadlines, and the applications waiting for reviewers, for the applications that the user handles. Only with `:reviewer-pool-organization`."
-      :roles #{:handler}
+      :roles #{:handler :owner}
       :return (s/maybe ReviewerCalendar)
       (ok (rems.service.reviewer-calendar/get-calendar (getx-user-id))))
 

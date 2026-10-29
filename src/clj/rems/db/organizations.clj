@@ -67,7 +67,7 @@
 
 (defn- join-reviewer [reviewer]
   (merge (rems.db.users/get-user (:userid reviewer))
-         (select-keys reviewer [:reviewer/organization :reviewer/status])))
+         (select-keys reviewer [:reviewer/organization :reviewer/status :reviewer/absences])))
 
 (defn get-organizations []
   (->> (get-organizations-raw)
@@ -122,7 +122,7 @@
                                   (update :organization/owners (partial mapv #(select-keys % [:userid])))
                                   (update-existing :organization/contacts (partial mapv #(select-keys % [:userid])))
                                   (update-existing :organization/chairs (partial mapv #(select-keys % [:userid])))
-                                  (update-existing :organization/reviewers (partial mapv #(select-keys % [:userid :reviewer/organization :reviewer/status])))
+                                  (update-existing :organization/reviewers (partial mapv #(select-keys % [:userid :reviewer/organization :reviewer/status :reviewer/absences])))
                                   validate-organization)]
     (db/set-organization! {:id id
                            :data (json/generate-string stripped-organization)})
