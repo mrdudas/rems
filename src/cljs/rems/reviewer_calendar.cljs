@@ -6,6 +6,7 @@
             [reagent.core :as r]
             [rems.atoms :refer [document-title]]
             [rems.collapsible :as collapsible]
+            [rems.config]
             [rems.fetcher :as fetcher]
             [rems.flash-message :as flash-message]
             [rems.reviews :refer [recommendation-text]]
@@ -56,6 +57,9 @@
 (def ^:private name-width 224)
 (def ^:private action-width 144)
 (def ^:private lane-height 46)
+(def ^:private min-bar-days
+  "The minimum length of a bar in days, so that its text can be read."
+  9)
 (def ^:private scroll-days
   "How far the earlier and later buttons scroll."
   28)
@@ -111,7 +115,7 @@
          result []]
     (if-some [review (first reviews)]
       (let [left (x line (ms (:review/requested review)))
-            right (max (+ left (* 6 day-width)) (x line (review-end review (:now line))))
+            right (max (+ left (* min-bar-days day-width)) (x line (review-end review (:now line))))
             lane (or (first (keep-indexed #(when (<= %2 left) %1) lane-ends))
                      (count lane-ends))]
         (recur (rest reviews)
@@ -147,7 +151,7 @@
         done? (some? (:review/done review))
         overdue? (pos? (:review/overdue-days review))
         left (x line requested)
-        right (max (+ left (* 6 day-width)) (x line (review-end review (:now line))))
+        right (max (+ left (* min-bar-days day-width)) (x line (review-end review (:now line))))
         width (- right left)
         title (str (:application/external-id review)
                    (when-some [description (:application/description review)]
@@ -222,7 +226,7 @@
        ;; the month on the first week of the month
        [:div {:style {:font-weight 600 :height "1.1em"}}
         (when (<= (.getDate date) 7)
-          (.toLocaleDateString date js/undefined #js {:year "numeric" :month "long"}))]
+          (.toLocaleDateString date (name @rems.config/current-language) #js {:year "numeric" :month "long"}))]
        [:div (subs (format-date (+ t (* 12 60 60 1000))) 5)]])
     [:div {:style {:position :absolute :left (- (x line (:now line)) 20) :bottom 0
                    :width 40 :text-align :center :font-weight 700 :color "#16233A"
@@ -310,7 +314,10 @@
                        (when-not @scrolled?
                          (reset! scrolled? true)
                          (scroll-to-today! el line))))
-              :style {:overflow-x :auto
+              ;; the zero width keeps the box from widening the page
+              :style {:width 0
+                      :min-width "100%"
+                      :overflow-x :auto
                       :border "1px solid #ddd"
                       :border-radius 8}}
         [:div {:style {:width :max-content :min-width "100%"}}
