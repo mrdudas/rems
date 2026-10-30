@@ -105,10 +105,13 @@
              (into [:div] (for [task tasks]
                             ^{:key [(:application/id task) (:task/type task)]}
                             [task-row task]))
-             (when (= role :handler)
-               (when (:reviewer-pool-organization @rems.globals/config)
-                 [:div {:style {:padding "0.75rem 1rem 0"}}
-                  [:a {:href "/reviewer-calendar"} (text :t.navigation/reviewer-calendar) " →"]]))]}])
+             (when (:reviewer-pool-organization @rems.globals/config)
+               (case role
+                 :handler [:div {:style {:padding "0.75rem 1rem 0"}}
+                           [:a {:href "/reviewer-calendar"} (text :t.navigation/reviewer-calendar) " →"]]
+                 :reviewer [:div {:style {:padding "0.75rem 1rem 0"}}
+                            [:a {:href "/profile"} (text :t.reviewer-dashboard/my-absences-link) " →"]]
+                 nil))]}])
 
 (defn my-tasks-page []
   (let [tasks @(rf/subscribe [::my-tasks])

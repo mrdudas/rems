@@ -5,6 +5,7 @@
             [clj-time.format :as time-format]
             [clojure.string :as str]
             [rems.auth.util :refer [throw-forbidden]]
+            [rems.common.roles :refer [has-roles?]]
             [rems.config :refer [env]]
             [rems.db.applications]
             [rems.db.organizations]
@@ -122,6 +123,14 @@
   []
   (boolean (some-> (pool-organization) rems.service.util/may-edit-organization?)))
 
+(defn- may-edit-absences?
+  "The reviewer, the handlers and those who may edit the pool may edit the
+  absences of the reviewer `userid`."
+  [userid]
+  (or (= userid (getx-user-id))
+      (has-roles? :handler)
+      (may-edit-pool?)))
+
 (defn- in-period? [from to t]
   (and t
        (let [date (date-string t)]
@@ -172,6 +181,7 @@
           stats-of (reviewer-statistics applications from to)
           today (date-string (time/now))]
       {:may-edit (may-edit-pool?)
+       :may-edit-absences (or (has-roles? :handler) (may-edit-pool?))
        :today today
        :reviewers (vec
                    (for [entry pool
@@ -217,6 +227,44 @@
                    (if (some #(= userid (:userid %)) reviewers)
                      (mapv #(if (= userid (:userid %)) entry %) reviewers)
                      (conj (vec reviewers) entry))))))
+      {:success true})))
+
+(defn- pool-entry [userid]
+  (some #(when (= userid (:userid %)) %)
+        (rems.db.organizations/get-reviewer-pool (:reviewer-pool-organization env))))
+
+(defn get-my-absences
+  "The status and the absences of the current user in the reviewer pool, or
+  nil when the user is not a member of the pool."
+  []
+  (when-some [entry (pool-entry (getx-user-id))]
+    {:reviewer/status (:reviewer/status entry)
+     :reviewer/absences (vec (sort-by :start (:reviewer/absences entry)))}))
+
+(defn set-absences!
+  "Sets the absences of a member of the reviewer pool. The reviewer, the
+  handlers and those who may edit the pool may set them."
+  [{:keys [userid] :as command}]
+  (when-not (may-edit-absences? userid)
+    (throw-forbidden "only the reviewer, the handlers and the owners of the reviewer pool organization may set the absences"))
+  (cond
+    (not (pool-entry userid))
+    {:success false :errors [{:type :t.reviewer-dashboard.errors/not-in-pool}]}
+
+    (not-every? valid-absence? (:reviewer/absences command))
+    {:success false :errors [{:type :t.reviewer-dashboard.errors/invalid-absence}]}
+
+    :else
+    (do
+      (rems.db.organizations/update-organization!
+       (:reviewer-pool-organization env)
+       (fn [organization]
+         (update organization :organization/reviewers
+                 (fn [reviewers]
+                   (mapv #(if (= userid (:userid %))
+                            (assoc % :reviewer/absences (vec (:reviewer/absences command)))
+                            %)
+                         reviewers)))))
       {:success true})))
 
 (defn- email-of [userid]

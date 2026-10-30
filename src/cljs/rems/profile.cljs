@@ -6,6 +6,7 @@
             [rems.fetcher :as fetcher]
             [rems.guide-util :refer [component-info example]]
             [rems.globals]
+            [rems.reviewer-absences :as reviewer-absences]
             [rems.spinner :as spinner]
             [rems.text :refer [text]]
             [rems.user :as user]
@@ -15,7 +16,8 @@
  ::enter-page
  (fn [{:keys [db]} _]
    {:db (dissoc db ::form)
-    :dispatch [::user-settings]}))
+    :dispatch-n [[::user-settings]
+                 [::reviewer-absences/enter-page]]}))
 
 (defn- fetch-user-settings-success [result]
   ;; select only the keys that can be edited on this page
@@ -104,6 +106,7 @@
    [flash-message/component :top]
    [:div.spaced-vertically-3
     [user-settings]
+    [reviewer-absences/my-absences]
     [user-details]]])
 
 (defn guide []

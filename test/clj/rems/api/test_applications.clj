@@ -3677,6 +3677,36 @@
         (is (= {:reviewer/absent true
                 :reviewer/absences [{:start today :end today :comment "holiday"}]}
                (select-keys (stats-of "dash-handler" "dash-reviewer2") [:reviewer/absent :reviewer/absences]))))
+      (testing "the absences of a reviewer"
+        (is (= {:reviewer/status "active"
+                :reviewer/absences [{:start today :end today :comment "holiday"}]}
+               (api-call :get "/api/reviewer-pool/my-absences" nil +test-api-key+ "dash-reviewer2")))
+        (is (nil? (api-call :get "/api/reviewer-pool/my-absences" nil +test-api-key+ "dash-applicant")))
+        (is (true? (:may-edit-absences (dashboard "dash-handler"))))
+        (testing "set by the reviewer"
+          (is (= {:success true}
+                 (api-call :put "/api/reviewer-pool/absences"
+                           {:userid "dash-reviewer2" :reviewer/absences []}
+                           +test-api-key+ "dash-reviewer2")))
+          (is (= ["dash-reviewer1" "dash-reviewer2"] (sort (available)))))
+        (testing "set by a handler"
+          (is (= {:success true}
+                 (api-call :put "/api/reviewer-pool/absences"
+                           {:userid "dash-reviewer2" :reviewer/absences [{:start today :end today}]}
+                           +test-api-key+ "dash-handler")))
+          (is (= ["dash-reviewer1"] (available)))
+          (is (= {:reviewer/organization "dash-pool" :reviewer/status "active"}
+                 (select-keys (stats-of "dash-handler" "dash-reviewer2") [:reviewer/organization :reviewer/status]))))
+        (testing "not set by another reviewer"
+          (is (response-is-forbidden?
+               (api-response :put "/api/reviewer-pool/absences"
+                             {:userid "dash-reviewer2" :reviewer/absences []}
+                             +test-api-key+ "dash-reviewer1"))))
+        (testing "only for the members of the pool"
+          (is (= {:success false :errors [{:type "t.reviewer-dashboard.errors/not-in-pool"}]}
+                 (api-call :put "/api/reviewer-pool/absences"
+                           {:userid "dash-applicant" :reviewer/absences []}
+                           +test-api-key+ "dash-handler")))))
       (testing "revoking the right to review"
         (is (= {:success true}
                (api-call :put "/api/reviewer-pool/reviewer"

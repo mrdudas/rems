@@ -104,13 +104,14 @@
 
 (rf/reg-event-fx
  ::edit
- (fn [{:keys [db]} [_ reviewer]]
+ (fn [{:keys [db]} [_ reviewer absences-only?]]
    {:db (assoc db
                ::message nil
                ::editing (if reviewer
                            (-> reviewer
                                (select-keys [:userid :name :email :reviewer/organization :reviewer/status :reviewer/absences])
-                               (update :reviewer/status keyword))
+                               (update :reviewer/status keyword)
+                               (assoc :absences-only? absences-only?))
                            {:new? true
                             :reviewer/status :active
                             :reviewer/absences []}))
@@ -121,7 +122,7 @@
 (rf/reg-event-db ::add-absence (fn [db _] (update-in db [::editing :reviewer/absences] conj-vec {:start "" :end "" :comment ""})))
 (rf/reg-event-db ::remove-absence (fn [db [_ index]] (update-in db [::editing :reviewer/absences] #(vec (remove-nth index %)))))
 
-(defn- valid-absence? [{:keys [start end]}]
+(defn valid-absence? [{:keys [start end]}]
   (and (not (str/blank? start))
        (not (str/blank? end))
        (<= (compare start end) 0)))
@@ -131,18 +132,28 @@
        (not (str/blank? (:reviewer/organization entry)))
        (every? valid-absence? (:reviewer/absences entry))))
 
+(defn absences-params
+  "The absences as the API takes them."
+  [absences]
+  (vec (for [absence absences]
+         (cond-> (select-keys absence [:start :end])
+           (not (str/blank? (:comment absence))) (assoc :comment (str/trim (:comment absence)))))))
+
 (rf/reg-event-fx
  ::save
  (fn [{:keys [db]} _]
    (let [entry (::editing db)
          description [text :t.reviewer-dashboard/save]]
-     (put! "/api/reviewer-pool/reviewer"
-           {:params {:userid (:userid entry)
-                     :reviewer/organization (:reviewer/organization entry)
-                     :reviewer/status (:reviewer/status entry)
-                     :reviewer/absences (vec (for [absence (:reviewer/absences entry)]
-                                               (cond-> (select-keys absence [:start :end])
-                                                 (not (str/blank? (:comment absence))) (assoc :comment (str/trim (:comment absence))))))}
+     (put! (if (:absences-only? entry)
+             "/api/reviewer-pool/absences"
+             "/api/reviewer-pool/reviewer")
+           {:params (if (:absences-only? entry)
+                      {:userid (:userid entry)
+                       :reviewer/absences (absences-params (:reviewer/absences entry))}
+                      {:userid (:userid entry)
+                       :reviewer/organization (:reviewer/organization entry)
+                       :reviewer/status (:reviewer/status entry)
+                       :reviewer/absences (absences-params (:reviewer/absences entry))})
             :handler (flash-message/default-success-handler
                       :reviewer-dashboard description
                       (fn [_]
@@ -220,7 +231,7 @@
 (defn- number-cell [n]
   [:td.text-right n])
 
-(defn- reviewer-row [reviewer {:keys [may-edit today]}]
+(defn- reviewer-row [reviewer {:keys [may-edit may-edit-absences today]}]
   (let [stats (:reviewer/stats reviewer)
         status (keyword (:reviewer/status reviewer))]
     [:tr {:style {:color (when (= :inactive status) "#8A96A8")}}
@@ -246,10 +257,16 @@
       (when (pos? (:overdue stats))
         [:span {:style {:color "#c62828"}} " (" (text-format :t.reviewer-dashboard/overdue-count (:overdue stats)) ")"])]
      [:td.text-right {:style {:white-space :nowrap}}
-      (when may-edit
+      (cond
+        may-edit
         [:button.btn.btn-secondary.btn-sm.mr-1
          {:type :button :on-click #(rf/dispatch [::edit reviewer])}
-         (text :t.reviewer-dashboard/edit)])
+         (text :t.reviewer-dashboard/edit)]
+
+        may-edit-absences
+        [:button.btn.btn-secondary.btn-sm.mr-1
+         {:type :button :on-click #(rf/dispatch [::edit reviewer true])}
+         (text :t.reviewer-dashboard/edit-absences)])
       [:button.btn.btn-secondary.btn-sm
        {:type :button :on-click #(rf/dispatch [::write-message reviewer])}
        (text :t.reviewer-dashboard/message)]]]))
@@ -274,7 +291,7 @@
                                         :on-click #(rf/dispatch [::set-period (shift-period period 1)])}
       "›"]]))
 
-(defn- absence-row [index absence]
+(defn- absence-row [index absence {:keys [on-change on-remove]}]
   (let [id (str "reviewer-absence-" index)]
     [:div.form-row.align-items-end.mb-2
      [:div.col-sm-3
@@ -282,24 +299,35 @@
       [:input.form-control {:id (str id "-start")
                             :type :date
                             :value (:start absence)
-                            :on-change #(rf/dispatch [::set-field [:reviewer/absences index :start] (.. % -target -value)])}]]
+                            :on-change #(on-change index :start (.. % -target -value))}]]
      [:div.col-sm-3
       [:label.small {:for (str id "-end")} (text :t.reviewer-dashboard/absence-end)]
       [:input.form-control {:id (str id "-end")
                             :type :date
                             :min (:start absence)
                             :value (:end absence)
-                            :on-change #(rf/dispatch [::set-field [:reviewer/absences index :end] (.. % -target -value)])}]]
+                            :on-change #(on-change index :end (.. % -target -value))}]]
      [:div.col-sm-4
       [:label.small {:for (str id "-comment")} (text :t.reviewer-dashboard/absence-comment)]
       [:input.form-control {:id (str id "-comment")
                             :type :text
                             :value (or (:comment absence) "")
-                            :on-change #(rf/dispatch [::set-field [:reviewer/absences index :comment] (.. % -target -value)])}]]
+                            :on-change #(on-change index :comment (.. % -target -value))}]]
      [:div.col-sm-2
       [:button.btn.btn-outline-danger.btn-sm {:type :button
-                                              :on-click #(rf/dispatch [::remove-absence index])}
+                                              :on-click #(on-remove index)}
        (text :t.reviewer-dashboard/remove)]]]))
+
+(defn absences-editor
+  "The rows of the `absences` with date inputs. `on-change` is called with
+  the index, the key and the new value."
+  [absences {:keys [on-add] :as handlers}]
+  [:<>
+   (for [[index absence] (indexed absences)]
+     ^{:key index}
+     [absence-row index absence handlers])
+   [:button.btn.btn-secondary.btn-sm.mb-3 {:type :button :on-click on-add}
+    (text :t.reviewer-dashboard/add-absence)]])
 
 (defn- edit-form []
   (let [entry @(rf/subscribe [::editing])
@@ -307,48 +335,49 @@
         organizations @(rf/subscribe [:organizations])]
     [:div.card.mb-3
      [:div.card-body
-      [:h3.h5 (if (:new? entry)
-                (text :t.reviewer-dashboard/add-reviewer)
-                (text-format :t.reviewer-dashboard/edit-reviewer (:name entry)))]
-      [:div.form-row
-       (when (:new? entry)
+      [:h3.h5 (cond
+                (:new? entry) (text :t.reviewer-dashboard/add-reviewer)
+                (:absences-only? entry) (text-format :t.reviewer-dashboard/absences-of (:name entry))
+                :else (text-format :t.reviewer-dashboard/edit-reviewer (:name entry)))]
+      (when-not (:absences-only? entry)
+        [:div.form-row
+         (when (:new? entry)
+           [:div.form-group.col-md
+            [:label {:for "reviewer-user"} (text :t.administration/reviewer)]
+            [dropdown/dropdown
+             {:id "reviewer-user"
+              :items users
+              :item-key :userid
+              :item-label :display
+              :item-selected? #(= (:userid %) (:userid entry))
+              :on-change #(rf/dispatch [::set-field [:userid] (:userid %)])}]])
          [:div.form-group.col-md
-          [:label {:for "reviewer-user"} (text :t.administration/reviewer)]
-          [dropdown/dropdown
-           {:id "reviewer-user"
-            :items users
-            :item-key :userid
-            :item-label :display
-            :item-selected? #(= (:userid %) (:userid entry))
-            :on-change #(rf/dispatch [::set-field [:userid] (:userid %)])}]])
-       [:div.form-group.col-md
-        [:label {:for "reviewer-organization"} (text :t.administration/reviewer-organization)]
-        [:select.form-control
-         {:id "reviewer-organization"
-          :value (or (:reviewer/organization entry) "")
-          :on-change #(rf/dispatch [::set-field [:reviewer/organization] (.. % -target -value)])}
-         [:option {:value ""} ""]
-         (for [organization organizations
-               :let [organization-id (:organization/id organization)]]
-           ^{:key organization-id}
-           [:option {:value organization-id} (localized (:organization/short-name organization))])]]
-       [:div.form-group.col-md
-        [:label {:for "reviewer-status"} (text :t.administration/reviewer-status-label)]
-        [:select.form-control
-         {:id "reviewer-status"
-          :value (name (:reviewer/status entry))
-          :on-change #(rf/dispatch [::set-field [:reviewer/status] (keyword (.. % -target -value))])}
-         (for [status statuses]
-           ^{:key status}
-           [:option {:value (name status)} (localize-reviewer-status status)])]
-        [:small.form-text.text-muted (text :t.reviewer-dashboard/status-hint)]]]
+          [:label {:for "reviewer-organization"} (text :t.administration/reviewer-organization)]
+          [:select.form-control
+           {:id "reviewer-organization"
+            :value (or (:reviewer/organization entry) "")
+            :on-change #(rf/dispatch [::set-field [:reviewer/organization] (.. % -target -value)])}
+           [:option {:value ""} ""]
+           (for [organization organizations
+                 :let [organization-id (:organization/id organization)]]
+             ^{:key organization-id}
+             [:option {:value organization-id} (localized (:organization/short-name organization))])]]
+         [:div.form-group.col-md
+          [:label {:for "reviewer-status"} (text :t.administration/reviewer-status-label)]
+          [:select.form-control
+           {:id "reviewer-status"
+            :value (name (:reviewer/status entry))
+            :on-change #(rf/dispatch [::set-field [:reviewer/status] (keyword (.. % -target -value))])}
+           (for [status statuses]
+             ^{:key status}
+             [:option {:value (name status)} (localize-reviewer-status status)])]
+          [:small.form-text.text-muted (text :t.reviewer-dashboard/status-hint)]]])
       [:h4.h6.mt-2 (text :t.reviewer-dashboard/absences)]
       [:p.small.text-muted (text :t.reviewer-dashboard/absences-hint)]
-      (for [[index absence] (indexed (:reviewer/absences entry))]
-        ^{:key index}
-        [absence-row index absence])
-      [:button.btn.btn-secondary.btn-sm.mb-3 {:type :button :on-click #(rf/dispatch [::add-absence])}
-       (text :t.reviewer-dashboard/add-absence)]
+      [absences-editor (:reviewer/absences entry)
+       {:on-change #(rf/dispatch [::set-field [:reviewer/absences %1 %2] %3])
+        :on-add #(rf/dispatch [::add-absence])
+        :on-remove #(rf/dispatch [::remove-absence %])}]
       [:div.d-flex {:style {:gap "0.5rem"}}
        [:button.btn.btn-primary {:type :button
                                  :disabled (not (valid-entry? entry))
@@ -391,7 +420,7 @@
         loading? @(rf/subscribe [::dashboard :fetching?])
         editing @(rf/subscribe [::editing])
         message @(rf/subscribe [::message])
-        options (select-keys dashboard [:may-edit :today])]
+        options (select-keys dashboard [:may-edit :may-edit-absences :today])]
     [:div
      [:p (text :t.reviewer-dashboard/intro)]
      [flash-message/component :reviewer-dashboard]

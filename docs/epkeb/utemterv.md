@@ -31,7 +31,7 @@
 
 - Bírálóválasztó statisztikával (**kész**, a bírálói körrel).
 - Bírálói naptár (**kész**): a bírálók aktív és kész ügyei határidővel, késés pirossal, a sávon a kérelem címével és állapotával; görgethető idővonal a múltba és a jövőbe; felkérés a naptárból; az elnököknek és a titkárnak.
-- Bírálók oldal (**kész**): a bírálói kör szerkesztése (felvétel, tagintézmény, státusz, a jogkör visszavonása), távollétek (a naptárban szürkén, közben nem kérhető fel), statisztika havonta, félévente, évente (felkérés, kész, arány, határidőben, átlagos napok), e-mail a bírálónak.
+- Bírálók oldal (**kész**): a bírálói kör szerkesztése (felvétel, tagintézmény, státusz, a jogkör visszavonása), távollétek (a naptárban szürkén, közben nem kérhető fel; a bíráló maga és az elnökök is beállíthatják), statisztika havonta, félévente, évente (felkérés, kész, arány, határidőben, átlagos napok), e-mail a bírálónak.
 - Külső szakértő bevonása egy kérdéshez (az elnök vagy a titkár dönt róla; nem bíráló).
 - Kérelemsablonok letöltése, aláírási útmutató.
 

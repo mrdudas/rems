@@ -24,6 +24,7 @@
 
 (s/defschema ReviewerDashboard
   {:may-edit s/Bool
+   :may-edit-absences s/Bool
    :today Date
    :reviewers [(merge schema-base/UserWithAttributes
                       {:reviewer/organization s/Str
@@ -33,6 +34,14 @@
                        :reviewer/stats ReviewerStats})]})
 
 (s/defschema SetReviewerCommand schema-base/ReviewerPoolEntry)
+
+(s/defschema MyAbsences
+  {:reviewer/status schema-base/ReviewerStatus
+   :reviewer/absences [schema-base/ReviewerAbsence]})
+
+(s/defschema SetAbsencesCommand
+  {:userid schema-base/UserId
+   :reviewer/absences [schema-base/ReviewerAbsence]})
 
 (s/defschema SendMessageCommand
   {:userid schema-base/UserId
@@ -62,6 +71,20 @@
       :return Response
       (extended-logging request)
       (ok (rems.service.reviewer-pool/set-reviewer! command)))
+
+    (GET "/my-absences" []
+      :summary "The status and the absences of the current user in the reviewer pool, or null when the user is not a member of the pool."
+      :roles #{:logged-in}
+      :return (s/maybe MyAbsences)
+      (ok (rems.service.reviewer-pool/get-my-absences)))
+
+    (PUT "/absences" request
+      :summary "Set the absences of a member of the reviewer pool. The reviewer is not available for review requests during an absence. Only for the reviewer, the handlers, the owners of the `:reviewer-pool-organization` and the administrators."
+      :roles #{:logged-in}
+      :body [command SetAbsencesCommand]
+      :return Response
+      (extended-logging request)
+      (ok (rems.service.reviewer-pool/set-absences! command)))
 
     (POST "/send-message" request
       :summary "Send an email to a member of the reviewer pool. Replies go to the sender."
