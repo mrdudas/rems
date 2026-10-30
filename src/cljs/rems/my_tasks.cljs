@@ -77,13 +77,13 @@
                          :color :inherit
                          :text-decoration :none}}
      [:div {:style {:flex "0 0 6rem" :font-weight 700}} (:application/external-id task)]
+     ;; the procedure (e.g. normal or abbreviated)
+     [:div.text-muted {:style {:flex "0 0 10rem" :font-size "0.875rem"}}
+      (str/join ", " (map (comp localized :catalogue-item/title) (:application/resources task)))]
      [:div {:style {:flex "1 1 auto" :min-width 0}}
       [:div {:style {:overflow :hidden :text-overflow :ellipsis :white-space :nowrap}}
        (or (not-empty (:application/description task))
            [:span.text-muted (text :t.my-tasks/no-title)])]]
-     ;; the procedure (e.g. normal or abbreviated)
-     [:div.text-muted {:style {:flex "0 0 10rem" :font-size "0.875rem"}}
-      (str/join ", " (map (comp localized :catalogue-item/title) (:application/resources task)))]
      [:div {:style (merge {:flex "0 0 auto"
                            :padding "0.25rem 0.75rem"
                            :border "1px solid"
