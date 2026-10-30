@@ -94,9 +94,9 @@ A próbarendszer adatbázisa tisztán, üresen jött létre, és a közös nyilv
 | Elem | Tartalom |
 |---|---|
 | Felhasználók | a bizottság tagjai, a bírálók, a kapcsolattartók és a 2026-os kérelmezők; a felhasználóazonosító az e-mail cím. Admin (`owner`): a fejlesztő. |
-| `EPKEB` szervezet | tulajdonosai a társelnökök; a bírálói kör a nyilvántartás szerint (delegáló intézmény, státusz: Bírál → aktív, Bírál\* → korlátozott, Átmenetileg nem → szünetel, Nem → nem bírál) |
+| `EPKEB` szervezet | tulajdonosai a társelnökök és a titkár (aki egyben az admin); a bírálói kör a nyilvántartás szerint (delegáló intézmény, státusz: Bírál → aktív, Bírál\* → korlátozott, Átmenetileg nem → szünetel, Nem → nem bírál) |
 | 18 tagintézmény | azonosító a rövid névből (pl. `pte-btk-pi`), teljes név a [sablonok.md](sablonok.md#tagintézmények) szerint; kapcsolattartó és illetékes társelnök a nyilvántartás szerint |
-| Eljárások | „Normál eljárás” és „Rövidített eljárás”: a korábbi próbarendszer utolsó űrlapjai és munkafolyamat-beállításai, elnökök a társelnökök; „Etikai Nyilatkozat” licenc |
+| Eljárások | „Normál eljárás” és „Rövidített eljárás”: a korábbi próbarendszer utolsó űrlapjai és munkafolyamat-beállításai, elnökök (kezelők) a társelnökök és a titkár; „Etikai Nyilatkozat” licenc |
 | 2026-os kérelmek | 145 kérelem a nyilvántartás számával (2026/50 … 2026/194), az események a nyilvántartás dátumaival (beérkezés, felkérés, bírálatok javaslattal, visszaküldés, újrabenyújtás, jóváhagyás, elutasítás, lezárás); a jóváhagyottak engedélyszáma a nyilvántartásé (2026-050 …). Az űrlapon csak a cím és a nyelv van kitöltve, a kérelmező a kutató. A rövidített eljárás bírálói megjegyzésként szerepelnek (a munkafolyamat nem enged bírálatkérést); a „Megjegyzés” oszlop elnöki megjegyzés. A múltbeli eseményekről nem ment levél. |
 
 A következő új kérelem száma 2026/195, a következő engedélyé 2026-1000 (`:permit-first-number`).
