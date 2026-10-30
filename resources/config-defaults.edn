@@ -54,7 +54,8 @@
  :alternative-login-url nil
 
  ;; What login data is used when :authentication :fake configuration is enabled.
- ;; Supported options: :test, :demo
+ ;; Supported options: :test, :demo, and :db (EPKEB: the users of the
+ ;; database, for a test system with real data)
  :fake-authentication-data :test
 
  ;; For :oidc authentication

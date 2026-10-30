@@ -1,16 +1,28 @@
 (ns rems.auth.fake-login
-  (:require [compojure.core :refer [GET defroutes]]
+  (:require [clojure.string :as str]
+            [compojure.core :refer [GET defroutes]]
             [hiccup.util :refer [url]]
             [rems.layout :as layout]
             [rems.auth.oidc :as oidc]
             [rems.common.util :refer [escape-element-id]]
             [rems.config :refer [env]]
             [rems.db.test-data-users :as test-data-users]
+            [rems.db.users]
             [rems.plugins :as plugins]
             [ring.util.response :refer [redirect]]))
 
+(defn- db-user-descriptions
+  "EPKEB: the users of the database, for a test system with real data."
+  []
+  [{:group "Users"
+    :users (vec (for [user (sort-by (juxt #(str/lower-case (or (:name %) "")) :userid)
+                                    (rems.db.users/get-users))]
+                  {:userid (:userid user)
+                   :description (str (:name user) (when (:email user) (str " – " (:email user))))}))}])
+
 (defn get-fake-user-descriptions []
   (case (:fake-authentication-data env)
+    :db (db-user-descriptions)
     :test test-data-users/+user-descriptions+
     :demo [{:group "Users" ; no fancy descriptions
             :users (vec (for [[userid attrs] test-data-users/+demo-id-data+]
@@ -41,16 +53,24 @@
 (defn logout-url []
   "/fake-logout")
 
+(defn- login [session user]
+  (-> (redirect "/redirect")
+      (assoc :session session)
+      (assoc-in [:session :access-token] (str "access-token-" (:userid user)))
+      (assoc-in [:session :identity] user)))
+
 (defn- fake-login [session username]
-  (let [id-data (get-fake-id-data username)
-        user-info (get-fake-user-info username)
-        user-data (merge id-data user-info)
-        user-data (plugins/transform :extension-point/transform-user-data user-data)
-        user (oidc/find-or-create-user! user-data)]
-    (-> (redirect "/redirect")
-        (assoc :session session)
-        (assoc-in [:session :access-token] (str "access-token-" username))
-        (assoc-in [:session :identity] user))))
+  (if (= :db (:fake-authentication-data env))
+    ;; EPKEB: only the existing users of the database
+    (if (rems.db.users/user-exists? username)
+      (login session (rems.db.users/get-user username))
+      (redirect (login-url)))
+    (let [id-data (get-fake-id-data username)
+          user-info (get-fake-user-info username)
+          user-data (merge id-data user-info)
+          user-data (plugins/transform :extension-point/transform-user-data user-data)
+          user (oidc/find-or-create-user! user-data)]
+      (login session user))))
 
 (defn- user-selection [username]
   (let [url (url (login-url) {:username username})]
