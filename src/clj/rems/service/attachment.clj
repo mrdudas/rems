@@ -1,6 +1,8 @@
 (ns rems.service.attachment
   (:require [better-cond.core :as b]
             [clojure.set :as set]
+            [clojure.string :as str]
+            [clojure.test :refer [deftest is]]
             [clojure.tools.logging :as log]
             [medley.core :refer [find-first]]
             [rems.application.commands :as commands]
@@ -15,6 +17,8 @@
             [rems.util :refer [to-bytes]]
             [ring.util.http-response :refer :all])
   (:import [java.io ByteArrayInputStream ByteArrayOutputStream]
+           [java.net URLEncoder]
+           [java.text Normalizer Normalizer$Form]
            [java.util.zip ZipOutputStream ZipEntry ZipException]
            [rems InvalidRequestException PayloadTooLargeException UnsupportedMediaTypeException]))
 
@@ -38,10 +42,31 @@
       (when (:detected scan)
         (throw (InvalidRequestException. "Malware detected"))))))
 
+(defn- ascii? [s]
+  (every? #(< (int %) 128) s))
+
+(defn content-disposition
+  "EPKEB: the HTTP headers carry only Latin-1, so the filenames with other
+  characters (such as the Hungarian ő and ű) are given in UTF-8 as in
+  RFC 6266, with a fallback without the accents."
+  [filename]
+  (if (ascii? filename)
+    (str "attachment;filename=" (pr-str filename))
+    (let [fallback (-> (Normalizer/normalize filename Normalizer$Form/NFD)
+                       (str/replace #"\p{M}" "")
+                       (str/replace #"[^\x20-\x7e]" "_"))]
+      (str "attachment;filename=" (pr-str fallback)
+           ";filename*=UTF-8''" (str/replace (URLEncoder/encode filename "UTF-8") "+" "%20")))))
+
+(deftest test-content-disposition
+  (is (= "attachment;filename=\"test.txt\"" (content-disposition "test.txt")))
+  (is (= "attachment;filename=\"Resztvevok 1.pdf\";filename*=UTF-8''R%C3%A9sztvev%C5%91k%201.pdf"
+         (content-disposition "Résztvevők 1.pdf"))))
+
 (defn download [attachment]
   (let [filename (getx-filename attachment)]
     (-> (ok (ByteArrayInputStream. (:attachment/data attachment)))
-        (header "Content-Disposition" (str "attachment;filename=" (pr-str filename)))
+        (header "Content-Disposition" (content-disposition filename))
         (content-type (:attachment/type attachment)))))
 
 (defn get-application-attachment

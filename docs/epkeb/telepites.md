@@ -75,6 +75,18 @@ Az állapot 2026-10-27-i felmérése. A beállításokat (űrlapok, workflow-k, 
                    :application.command/add-licenses]
 ```
 
+A magyar ékezetekhez (ő, ű):
+
+```clojure
+;; a kérelem PDF-je; a gyári Helvetica nem tudja az ő és ű betűt
+:pdf-metadata {:font {:encoding :unicode :ttf-name "/rems/epkeb-theme/fonts/DejaVuSans.ttf"}}
+:permit-pdf-font "/rems/epkeb-theme/fonts/DejaVuSans.ttf"
+;; a CSV-export a magyar Excelnek (a fájl elején BOM van, így UTF-8-ként olvassa)
+:csv-separator ";"
+```
+
+Az ékezetes nevű csatolmányok letöltésekor a fájlnév UTF-8-ban (RFC 6266 `filename*`) is megy, mert a HTTP-fejléc csak Latin-1 karaktereket visz át.
+
 ### Bemutatóadat
 
 | Elem | Beállítás |

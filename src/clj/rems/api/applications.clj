@@ -257,7 +257,8 @@
       :roles #{:owner :reporter}
       :query-params [form-id :- (describe s/Int "form id")]
       (let [formatted-time-now (str/replace (text/localize-time (time/now)) " " "_")]
-        (-> (ok (rems.service.application/export-applications-for-form-as-csv (getx-user-id) form-id))
+        ;; EPKEB: with a byte order mark, so that Excel reads the accents as UTF-8
+        (-> (ok (str "\uFEFF" (rems.service.application/export-applications-for-form-as-csv (getx-user-id) form-id)))
             (header "Content-Disposition" (format "filename=\"applications_%s.csv\"" formatted-time-now))
             (content-type "text/csv"))))
 
