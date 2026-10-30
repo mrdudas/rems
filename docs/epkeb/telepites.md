@@ -99,6 +99,15 @@ A próbarendszer adatbázisa tisztán, üresen jött létre, és a közös nyilv
 | Eljárások | „Normál eljárás” és „Rövidített eljárás”: a korábbi próbarendszer utolsó űrlapjai és munkafolyamat-beállításai, elnökök (kezelők) a társelnökök és a titkár; „Etikai Nyilatkozat” licenc |
 | 2026-os kérelmek | 145 kérelem a nyilvántartás számával (2026/50 … 2026/194), az események a nyilvántartás dátumaival (beérkezés, felkérés, bírálatok javaslattal, visszaküldés, újrabenyújtás, jóváhagyás, elutasítás, lezárás); a jóváhagyottak engedélyszáma a nyilvántartásé (2026-050 …). Az űrlapon csak a cím és a nyelv van kitöltve, a kérelmező a kutató. A rövidített eljárás bírálói megjegyzésként szerepelnek (a munkafolyamat nem enged bírálatkérést); a „Megjegyzés” oszlop elnöki megjegyzés. A múltbeli eseményekről nem ment levél. |
 
+**A kérelmek dokumentumai (2026-10-30):** a Drive „beérkezett kérelmek” mappájának helyi másolatából (kérelmenként egy mappa, 655 fájl: PDF, DOCX, DOC) a kérelmek űrlapja és dokumentumai is bekerültek:
+
+1. **Szövegkinyerés** (`extract_text.py`, `doctext.py`): PDF-ből PyPDF2-vel, DOCX-ből pandoc-kal, a régi .doc fájlokból a Word-fájl szerkezetének olvasásával; a szkennelt oldalakat képként olvassuk.
+2. **Feldolgozás subagentekkel** (`INSTRUCTIONS.md`, `fields.json`): egy-egy subagent néhány mappát dolgoz fel; besorolja a fájlokat (végleges kérelem, korábbi változat, bírálati lap a bírálóval és a javaslattal, jóváhagyó levél, válaszlevél, melléklet az űrlapmezőjével), és kinyeri a válaszokat az új űrlap mezőire. Szabályok: a kérelmező saját válasza kerül be akkor is, ha ellentmondásos (a kétely a megjegyzésbe); amire nincs válasz, az üresen marad; a bírálati lapon a javaslatot (aláhúzás) a lap képéről olvassuk.
+3. **Ellenőrzés** (`validate.py`): minden fájl pontosan egyszer szerepel, az opciók érvényesek, a bíráló szerepel a nyilvántartásban.
+4. **Betöltés** (`merge.py`, `epkeb_import.clj`): az űrlap kitöltve; az eredeti kérelem, korábbi változatai és a válaszlevelek a kérelmező nyilvános megjegyzéséhez csatolva; a bírálati lap a bírálathoz, a jóváhagyó levél a jóváhagyáshoz; a beleegyező nyilatkozatok és más mellékletek a mezőjükhöz (ha a kérelem PDF-je tartalmazza őket, a kérelemfájl kerül a mezőbe); a többi (üres bírálati sablon, másik kérelem tévesen ide tett dokumentuma) az elnökök nem nyilvános megjegyzéséhez, a kinyerés megbízhatóságával és megjegyzéseivel együtt.
+
+Eredmény: 145 kérelem, átlagosan 23 kitöltött mező; megbízhatóság: 114 magas, 30 közepes, 1 alacsony (csak a jóváhagyó levél volt meg). A feldolgozás eszközei és eredményei a szerveren vannak (`/opt/analyst.hu/rems/db-archive/import/`), a repóban nem, mert személyes adatokkal dolgoznak. Az előző (csak nyilvántartásos) adatbázis `rems_nyilvantartas_20261030` néven megmaradt.
+
 A következő új kérelem száma 2026/195, a következő engedélyé 2026-1000 (`:permit-first-number`).
 
 A korábbi adatbázis megmaradt `rems_archiv_20261030` néven (és mentésként: `/opt/analyst.hu/rems/db-archive/`).
