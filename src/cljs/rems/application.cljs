@@ -1367,8 +1367,8 @@
 (defn- render-application [{:keys [application userid]}]
   [:<>
    [review-deadline-alert application userid]
-   (when (can-see-everything? application) ; XXX: should these be shown only to handling users?
-     [disabled-items-warning application])
+   ;; EPKEB: no disabled-items-warning, a disabled catalogue item is only an
+   ;; earlier version of the procedure and does not affect the application
    (when (can-see-everything? application) ; XXX: should these be shown only to handling users?
      [blacklist-warning application])
    (if (is-handling-user? application)
