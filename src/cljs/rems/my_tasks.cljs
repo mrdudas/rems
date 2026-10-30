@@ -1,13 +1,14 @@
 (ns rems.my-tasks
   "The /my-tasks page: the tasks of the user on the applications, by role."
-  (:require [re-frame.core :as rf]
+  (:require [clojure.string :as str]
+            [re-frame.core :as rf]
             [rems.atoms :refer [document-title]]
             [rems.collapsible :as collapsible]
             [rems.fetcher :as fetcher]
             [rems.flash-message :as flash-message]
             [rems.globals]
             [rems.spinner :as spinner]
-            [rems.text :refer [text text-format]]))
+            [rems.text :refer [localized text text-format]]))
 
 (rf/reg-event-fx
  ::enter-page
@@ -80,6 +81,9 @@
       [:div {:style {:overflow :hidden :text-overflow :ellipsis :white-space :nowrap}}
        (or (not-empty (:application/description task))
            [:span.text-muted (text :t.my-tasks/no-title)])]]
+     ;; the procedure (e.g. normal or abbreviated)
+     [:div.text-muted {:style {:flex "0 0 10rem" :font-size "0.875rem"}}
+      (str/join ", " (map (comp localized :catalogue-item/title) (:application/resources task)))]
      [:div {:style (merge {:flex "0 0 auto"
                            :padding "0.25rem 0.75rem"
                            :border "1px solid"

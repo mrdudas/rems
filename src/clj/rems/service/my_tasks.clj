@@ -42,6 +42,8 @@
   {:application/id (:application/id application)
    :application/external-id (:application/external-id application)
    :application/description (:application/description application)
+   :application/resources (mapv #(select-keys % [:catalogue-item/id :catalogue-item/title])
+                                (:application/resources application))
    :application/state (:application/state application)
    :application/last-activity (:application/last-activity application)})
 

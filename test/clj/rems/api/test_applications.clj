@@ -3791,7 +3791,13 @@
                          +test-api-key+ "tasks-researcher"))))
       (testing "the draft"
         (is (= ["draft"] (tasks "alice" :applicant)))
-        (is (= ["fill-in"] (tasks "tasks-researcher" :member))))
+        (is (= ["fill-in"] (tasks "tasks-researcher" :member)))
+        (is (= [[cat-item-id]]
+               (->> (api-call :get "/api/applications/my-tasks" nil +test-api-key+ "alice")
+                    :applicant
+                    (filter #(= app-id (:application/id %)))
+                    (mapv #(mapv :catalogue-item/id (:application/resources %)))))
+            "the procedure of the application"))
       (testing "marked ready by the researcher"
         (is (= {:success true}
                (send-command "tasks-researcher" {:type :application.command/save-draft

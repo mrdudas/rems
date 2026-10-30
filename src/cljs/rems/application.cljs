@@ -838,6 +838,13 @@
       description
       {:inline? true}])
 
+   ;; EPKEB: the procedure (e.g. normal or abbreviated), also when the
+   ;; resources section is hidden
+   (when-some [resources (seq (:application/resources application))]
+     [info-field (text :t.applications/resource)
+      (str/join ", " (map (comp localized :catalogue-item/title) resources))
+      {:inline? true}])
+
    (when-some [organization (:application/organization application)]
      [info-field (text :t.applications/organization)
       (localized (:organization/name organization))

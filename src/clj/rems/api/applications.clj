@@ -59,6 +59,8 @@
   {:application/id s/Int
    :application/external-id (s/maybe s/Str)
    :application/description (s/maybe s/Str)
+   :application/resources [{:catalogue-item/id s/Int
+                            :catalogue-item/title schema-base/LocalizedString}]
    :application/state s/Keyword
    :application/last-activity DateTime
    :task/type (s/enum :answer-question :returned :submit :waiting-for-supervisor :draft
