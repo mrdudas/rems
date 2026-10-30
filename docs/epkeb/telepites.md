@@ -106,7 +106,7 @@ A próbarendszer adatbázisa tisztán, üresen jött létre, és a közös nyilv
 3. **Ellenőrzés** (`validate.py`): minden fájl pontosan egyszer szerepel, az opciók érvényesek, a bíráló szerepel a nyilvántartásban.
 4. **Betöltés** (`merge.py`, `epkeb_import.clj`): az űrlap kitöltve; az eredeti kérelem, korábbi változatai és a válaszlevelek a kérelmező nyilvános megjegyzéséhez csatolva; a bírálati lap a bírálathoz, a jóváhagyó levél a jóváhagyáshoz; a beleegyező nyilatkozatok és más mellékletek a mezőjükhöz (ha a kérelem PDF-je tartalmazza őket, a kérelemfájl kerül a mezőbe); a többi (üres bírálati sablon, másik kérelem tévesen ide tett dokumentuma) az elnökök nem nyilvános megjegyzéséhez, a kinyerés megbízhatóságával és megjegyzéseivel együtt.
 
-Eredmény: 145 kérelem, átlagosan 23 kitöltött mező; megbízhatóság: 114 magas, 30 közepes, 1 alacsony (csak a jóváhagyó levél volt meg). A feldolgozás eszközei és eredményei a szerveren vannak (`/opt/analyst.hu/rems/db-archive/import/`), a repóban nem, mert személyes adatokkal dolgoznak. Az előző (csak nyilvántartásos) adatbázis `rems_nyilvantartas_20261030` néven megmaradt.
+Eredmény: 145 kérelem, átlagosan 23 kitöltött mező; megbízhatóság: 115 magas, 29 közepes, 1 alacsony (csak a jóváhagyó levél volt meg). A feldolgozás eszközei és eredményei a szerveren vannak (`/opt/analyst.hu/rems/db-archive/import/`), a repóban nem, mert személyes adatokkal dolgoznak. Az előző (csak nyilvántartásos) adatbázis `rems_nyilvantartas_20261030` néven megmaradt.
 
 A következő új kérelem száma 2026/195, a következő engedélyé 2026-1000 (`:permit-first-number`).
 
