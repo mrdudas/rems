@@ -43,7 +43,7 @@ Az állapot 2026-10-27-i felmérése. A beállításokat (űrlapok, workflow-k, 
 **Tesztelésre (jelenlegi állapot):**
 
 - A REMS előtt Keycloak-belépés van (oauth2-proxy, mint a többi szolgáltatásnál), saját `rems-oauth2-proxy` forwardauth köztes réteggel (`rems-docker-compose.yml`). A közös `oauth2-proxy@docker` nem használható, mert az `authResponseHeadersRegex=^X-` beállítása a kérésből minden `X-` fejlécet töröl, így a REMS `X-CSRF-Token` fejlécét is, és minden mentés 401-et kap.
-- A REMS-ben a beépített tesztbelépés van bekapcsolva (`:authentication :fake`, `:fake-authentication-data :test`): a `/fake-login` oldalon jelszó nélkül lehet a beépített tesztfelhasználók (alice, elsa, frank, handler, carl, owner, ...) nevében belépni, és egy kattintással váltani. Csak az oauth2-proxy mögött szabad bekapcsolni.
+- A REMS-ben a beépített tesztbelépés van bekapcsolva (`:authentication :fake`, `:fake-authentication-data :db`): a `/fake-login` oldalon jelszó nélkül lehet az adatbázis bármelyik felhasználója nevében belépni, és egy kattintással váltani (2026-10-30 előtt a beépített tesztfelhasználók voltak: `:test`). Csak az oauth2-proxy mögött szabad bekapcsolni.
 - Tesztszerepek: `alice` az EPKEB szervezet kapcsolattartója, `elsa` kutató, `frank` felügyelő, `handler` a „próba munkafolyamat” elnöke (handlere), `carl` bíráló, `owner` admin (`grant-role owner owner`; a szerepet a futó REMS újraindítás után látja).
 - A Keycloakos fiókok (az eredeti admin is) ilyenkor nem tudnak belépni.
 
@@ -87,21 +87,25 @@ A magyar ékezetekhez (ő, ű):
 
 Az ékezetes nevű csatolmányok letöltésekor a fájlnév UTF-8-ban (RFC 6266 `filename*`) is megy, mert a HTTP-fejléc csak Latin-1 karaktereket visz át.
 
-### Bemutatóadat
+### Adatbázis (2026-10-30 óta)
 
-| Elem | Beállítás |
+A próbarendszer adatbázisa tisztán, üresen jött létre, és a közös nyilvántartásból (`Kérelmek_terhelés_KÖZÖS_2026.xlsx`, `2026_TERHELÉS` és `2026_KÉRELMEK` lap) valódi adatokkal töltöttük fel:
+
+| Elem | Tartalom |
 |---|---|
-| Szervezet `EPKEB` | kapcsolattartó és illetékes elnök beállítva |
-| Workflow #3 „próba munkafolyamat” (normál eljárás) | *anonymize handling* be; tiltások: `approve` a bírálónak, `copy-as-new` a tagnak, `change-applicant`, `redact-attachments` a bírálónak; állapotcímkék: Bírálók kijelölve, Bírálók felkérve, Módosítás alatt, Bizottsági szavazás |
-| Workflow #4 „Rövidített eljárás” | *anonymize handling* be; tiltások: `copy-as-new` a tagnak, `change-applicant`, `request-review`, `invite-reviewer`, `request-decision`, `invite-decider`, `vote` |
-| Űrlap #5 | az #3 másolata, „A kutatás címe” címmezőként (description), így a listákban a kérelem címe látszik. A használatban lévő űrlap nem szerkeszthető, ezért kellett másolat. |
-| Workflow #5 „próba munkafolyamat” és #6 „Rövidített eljárás” | a #3 és #4 másolata (elnökök, nyilatkozatok, tiltások, névtelenítés, állapotcímkék) az #5 űrlappal. A munkafolyamathoz csatolt űrlap utólag nem cserélhető, és a katalóguselem űrlapja a munkafolyamaté mellé kerül (két űrlap), ezért kellett új munkafolyamat. A #3 és #4 neve „(régi)”; a korábbi kérelmek azokon maradnak. |
-| Katalóguselem #6 „Normál eljárás” és #7 „Rövidített eljárás” | workflow #5 és #6, saját űrlap nélkül (kivezetve) |
-| Űrlap #6 és #7, workflow #7 és #8, katalóguselem #8 „Normál eljárás” és #9 „Rövidített eljárás” (2026-10-28 óta) | az új űrlap ([urlap-terv.md](urlap-terv.md#az-új-űrlap-2026-10-28)); a #5 és #6 workflow neve „(régi, #5 űrlap)” |
-| Szervezet `DE-PI` „Debreceni Egyetem Pszichológiai Intézet” | bemutató tagintézmény: kapcsolattartó `alice`, illetékes elnök az EPKEB-é; a bírálói körben `malice` innen delegált (így a debreceni kérelmeknél nem kérhető fel) |
-| Űrlap #8, workflow #9, katalóguselem #10 „Rövidített eljárás” (2026-10-28 óta) | javított rövidített űrlap: csak a nyelv, az eredeti engedély száma, az eltérések és az eredeti kérelem kötelező; a #8 workflow neve „(régi, #7 űrlap)” |
-| Kérelem 2026/15 | álnevesített valódi kérelem az új űrlapon, benyújtva |
-| Kérelem 2026/8 | a kapcsolattartós létrehozás próbája |
+| Felhasználók | a bizottság tagjai, a bírálók, a kapcsolattartók és a 2026-os kérelmezők; a felhasználóazonosító az e-mail cím. Admin (`owner`): a fejlesztő. |
+| `EPKEB` szervezet | tulajdonosai a társelnökök; a bírálói kör a nyilvántartás szerint (delegáló intézmény, státusz: Bírál → aktív, Bírál\* → korlátozott, Átmenetileg nem → szünetel, Nem → nem bírál) |
+| 18 tagintézmény | azonosító a rövid névből (pl. `pte-btk-pi`), teljes név a [sablonok.md](sablonok.md#tagintézmények) szerint; kapcsolattartó és illetékes társelnök a nyilvántartás szerint |
+| Eljárások | „Normál eljárás” és „Rövidített eljárás”: a korábbi próbarendszer utolsó űrlapjai és munkafolyamat-beállításai, elnökök a társelnökök; „Etikai Nyilatkozat” licenc |
+| 2026-os kérelmek | 145 kérelem a nyilvántartás számával (2026/50 … 2026/194), az események a nyilvántartás dátumaival (beérkezés, felkérés, bírálatok javaslattal, visszaküldés, újrabenyújtás, jóváhagyás, elutasítás, lezárás); a jóváhagyottak engedélyszáma a nyilvántartásé (2026-050 …). Az űrlapon csak a cím és a nyelv van kitöltve, a kérelmező a kutató. A rövidített eljárás bírálói megjegyzésként szerepelnek (a munkafolyamat nem enged bírálatkérést); a „Megjegyzés” oszlop elnöki megjegyzés. A múltbeli eseményekről nem ment levél. |
+
+A következő új kérelem száma 2026/195, a következő engedélyé 2026-1000 (`:permit-first-number`).
+
+A korábbi adatbázis megmaradt `rems_archiv_20261030` néven (és mentésként: `/opt/analyst.hu/rems/db-archive/`).
+
+A tesztbelépés az adatbázis felhasználóit listázza (`:fake-authentication-data :db`), így bárki nevében be lehet lépni; ezt csak a Keycloak-belépés védi. A nyilvános engedélyoldalak (`/permit/…`) valódi adatokat mutatnak.
+
+Az importot egy Clojure-szkript végzi a REMS jarral, egy üres, migrált adatbázison, a REMS tesztadat-segédfüggvényeivel (`rems.db.test-data-helpers`), a parancsok idejét a nyilvántartás dátumára állítva. A szkript és az adat-előkészítő a repón kívül van, mert személyes adatokkal dolgozik.
 
 ## Upstream verzió
 
